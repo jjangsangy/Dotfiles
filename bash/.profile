@@ -71,3 +71,9 @@ _completemarks() {
 }
 
 complete -F _completemarks jump unmark
+
+#Runs bash terminal completion script in current directory
+if [ -f git-completion.bash ]; then
+  . git-completion.bash
+fi
+
