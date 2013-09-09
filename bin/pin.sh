@@ -1,12 +1,5 @@
 #!/bin/sh
 clear
-#  pin_yield.sh
-#  
-#  Calient Technologies
-#  Created by Sang Han
-#  Parses Pin Prober Data on network drive into working directory
-
-#filePath requires Pubstore to be mounted locally in OS X /Volumes directory
 
 #Initialize Variables & Functions
 WaferID=${1}
