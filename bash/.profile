@@ -41,6 +41,24 @@ alias u2m="tr '\012' '\015' "
 
 #[Functions]
 
+function red() {
+  RED=$(tput setaf 1)
+  NORMAL=$(tput sgr0)
+  echo -e "$RED$*$NORMAL"
+}
+
+function green() {
+  GREEN=$(tput setaf 2)
+  NORMAL=$(tput sgr6)
+  echo -e "$GREEN$*$NORMAL"
+}
+
+function yellow() {
+  YELLOW=$(tput setaf 3)
+  NORMAL=$(tput sgr0)
+  echo -e "$YELLOW$*$NORMAL"
+}
+
 function ds () 	{
 	echo "Disk Space Utilization for $HOSTNAME"
 	df -h
@@ -72,7 +90,7 @@ _completemarks() {
 complete -F _completemarks jump unmark
 
 #Runs bash terminal completion script in current directory
-if [ -f $HOME/.dotfile/bash/git-completion.bash ]; then
-  . git-completion.bash
+if [ -f $HOME/.dotfiles/bash/git-completion.bash ]; then
+  . $HOME/.dotfiles/bash/git-completion.bash
 fi
 
