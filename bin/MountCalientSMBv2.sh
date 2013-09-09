@@ -1,22 +1,11 @@
 #!/bin/sh
 
-#  CalientMount.sh
 #  
 #
-#  Created by Sang Han on 1/29/13.
-#
 
-#Initialize User Credentials
-########################################################
 visualCred="visual:visual"
 autoproberCred="autoprober:autoprober"
-########################################################
-
 function calient_smb () {
-
-#1 Server Name Host
-#2 Share Name
-#3 Credential Function
 
 if ! [ -d "/Volumes/${2}" ] ; then
     echo "Creating Directory"
