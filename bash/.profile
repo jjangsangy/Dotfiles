@@ -5,13 +5,17 @@ export GREP_OPTIONS='--color=auto'
 export PATH=$PATH:$HOME/bin
 export MARKPATH=$HOME/.marks
 
+if [[ -f /Applications/MATLAB_R2013a.app/bin/matlab ]]; then
+    export PATH=$PATH:/Applications/MATLAB_R2013a.app/bin/
+    alias matlab="matlab -nojvm -nosplash"
+fi
+
 #[Prompt]
 PS1='\[\033[36m\]Yes, Master?\[\033[m\] \[\e[0;33m\]Sang\[\e[0m\]:\[\033[36m\] ~$\[\033[m\] '
 
 #[Aliases]
 
 alias ls="ls -Fx"
-
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 
