@@ -1,25 +1,36 @@
+#[Source]
+## Bash Completion
+if [ -f $HOME/.dotfiles/bash/git-completion.bash ]; then
+  . $HOME/.dotfiles/bash/git-completion.bash
+fi
+
+## OS X Matlab Console
+if [[ -f /Applications/MATLAB_R2013a.app/bin/matlab ]]; then
+    export PATH=$PATH:/Applications/MATLAB_R2013a.app/bin
+    alias matlab="matlab -nojvm -nosplash"
+fi
+
+## Functions
+if [[ -f $HOME/.functions ]]; then
+	. $HOME/.functions
+fi
+
 #[ENVAR]
 export CLICOLOR=1
 export LSCOLORS=Exfxcxdxbxegedabagacad
 export GREP_OPTIONS='--color=auto'
-export PATH=$PATH:$HOME/bin
+export PATH=/anaconda/bin:/usr/local/bin:$HOME/bin:$PATH
 export MARKPATH=$HOME/.marks
-
-if [[ -f /Applications/MATLAB_R2013a.app/bin/matlab ]]; then
-    export PATH=$PATH:/Applications/MATLAB_R2013a.app/bin/
-    alias matlab="matlab -nojvm -nosplash"
-fi
 
 #[Prompt]
 PS1='\[\033[36m\]Yes, Master?\[\033[m\] \[\e[0;33m\]Sang\[\e[0m\]:\[\033[36m\] ~$\[\033[m\] '
 
 #[Aliases]
-
 alias ls="ls -Fx"
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 
-alias sshPi="ssh shan@raspberrypi.local"
+alias sshPi="ssh sang@raspberrypi.calient.local"
 alias sshApps="ssh root@sangapps.com"
 alias sshCloud="ssh root@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
@@ -63,7 +74,7 @@ function yellow() {
   echo -e "$YELLOW$*$NORMAL"
 }
 
-function ds () 	{
+function ds () {
 	echo "Disk Space Utilization for $HOSTNAME"
 	df -h
 }
@@ -81,7 +92,7 @@ function unmark {
 }
 
 function marks {
-    ls -l $MARKPATH | sed -e 's:\  : :g' -e 's:@::g' | cut -f 10- -d ' ' | sed -e 's:->:'$'\t''&:g'
+	ls -l $MARKPATH | sed -e 's:\  : :g' -e 's:@::g' | cut -f 9- -d ' ' | awk ' BEGIN {FS="->"}; NR>1 {printf("%-3.2d %-24s %s %s\n",NR-1,$1,"->",$2)}'
 }
 
 _completemarks() {
@@ -92,9 +103,4 @@ _completemarks() {
 }
 
 complete -F _completemarks jump unmark
-
-#Runs bash terminal completion script in current directory
-if [ -f $HOME/.dotfiles/bash/git-completion.bash ]; then
-  . $HOME/.dotfiles/bash/git-completion.bash
-fi
 
