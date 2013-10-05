@@ -1,2 +1,2 @@
-.dotfiles
+# Sang Han's dotfiles
 =========
