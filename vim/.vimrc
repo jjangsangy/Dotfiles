@@ -1,127 +1,123 @@
-"   *************************************
-"   * Variables
-"   *************************************
+" don't bother with vi compatibility
+set nocompatible
 
-" Default Shell
-set shell=bash                  "default login shell is set to bash
-
-" Color Profiles
-colorscheme solarized
+" enable syntax highlighting
 syntax enable
-set background=dark
 
-set nojoinspaces                " no more implicit whitespace creation
-set ruler                       " tells you what line you are on
-set ts=4                        " tabs are set equivalent to 4 spaces
-set ai
-set nocompatible                " get rid of strict vi compatibility
-set ignorecase                  " search without regards to case
-set fileformats=unix,dos,mac    " open files from mac/dos
-set nohlsearch                  " highlighting turned off when searching
-set showmatch                   " jumping between matches
-set binary noeol                " no eol attached to end, always unix format
-set nu                          " line numbering on
-set incsearch                   " incremental searching
-set cindent
-set nopaste
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set expandtab
-set autoindent                  " autoindent on
-set smartindent
-set laststatus=2
-set mousemodel=popup
-set hidden
-set noerrorbells                " no more error bells
-set noic
-set backspace=2                 " fix backspacing in insert mode
+" configure Vundle
+filetype on " without this vim emits a zero exit status, later, because of :ft off
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
 
-let mapleader = ","
-
-filetype on
-filetype plugin on
-filetype indent on
-
-" Mapping for ctags
-nmap <silent><Leader>B <ESC>/end<CR>=%:noh<CR>
-nmap <silent> <M-S-Left> <ESC>:bp<CR>
-nmap <Leader>U <ESC>:TlistUpdate<CR>
-nmap <Leader>M <ESC>:wa<CR>:make!<CR>
-nmap <Leader>D <ESC>:w<CR>:diffthis<CR>
-nmap <Leader>d <ESC>:w<CR>:diffoff<CR>
-nmap <silent><Leader>q <ESC>:copen<CR>
-nmap <silent><Leader>n <ESC>:cn<CR>
-nmap <silent><Leader>; <ESC>d/;/e<CR>:noh<CR>
-nmap <Leader><Leader>s <ESC>:cs find s <C-R>=expand("<cword>")<CR><CR>
-nmap <Leader><Leader>g <ESC>:cs find g <C-R>=expand("<cword>")<CR><CR>
-nmap <Leader><Leader>d <ESC>:cs find d <C-R>=expand("<cword>")<CR><CR>
-nmap <Leader><Leader>c <ESC>:cs find c <C-R>=expand("<cword>")<CR><CR>
-nmap <Leader><Leader>t <ESC>:cs find t 
-nmap <Leader><Leader>e <ESC>:cs find e 
-nmap <Leader><Leader>f <ESC>:cs find f <C-R>=expand("<cword>")<CR><CR>
-nmap <Leader><Leader>i <ESC>:cs find i <C-R>=expand("<cword>")<CR><CR>
-nmap <Leader>P <ESC>:Pydoc <C-R>=expand("<cword>")<CR>
-map <C-_> :cstag <C-R>=expand("<cword>")<CR><CR>
-noremap <f11> <esc>:syntax sync fromstart<cr>
-inoremap <f11> <esc>:syntax sync fromstart<cr>a
-
-" Similar to bash style ctrl+e and ctrl+a for start and end of line. ctrl+d is
-" mapped to dd
-inoremap <c-d> <esc>ddi
-inoremap <c-e> <esc>A
-inoremap <c-a> <esc>I
-" inoremap <c-s> <esc>:w
-" inoremap <c-q> <esc>:wq
-nnoremap    <leader>w <c-w>w
-" Pressing <leader>+" sets quotations around the word you are on.
-nnoremap    <leader>" viw<esc>a"<esc>hbi"<esc>lel
-
-"Remove normal mappings for arrow movement
-nnoremap    <up>    <nop>
-nnoremap    <down>  <nop>
-nnoremap    <left>  <nop>
-nnoremap    <right> <nop>
-
-" Open up vimrc file with <leader>ev and source with <leader>sv
-nnoremap <leader>ev :vsplit $MYVIMRC<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
-
-set statusline=%<%f%=\ [%1*%M%*%n%R]\ y\ %-19(%3l,%02c%03V%)
-
-nmap <Leader>S <ESC>:setlocal spell spelllang=en_us<CR>
-
-set tags=tags;/Users/jjangsangy
-
-set whichwrap+=<,>,h,l
-
-autocmd FileType ruby set path=./**,**
-setl path=./**,**
-
-nmap <F12> <Esc>:wa<CR>:mksession!<CR>:qa<CR>
-
-if has("cscope")
-  set csprg=/usr/local/bin/cscope
-  set csto=0
-  set cst
-  set nocsverb
-  if filereadable("cscope.out")
-    cs add cscope.out
-  elseif $CSCOPE_DB != ""
-    cs add $CSCOPE_DB
-  endif
-  set csverb
+" install Vundle bundles
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+  source ~/.vimrc.bundles.local
 endif
 
+" ensure ftdetect et al work by including this after the Vundle stuff
+filetype plugin indent on
 
-autocmd BufRead *.rl  setfiletype=ragel
-autocmd BufRead *.asm  setfiletype=earing
-autocmd BufRead *.factor  setfiletype=factor
+set autoindent
+set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
+set backspace=2                                              " Fix broken backspace in some setups
+set backupcopy=yes                                           " see :help crontab
+set clipboard=unnamed                                        " yank and paste with the system clipboard
+set directory-=.                                             " don't store swapfiles in the current directory
+set encoding=utf-8
+set expandtab                                                " expand tabs to spaces
+set ignorecase                                               " case-insensitive search
+set incsearch                                                " search as you type
+set laststatus=2                                             " always show statusline
+set list                                                     " show trailing whitespace
+set listchars=tab:▸\ ,trail:▫
+set number                                                   " show line numbers
+set ruler                                                    " show where you are
+set scrolloff=3                                              " show context above/below cursorline
+set shiftwidth=2                                             " normal mode indentation commands use 2 spaces
+set showcmd
+set smartcase                                                " case-sensitive search if any caps
+set softtabstop=2                                            " insert mode tab and backspace use 2 spaces
+set tabstop=8                                                " actual tabs occupy 8 characters
+set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
+set wildmenu                                                 " show a navigable menu for tab completion
+set wildmode=longest,list,full
 
-runtime! ftplugin/man.vim
-set grepprg=/usr/local/bin/ack
+" Enable basic mouse behavior such as resizing buffers.
+set mouse=a
+if exists('$TMUX')  " Support resizing in tmux
+  set ttymouse=xterm2
+endif
 
+" keyboard shortcuts
+let mapleader = ','
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+map <leader>l :Align
+nmap <leader>a :Ack<space>
+nmap <leader>b :CtrlPBuffer<CR>
+nmap <leader>d :NERDTreeToggle<CR>
+nmap <leader>f :NERDTreeFind<CR>
+nmap <leader>t :CtrlP<CR>
+nmap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
+nmap <leader>] :TagbarToggle<CR>
+nmap <leader><space> :call whitespace#strip_trailing()<CR>
+nmap <leader>g :GitGutterToggle<CR>
+nmap <leader>c <Plug>Kwbd
+map <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
-let g:pydiction_location = '/Users/jjangsangy/.vim/ftplugin/complete-dict'
+" plugin settings
+let g:ctrlp_match_window = 'order:ttb,max:20'
+let g:NERDSpaceDelims=1
+let g:gitgutter_enabled = 0
 
-call pathogen#infect()
+" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+if executable('ag')
+  let g:ackprg = 'ag --nogroup --column'
+
+  " Use Ag over Grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+endif
+
+" fdoc is yaml
+autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
+" md is markdown
+autocmd BufRead,BufNewFile *.md set filetype=markdown
+" extra rails.vim help
+autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
+autocmd User Rails silent! Rnavcommand observer       app/observers             -glob=**/* -suffix=_observer.rb
+autocmd User Rails silent! Rnavcommand feature        features                  -glob=**/* -suffix=.feature
+autocmd User Rails silent! Rnavcommand job            app/jobs                  -glob=**/* -suffix=_job.rb
+autocmd User Rails silent! Rnavcommand mediator       app/mediators             -glob=**/* -suffix=_mediator.rb
+autocmd User Rails silent! Rnavcommand stepdefinition features/step_definitions -glob=**/* -suffix=_steps.rb
+" automatically rebalance windows on vim resize
+autocmd VimResized * :wincmd =
+
+" Fix Cursor in TMUX
+if exists('$TMUX')
+  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+else
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
+
+" Go crazy!
+if filereadable(expand("~/.vimrc.local"))
+  " In your .vimrc.local, you might like:
+  "
+  " set autowrite
+  " set nocursorline
+  " set nowritebackup
+  " set whichwrap+=<,>,h,l,[,] " Wrap arrow keys between lines
+  "
+  " autocmd! bufwritepost .vimrc source ~/.vimrc
+  " noremap! jj <ESC>
+  source ~/.vimrc.local
+endif
