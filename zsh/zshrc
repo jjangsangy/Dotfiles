@@ -3,6 +3,6 @@ ZSH_THEME="ys"
 source $ZSH/oh-my-zsh.sh
 source $HOME/.aliases
 source $HOME/.prompt.zsh
-source $HOME/.source
+source $HOME/.path
 
 plugins=(git osx)

@@ -121,3 +121,6 @@ if filereadable(expand("~/.vimrc.local"))
   " noremap! jj <ESC>
   source ~/.vimrc.local
 endif
+
+autocmd BufRead,BufNewFile *.path set filetype=sh
+autocmd BufRead,BufNewFile *.aliases set filetype=sh
