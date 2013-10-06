@@ -32,7 +32,7 @@ fi
 if [[ $(uname -s) == "Darwin" ]]; then
         which -s brew
         if [[ $? != 0 ]]; then
-                BREWINSTALL=(curl git ctags wget vim tmux python)
+                BREWINSTALL=(curl git ctags wget zsh vim tmux python)
                 echo "Installing Homebrew..."
                 ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
                 brew update
