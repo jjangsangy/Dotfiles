@@ -8,15 +8,15 @@ if [[ -e ${ZSH}/oh-my-zsh.sh ]]; then
 fi
 
 if [[ -e ${HOME}/.aliases ]]; then
-    . ${HOME}/.aliases
+    . ${HOME}/.aliases.sh
 fi
 
 if [[ -e ${HOME}/.prompt.zsh ]]; then
     . ${HOME}/.prompt.zsh
 fi
 
-if [[ -e ${HOME}/.path ]]; then
-    . ${HOME}/.path
+if [[ -e ${HOME}/.path.sh ]]; then
+    . ${HOME}/.path.sh
 fi
 
 

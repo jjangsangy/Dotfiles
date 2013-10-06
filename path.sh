@@ -12,6 +12,6 @@ if [[ -d $HOME/bin ]]; then
 fi
 
 which brew -s > /dev/null
-if [[ $? == 0 ]]; then
+if [[ $? != 0 ]]; then
     export PATH=/usr/local/bin:$PATH
 fi
