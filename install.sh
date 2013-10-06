@@ -45,6 +45,8 @@ if [[ $(uname -s) == "Darwin" ]]; then
             git clone https://github.com/jjangsangy/Dotfiles.git "$HOME/Dotfiles"
         fi
 
+        source $HOME/Dotfiles/osx/osx.sh
+
         if ! [[ -d ${HOME}/bin/maximum-awesome ]]; then
                 echo "Installing Maximum Awesome VIM"
                 maxDIR="${HOME}/bin/maximum-awesome"
