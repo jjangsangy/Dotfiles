@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+git remote set-url origin https://github.com/jjangsangy/Dotfiles.git
+
 if ! [[ -d $HOME/bin ]]; then
 	mkdir $HOME/bin
 fi
-
 
 if [[ $(uname -s) == "Linux" ]]; then
 	APTPREINSTALL=(git git-core vim zsh curl wget)
@@ -39,5 +40,6 @@ if [[ $(uname -s) == "Darwin" ]]; then
                 brew update
                 brew install ${BREWINSTALL[*]}
         fi
+
 fi
 
