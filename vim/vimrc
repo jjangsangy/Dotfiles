@@ -120,5 +120,6 @@ if filereadable(expand("~/.vimrc.local"))
 endif
 
 " Syntax highlighting for dotfiles
-autocmd BufRead,BufNewFile *.path set filetype=sh
-autocmd BufRead,BufNewFile *.aliases set filetype=sh
+autocmd BufRead,BufNewFile *path set filetype=sh
+autocmd BufRead,BufNewFile *aliases set filetype=sh
+autocmd BufRead,BufNewFile *profile set filetype=sh
