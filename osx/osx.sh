@@ -12,7 +12,7 @@ git config --global user.name jjangsangy
 git config --global user.email jjangsangy@gmail.com
 git config --global core.editor vim
 git config --global push.default matching
-git remote set-url origin https://github.com/ngsangy/Dotfiles.git
+git remote set-url origin https://github.com/jjangsangy/Dotfiles.git
 
 # Ask for the administrator privilages upfront
 sudo -v
