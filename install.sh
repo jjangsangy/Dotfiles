@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-git remote set-url origin https://github.com/jjangsangy/Dotfiles.git
-
 if ! [[ -d $HOME/bin ]]; then
 	mkdir $HOME/bin
 fi
@@ -34,12 +32,35 @@ fi
 if [[ $(uname -s) == "Darwin" ]]; then
         which -s brew
         if [[ $? != 0 ]]; then
-                BREWINSTALL=(curl git valgrind ctags wget vim tmux "python --framework")
+                BREWINSTALL=(curl git ctags wget vim tmux python)
                 echo "Installing Homebrew..."
                 ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
                 brew update
-                brew install ${BREWINSTALL[*]}
+                    for apps in "${BREWINSTALL[@]}"; do
+                    brew install ${apps}
+                    done
+        fi
+
+        if ! [[ -d "$HOME/Dotfiles" ]]; then
+            git clone https://github.com/jjangsangy/Dotfiles.git "$HOME/Dotfiles"
+        fi
+
+        if ! [[ -d ${HOME}/bin/maximum-awesome ]]; then
+                echo "Installing Maximum Awesome VIM"
+                maxDIR="${HOME}/bin/maximum-awesome"
+                dotDIR="${HOME}/Dotfiles"
+                myVIMRC=("${dotDIR}/vim/vimrc" "${dotDIR}/vim/vimrc.local")
+                git clone https://github.com/square/maximum-awesome.git "${maxDIR}" && cd "${maxDIR}" && rake
+
+                for file in "${myVIMRC[@]}"; do
+                origFile="${HOME}/.${file##*/}"
+                    if [[ -f "${file}" ]]; then
+                          if [[ -f "${origFile}" ]]; then
+                                rm "${origFile}"
+                          fi
+                          ln "${file}" "${origFile}"
+                    fi
+                done
         fi
 
 fi
-
