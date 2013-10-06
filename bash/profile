@@ -1,18 +1,5 @@
-#[Source]
-## Bash Completion
-if [ -f $HOME/.dotfiles/bash/git-completion.bash ]; then
-  . $HOME/.dotfiles/bash/git-completion.bash
-fi
-
-## OS X Matlab Console
-if [[ -f /Applications/MATLAB_R2013a.app/bin/matlab ]]; then
-    export PATH=$PATH:/Applications/MATLAB_R2013a.app/bin
-    alias matlab="matlab -nojvm -nosplash"
-fi
-
-## Functions
-if [[ -f $HOME/.functions ]]; then
-	. $HOME/.functions
+if [[ -e $HOME/.path ]]; then
+    . $HOME/.path
 fi
 
 #[ENVAR]
