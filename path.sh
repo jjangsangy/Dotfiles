@@ -10,3 +10,8 @@ fi
 if [[ -d $HOME/bin ]]; then
     export PATH=$HOME/bin:$PATH
 fi
+
+which brew -s > /dev/null
+if [[ $? == 0 ]]; then
+    export PATH=/usr/local/bin:$PATH
+fi
