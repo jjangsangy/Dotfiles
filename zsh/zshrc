@@ -7,7 +7,7 @@ if [[ -e ${ZSH}/oh-my-zsh.sh ]]; then
     . ${ZSH}/oh-my-zsh.sh
 fi
 
-if [[ -e ${HOME}/.aliases ]]; then
+if [[ -e ${HOME}/.aliases.sh ]]; then
     . ${HOME}/.aliases.sh
 fi
 
