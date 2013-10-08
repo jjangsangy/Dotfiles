@@ -28,4 +28,12 @@ if [[ -e ${HOME}/.path ]]; then
 fi
 
 
-plugins=(git osx)
+# Fix for jump plugin for better alignment
+marks() {
+    for link in $MARKPATH/*(@); do
+        local markname="$fg[cyan]${link:t}$reset_color"
+        local markpath="$fg[blue]$(readlink $link)$reset_color"
+        printf "%-30s" $markname
+        printf "-> %-4s \n" $markpath
+    done
+}
