@@ -3,20 +3,28 @@ ZSH_THEME="ys"
 
 plugins=(git osx)
 
+# Mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
+bindkey "\e[1;5C" forward-word
+bindkey "\e[1;5D" backward-word
+bindkey "\e[5C" forward-word
+bindkey "\e[5D" backward-word
+bindkey "\e\e[C" forward-word
+bindkey "\e\e[D" backward-word
+
 if [[ -e ${ZSH}/oh-my-zsh.sh ]]; then
     . ${ZSH}/oh-my-zsh.sh
 fi
 
-if [[ -e ${HOME}/.aliases.sh ]]; then
-    . ${HOME}/.aliases.sh
+if [[ -e ${HOME}/.aliases ]]; then
+    . ${HOME}/.aliases
 fi
 
 if [[ -e ${HOME}/.prompt.zsh ]]; then
     . ${HOME}/.prompt.zsh
 fi
 
-if [[ -e ${HOME}/.path.sh ]]; then
-    . ${HOME}/.path.sh
+if [[ -e ${HOME}/.path ]]; then
+    . ${HOME}/.path
 fi
 
 
