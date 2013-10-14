@@ -14,7 +14,6 @@ if [[ -e ${HOME}/.jump.sh ]]; then
     . ${HOME}/.jump.sh
 fi
 
-
 #[ENVAR]
 export CLICOLOR=1
 export LSCOLORS=Exfxcxdxbxegedabagacad
