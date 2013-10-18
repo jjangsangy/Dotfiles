@@ -14,6 +14,7 @@ bindkey "\e\e[D" backward-word
 # Modules
 zmodload zsh/mapfile
 
+# Load default dotfiles
 if [[ -e ${ZSH}/oh-my-zsh.sh ]]; then
     . ${ZSH}/oh-my-zsh.sh
 fi

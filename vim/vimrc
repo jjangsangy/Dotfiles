@@ -34,10 +34,10 @@ set listchars=tab:▸\ ,trail:▫
 set number                                                   " show line numbers
 set ruler                                                    " show where you are
 set scrolloff=3                                              " show context above/below cursorline
-set shiftwidth=4                                             " normal mode indentation commands use 2 spaces
+set shiftwidth=4                                             " normal mode indentation commands use 4 spaces
 set showcmd
 set smartcase                                                " case-sensitive search if any caps
-set softtabstop=4                                            " insert mode tab and backspace use 2 spaces
+set softtabstop=4                                            " insert mode tab and backspace use 4 spaces
 set tabstop=4                                                " actual tabs occupy 8 characters
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu                                                 " show a navigable menu for tab completion
@@ -49,8 +49,10 @@ if exists('$TMUX')  " Support resizing in tmux
   set ttymouse=xterm2
 endif
 
-" plugin shortcuts
+" Mapping
 let mapleader = ','
+noremap <C-e> <esc>:wq<CR>
+noremap <C-z> <esc>:w<CR>:exe ":echo 'file saved'"<CR>
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
@@ -91,7 +93,7 @@ autocmd BufRead,BufNewFile *profile set filetype=sh
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 
-" Python syntax
+" Python mapping
 autocmd FileType python nnoremap <buffer><localleader>c I#<esc>
 
 " Fix Cursor in TMUX
