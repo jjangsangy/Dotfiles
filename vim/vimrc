@@ -86,12 +86,13 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" Syntax highlighting for dotfiles
+" filetype dependent autocommands
 autocmd BufRead,BufNewFile *path set filetype=sh
 autocmd BufRead,BufNewFile *aliases set filetype=sh
 autocmd BufRead,BufNewFile *profile set filetype=sh
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
+autocmd BufNewFile,BufRead .vimrc setlocal nowrap
 
 " Python mapping
 autocmd FileType python nnoremap <buffer><localleader>c I#<esc>
