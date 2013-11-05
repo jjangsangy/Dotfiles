@@ -18,7 +18,7 @@ fi
 export CLICOLOR=1
 export LSCOLORS=Exfxcxdxbxegedabagacad
 export GREP_OPTIONS='--color=auto'
-export PATH=/anaconda/bin:/usr/local/bin:${HOME}/bin:$PATH
+export PATH=/usr/local/bin:${HOME}/bin:$PATH
 
 #[Functions]
 
