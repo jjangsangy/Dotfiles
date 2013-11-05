@@ -5,9 +5,10 @@ alias gc="git commit -a -m"
 # System
 alias myPATH="echo $PATH | tr ':' '\n' | sort"
 
-# Finder
+# OS X
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
+alias dsclean='find . -type f -name .DS_Store -print0 | xargs -0 rm'
 
 # SSH
 alias sshPi="ssh sang@raspberrypi.calient.local"
