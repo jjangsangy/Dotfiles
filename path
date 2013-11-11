@@ -15,3 +15,7 @@ which brew -s > /dev/null
 if [[ $? != 0 ]]; then
     export PATH=/usr/local/bin:$PATH
 fi
+
+if [[ -d $HOME/Git/Go ]]; then
+    export GOPATH=$HOME/Git/Go
+fi
