@@ -1,0 +1,8 @@
+#!/bin/bash
+
+douLink=${1}
+
+for ((i=0;i<54;i++))
+	do wget ${douLink%%[0-9][0-9].jpg}`printf "%02d" ${i}`'.jpg'
+done
+

@@ -1,0 +1,15 @@
+#!/bin/bash
+# Retrieves xively temperature probe data using RestAPI
+# 2013 Calient Technologies
+# Sang Han
+
+api_key=2jAqS1oCOKTQMrn84UIgMp7kpHoYhZFSV0acxsb3fntyANwX
+feed_id=1323604224
+
+if [[ ${1} == "csv" ]] || [[ ${1} == "json" ]] || [[ ${1} == "xml" ]]; then
+  filetype=\.${1}
+else
+  filetype="csv"
+fi
+
+curl --request GET --header "X-ApiKey: ${api_key}" https://api.xively.com/v2/feeds/${feed_id}${filetype}; printf "\n"
