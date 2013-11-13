@@ -1,6 +1,7 @@
 # Git
 alias gs="git status"
 alias gc="git commit -a -m"
+alias gp="git push"
 
 # System
 alias myPATH="echo $PATH | tr ':' '\n' | sort"
