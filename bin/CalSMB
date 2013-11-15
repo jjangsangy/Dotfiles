@@ -1,4 +1,5 @@
 #!/bin/bash
+#
 # CalSMB
 # Sang Han
 # Calient Technologies 2013
@@ -10,9 +11,9 @@
 AUTOPROBER="autoprober:autoprober"
 
 function CalSMB () {
-netbios="${1}"
-share="${2}"
-credentials="${3}"
+local netbios="${1}"
+local share="${2}"
+local credentials="${3}"
 if ! [[ -d /Volumes/"${share}" ]]; then
     echo "Mounting drive ${share}"
     mkdir /Volumes/"${share}" && mount -t smbfs -o soft //"${credentials}"@"${netbios}"/"${share/' '/%20}" /Volumes/"${share}" && echo "Mounting drive ${share} complete"

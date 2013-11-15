@@ -1,15 +1,14 @@
-#!/bin/sh
-#  pin
-#  Calient Technologies
-#  Parses Pin Prober Data on network drive into working directory
+#!/usr/bin/env bash
+#
+# Sang Han
+# Calient Technologies 2012
+# Pin Prober Parsing Script
 
-#filePath requires Pubstore to be mounted locally in OS X /Volumes directory
 
-#Initialize Variables & Functions
 WaferID=${1}
 locID=${2}
 pubDir=/Volumes/PubStore
-filePath=${pubDir}/_Production\ Data/MEMs\ PROBE\ DATA/OSF
+filePath="${pubDir}/_Production Data/MEMs PROBE DATA/OSF"
 
 function operators () {
     find . -name '*.csv' -type f -exec awk -F "," \
@@ -20,25 +19,11 @@ function operators () {
     }
 
 function pinGrepHead () {
-        grep -E '\
-            %Mirror ID:|\
-            %Operaror:|\
-            %Comment:|\
-            %Start Date:'
+        grep -E '%Mirror ID:|%Operaror:|%Comment:|%Start Date:'
     }
 
 function pinGrepTail () {
-        grep -E "\
-            101 - Shorted|\
-            102 - Over Current|\
-            103 - No Deflection|\
-            105 - Off Azimuth|\
-            104 - Bad Initial Angle|\
-            106 - V Limit Poor Deflect|\
-            107 - M Limit Poor Deflect|\
-            108 - V Limit Full Deflect|\
-            109 - M Limit Full Deflect|\
-            100 - Full Def"
+        grep -E '101 - Shorted|102 - Over Current|103 - No Deflection|105 - Off Azimuth|104 - Bad Initial Angle|106 - V Limit Poor Deflect|107 - M Limit Poor Deflect|108 - V Limit Full Deflect|109 - M Limit Full Deflect|100 - Full Def'
     }
 
 mountCalient ()
