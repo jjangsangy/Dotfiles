@@ -38,9 +38,6 @@ pip install ipython[zmq,qtconsole,notebook,test]
 # html stuff (parsing)
 pip install html5lib cssselect pyquery lxml BeautifulSoup
 
-# webapps / apis (choose what you like)
-pip install Flask Django
-
 # semantic web stuff: rdf & sparql
 pip install rdflib SPARQLWrapper
 

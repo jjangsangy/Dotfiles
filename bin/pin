@@ -14,14 +14,35 @@ locID=${2}
 pubDir=/Volumes/PubStore
 filePath=${pubDir}/_Production\ Data/MEMs\ PROBE\ DATA/OSF
 
-pinGrepHead ()
-    {
-        grep -E "%Mirror ID:|%Operaror:|%Comment:|%Start Date:"
+function operators () {
+    find . -name '*.csv' -type f -exec awk -F ","
+        '/%Operaror/ {print $2}' {} \; | \
+            awk -v count=0 '\
+        /${operator}/ {count=count+1}; \
+        END {print count}'
     }
 
-pinGrepTail ()
+function pinGrepHead () {
+        grep -E '\
+            %Mirror ID:|\
+            %Operaror:|\
+            %Comment:|\
+            %Start Date:'
+    }
+
+function pinGrepTail ()
     {
-        grep -E "101 - Shorted|102 - Over Current|103 - No Deflection|105 - Off Azimuth|104 - Bad Initial Angle|106 - V Limit Poor Deflect|107 - M Limit Poor Deflect|108 - V Limit Full Deflect|109 - M Limit Full Deflect|100 - Full Def"
+        grep -E "\
+            101 - Shorted|\
+            102 - Over Current|\
+            103 - No Deflection|\
+            105 - Off Azimuth|\
+            104 - Bad Initial Angle|\
+            106 - V Limit Poor Deflect|\
+            107 - M Limit Poor Deflect|\
+            108 - V Limit Full Deflect|\
+            109 - M Limit Full Deflect|\
+            100 - Full Def"
     }
 
 mountCalient ()
