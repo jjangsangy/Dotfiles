@@ -5,9 +5,9 @@
 # MEMS Process Engineer
 
 # This script logs into Calient Shares usually mounted on
-# windows authenticated as Autoprober computer.
+# windows authenticated as AUTOPROBER computer.
 
-Autoprober="autoprober:autoprober"
+AUTOPROBER="autoprober:autoprober"
 
 function CalSMB () {
 netbios="${1}"
@@ -26,8 +26,8 @@ fi
 }
 
 # Main
-CalSMB columba Public "${Autoprober}" &
-CalSMB sbnetapp PubStore "${Autoprober}" &
-CalSMB columba Optical\ Comp "${Autoprober}" &
+CalSMB columba Public "${AUTOPROBER}" &
+CalSMB sbnetapp PubStore "${AUTOPROBER}" &
+CalSMB columba Optical\ Comp "${AUTOPROBER}" &
 
 wait

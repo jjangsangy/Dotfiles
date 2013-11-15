@@ -30,8 +30,7 @@ function pinGrepHead () {
             %Start Date:'
     }
 
-function pinGrepTail ()
-    {
+function pinGrepTail () {
         grep -E "\
             101 - Shorted|\
             102 - Over Current|\
