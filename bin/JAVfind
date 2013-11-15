@@ -1,5 +1,0 @@
-#!/bin/bash
-
-studio="${1}"
-
-find "/Volumes/WinRAID/Podcasts/JAV" -type f -name *${studio}* | parallel echo {/.} | sort
