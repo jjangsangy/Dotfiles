@@ -1,9 +1,6 @@
 #!/bin/sh
-clear
-#  pin_yield.sh
-#
+#  pin
 #  Calient Technologies
-#  Created by Sang Han
 #  Parses Pin Prober Data on network drive into working directory
 
 #filePath requires Pubstore to be mounted locally in OS X /Volumes directory
@@ -15,7 +12,7 @@ pubDir=/Volumes/PubStore
 filePath=${pubDir}/_Production\ Data/MEMs\ PROBE\ DATA/OSF
 
 function operators () {
-    find . -name '*.csv' -type f -exec awk -F ","
+    find . -name '*.csv' -type f -exec awk -F "," \
         '/%Operaror/ {print $2}' {} \; | \
             awk -v count=0 '\
         /${operator}/ {count=count+1}; \
@@ -86,7 +83,6 @@ if [[ -d "${filePath}/${WaferID}" ]] ; then
     done
 echo "DONE!"
 sleep 2
-
 clear
 
 #Display output in pager and open yield result in excel
@@ -94,6 +90,5 @@ open /tmp/${WaferID}_yield2.csv
 
 else
     echo "Wafer does not exist"
-
     return 0
 fi
