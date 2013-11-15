@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-#
+# Version 2.0.0beta
 # Sang Han
 # Calient Technologies 2012
 # Pin Prober Parsing Script
 
-
+# TODO: Usage statement and getopts loops
 WaferID=${1}
 locID=${2}
 pubDir=/Volumes/PubStore
 filePath="${pubDir}/_Production Data/MEMs PROBE DATA/OSF"
 
+# TODO: Implement operator feature with optparse
 function operators () {
     find . -name '*.csv' -type f -exec awk -F "," \
         '/%Operaror/ {print $2}' {} \; | \
@@ -18,6 +19,8 @@ function operators () {
         END {print count}'
     }
 
+# TODO: Replace both grep commands with AWK
+# TODO: Declare array or variable for substituting regex search.
 function pinGrepHead () {
         grep -E '%Mirror ID:|%Operaror:|%Comment:|%Start Date:'
     }
@@ -26,7 +29,8 @@ function pinGrepTail () {
         grep -E '101 - Shorted|102 - Over Current|103 - No Deflection|105 - Off Azimuth|104 - Bad Initial Angle|106 - V Limit Poor Deflect|107 - M Limit Poor Deflect|108 - V Limit Full Deflect|109 - M Limit Full Deflect|100 - Full Def'
     }
 
-mountCalient ()
+# TODO: Source smb mounting library
+function mountCalient ()
     {
         mount -t smbfs -o soft //visual:visual@sbnetapp/PubStore ${pubDir}
     }
@@ -67,10 +71,7 @@ if [[ -d "${filePath}/${WaferID}" ]] ; then
         tail ${i} | pinGrepTail | cut -d ',' -f 1-2 >> /tmp/${WaferID}_yield2.csv
     done
 echo "DONE!"
-sleep 2
-clear
 
-#Display output in pager and open yield result in excel
 open /tmp/${WaferID}_yield2.csv
 
 else
