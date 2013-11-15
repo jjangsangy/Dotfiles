@@ -21,7 +21,6 @@ export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
 
 #[Functions]
-
 function red() {
   RED=$(tput setaf 1)
   NORMAL=$(tput sgr0)

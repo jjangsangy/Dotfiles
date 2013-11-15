@@ -1,27 +1,33 @@
 #!/bin/bash
+# CalSMB
+# Sang Han
+# Calient Technologies 2013
+# MEMS Process Engineer
+
+# This script logs into Calient Shares usually mounted on
+# windows authenticated as Autoprober computer.
 
 Autoprober="autoprober:autoprober"
 
 function CalSMB () {
-if ! [[ -d /Volumes/"${2}" ]]; then
-    echo "Mounting drive ${2}"
-    mkdir /Volumes/"${2}" && mount -t smbfs -o soft //"${3}"@"${1}"/"${2/' '/%20}" /Volumes/"${2}" && echo "Mounting drive ${2} complete"
+netbios="${1}"
+share="${2}"
+credentials="${3}"
+if ! [[ -d /Volumes/"${share}" ]]; then
+    echo "Mounting drive ${share}"
+    mkdir /Volumes/"${share}" && mount -t smbfs -o soft //"${credentials}"@"${netbios}"/"${share/' '/%20}" /Volumes/"${share}" && echo "Mounting drive ${share} complete"
 else
-    echo "Drive ${2} already exists, unmounting"
-    rmdir /Volumes/"${2}" || umount /Volumes/"${2}"
-    echo "Mounting drive ${2}"
-    mkdir /Volumes/"${2}" && mount -t smbfs -o soft //"${3}"@"${1}"/"${2/' '/%20}" /Volumes/"${2}" && echo "Mounting drive ${2} complete"
+    echo "Drive ${share} already exists, unmounting"
+    rmdir /Volumes/"${share}" || umount /Volumes/"${share}"
+    echo "Mounting drive ${share}"
+    mkdir /Volumes/"${share}" && mount -t smbfs -o soft //"${credentials}"@"${netbios}"/"${share/' '/%20}" /Volumes/"${share}" && echo "Mounting drive ${share} complete"
 fi
+
 }
 
-## MountPoints ###########
-#[COLUMBA PUBLIC]
+# Main
 CalSMB columba Public "${Autoprober}" &
-
-#[SBNETAPP PUBSTORE]
 CalSMB sbnetapp PubStore "${Autoprober}" &
-
-#[COLUMBA OPTICAL COMP]
 CalSMB columba Optical\ Comp "${Autoprober}" &
 
 wait
