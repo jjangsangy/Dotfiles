@@ -1,8 +1,10 @@
+" Sang Han's Vimrc
+"
 set nocompatible
 syntax enable
 
-" Configure Vundle
-filetype on " without this vim emits a zero exit status, later, because of :ft off
+" Vundle
+filetype on
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -13,34 +15,32 @@ if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles.local
 endif
 
-if filereadable(expand("~/.vimrc.local"))
-	source ~/.vimrc.local
-endif
-
-" ensure ftdetect et al work by including this after the Vundle stuff
 filetype plugin indent on
 
+" Basic Configuration
 set autoindent
-set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
-set backspace=2                                              " Fix broken backspace in some setups
-set backupcopy=yes                                           " see :help crontab
-set clipboard=unnamed                                        " yank and paste with the system clipboard
-set directory-=.                                             " don't store swapfiles in the current directory
+set autoread
+set backspace=2
+set backupcopy=yes
+set clipboard=unnamed
+set directory-=.
 set encoding=utf-8
-set incsearch                                                " search as you type
-set laststatus=2                                             " always show statusline
-set list                                                     " show trailing whitespace
+set expandtab
+set ignorecase
+set incsearch
+set laststatus=2
+set list
 set listchars=tab:▸\ ,trail:▫
-set number                                                   " show line numbers
-set ruler                                                    " show where you are
-set scrolloff=3                                              " show context above/below cursorline
-set shiftwidth=4                                             " normal mode indentation commands use 4 spaces
+set number
+set ruler
+set scrolloff=3
+set shiftwidth=4
 set showcmd
-set smartcase                                                " case-sensitive search if any caps
-set softtabstop=4                                            " insert mode tab and backspace use 4 spaces
-set tabstop=4                                                " actual tabs occupy 8 characters
+set smartcase
+set softtabstop=4
+set tabstop=4
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
-set wildmenu                                                 " show a navigable menu for tab completion
+set wildmenu
 set wildmode=longest,list,full
 
 " Enable basic mouse behavior such as resizing buffers.
@@ -49,44 +49,63 @@ if exists('$TMUX')  " Support resizing in tmux
   set ttymouse=xterm2
 endif
 
-" Mapping
-let mapleader = ','
-noremap <C-e> <esc>:wq<CR>
-noremap <C-z> <esc>:w<CR>:exe ":echo 'file saved'"<CR>
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-noremap <leader>l :Align
-nnoremap <leader>a :Ack<space>
-nnoremap <leader>b :CtrlPBuffer<CR>
-nnoremap <leader>d :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
-nnoremap <leader>t :CtrlP<CR>
-nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
-nnoremap <leader>] :TagbarToggle<CR>
-nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
-nnoremap <leader>g :GitGutterToggle<CR>
-nnoremap <leader>c <Plug>Kwbd
-noremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+" Keyboard Shortcuts
 
-" plugin settings
+" - Mapleader set to comma
+let mapleader = ','
+
+" - Windows Management
+" <Ctrl>+hjkl for moving between splits
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+
+" - Plugins
+" Access with mapleader which is set to comma.
+" Align:                l
+" Ack:                  a
+" CtrlP:                t
+" CtrlP Clear Cache:    T
+" CtrlP Buffer:         b
+" NERDTree:             d
+" NERDTree Find:        f
+" Tagbar Toggle:        ]
+" Strip Whitespace:     space
+" Git Gutter:           g
+" Plug:                 c
+" Vimrc Source:         V
+map <leader>l :Align
+nmap <leader>a :Ack<space>
+nmap <leader>b :CtrlPBuffer<CR>
+nmap <leader>d :NERDTreeToggle<CR>
+nmap <leader>f :NERDTreeFind<CR>
+nmap <leader>t :CtrlP<CR>
+nmap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
+nmap <leader>] :TagbarToggle<CR>
+nmap <leader><space> :call whitespace#strip_trailing()<CR>
+nmap <leader>g :GitGutterToggle<CR>
+nmap <leader>c <Plug>Kwbd
+map <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+
+" Settings
 let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 let g:gitgutter_enabled = 0
 
-" Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
+" Silver Searcher
 if executable('ag')
   let g:ackprg = 'ag --nogroup --column'
 
-  " Use Ag over Grep
   set grepprg=ag\ --nogroup\ --nocolor
 
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+" Use ag in CtrlP for listing files
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" filetype dependent autocommands
+" Filetype Def
+autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
+autocmd BufRead,BufNewFile *.md set filetype=markdown
 autocmd BufRead,BufNewFile *path set filetype=sh
 autocmd BufRead,BufNewFile *aliases set filetype=sh
 autocmd BufRead,BufNewFile *profile set filetype=sh
@@ -94,14 +113,27 @@ autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 autocmd BufNewFile,BufRead .vimrc setlocal nowrap
 
-" Python mapping
-autocmd FileType python nnoremap <buffer><localleader>c I#<esc>
 
-" Fix Cursor in TMUX
+
+" Rails
+autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
+autocmd User Rails silent! Rnavcommand observer       app/observers             -glob=**/* -suffix=_observer.rb
+autocmd User Rails silent! Rnavcommand feature        features                  -glob=**/* -suffix=.feature
+autocmd User Rails silent! Rnavcommand job            app/jobs                  -glob=**/* -suffix=_job.rb
+autocmd User Rails silent! Rnavcommand mediator       app/mediators             -glob=**/* -suffix=_mediator.rb
+autocmd User Rails silent! Rnavcommand stepdefinition features/step_definitions -glob=**/* -suffix=_steps.rb
+autocmd VimResized * :wincmd =
+
+" TMUX Cursor Fix
 if exists('$TMUX')
   let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
   let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
 else
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
+
+" Source More RC Files
+if filereadable(expand("~/.vimrc.local"))
+  source ~/.vimrc.local
 endif
