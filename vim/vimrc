@@ -18,6 +18,7 @@ endif
 filetype plugin indent on
 
 " Basic Configuration
+set splitright
 set autoindent
 set autoread
 set backspace=2
@@ -56,10 +57,14 @@ let mapleader = ','
 
 " - Windows Management
 " <Ctrl>+hjkl for moving between splits
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
+noremap <C-h> <C-w>h
+noremap <C-H> <C-w>H
+noremap <C-j> <C-w>j
+noremap <C-J> <C-w>J
+noremap <C-k> <C-w>k
+noremap <C-K> <C-w>K
+noremap <C-l> <C-w>l
+noremap <C-L> <C-w>L
 
 " - Plugins
 " Access with mapleader which is set to comma.
