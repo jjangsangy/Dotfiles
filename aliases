@@ -12,7 +12,7 @@ alias Downloads="cd ~/Downloads"
 alias dsclean='find . -type f -name .DS_Store -print0 | xargs -0 rm'
 
 # SSH
-alias sshPi="ssh sang@raspberrypi.calient.local"
+alias sshPi="ssh sang@raspberrypi.local"
 alias sshApps="ssh root@sangapps.com"
 alias sshCloud="ssh root@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"

@@ -18,6 +18,7 @@ endif
 filetype plugin indent on
 
 " Basic Configuration
+set nowrap
 set splitright
 set autoindent
 set autoread
@@ -51,6 +52,10 @@ if exists('$TMUX')  " Support resizing in tmux
 endif
 
 " Keyboard Shortcuts
+noremap <C-e> <esc>$
+noremap <C-a> <esc>0
+nnoremap K gg
+nnoremap J G
 
 " - Mapleader set to comma
 let mapleader = ','
@@ -79,19 +84,20 @@ noremap <C-L> <C-w>L
 " Strip Whitespace:     space
 " Git Gutter:           g
 " Plug:                 c
-" Vimrc Source:         V
-map <leader>l :Align
-nmap <leader>a :Ack<space>
-nmap <leader>b :CtrlPBuffer<CR>
-nmap <leader>d :NERDTreeToggle<CR>
-nmap <leader>f :NERDTreeFind<CR>
-nmap <leader>t :CtrlP<CR>
-nmap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
-nmap <leader>] :TagbarToggle<CR>
-nmap <leader><space> :call whitespace#strip_trailing()<CR>
-nmap <leader>g :GitGutterToggle<CR>
-nmap <leader>c <Plug>Kwbd
-map <silent> <leader>V :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+" Vimrc Source:         sv
+noremap <leader>l :Align
+nnoremap <leader>a :Ack<space>
+nnoremap <leader>b :CtrlPBuffer<CR>
+nnoremap <leader>d :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <leader>t :CtrlP<CR>
+nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
+nnoremap <leader>] :TagbarToggle<CR>
+nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
+nnoremap <leader>g :GitGutterToggle<CR>
+nnoremap <leader>c <Plug>Kwbd
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+noremap <silent> <leader>sv :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
 " Settings
 let g:ctrlp_match_window = 'order:ttb,max:20'
@@ -116,9 +122,15 @@ autocmd BufRead,BufNewFile *aliases set filetype=sh
 autocmd BufRead,BufNewFile *profile set filetype=sh
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
+
+" Vimrc
 autocmd BufNewFile,BufRead .vimrc setlocal nowrap
 
-
+" Shell
+augroup shell
+    autocmd!
+    autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
+augroup END
 
 " Rails
 autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
