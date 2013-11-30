@@ -4,7 +4,7 @@ brew tap samueljohn/python # numpy, scipy
 brew update && brew upgrade
 
 # install a brewed python
-brew install python
+brew install python --with-brewed-openssl
 
 # install openblas (otherwise scipy's arpack tests will fail)
 brew install openblas
