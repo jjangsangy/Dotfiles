@@ -1,5 +1,6 @@
+" ==========================================================
 " Sang Han's Vimrc
-"
+" ==========================================================
 set nocompatible
 syntax enable
 
@@ -9,7 +10,9 @@ filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
+" ==========================================================
 " install Vundle bundles
+" ==========================================================
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
   source ~/.vimrc.bundles.local
@@ -17,7 +20,9 @@ endif
 
 filetype plugin indent on
 
+" ==========================================================
 " Basic Configuration
+" ==========================================================
 set nowrap
 set splitright
 set autoindent
@@ -51,7 +56,9 @@ if exists('$TMUX')  " Support resizing in tmux
   set ttymouse=xterm2
 endif
 
+" ==========================================================
 " Keyboard Shortcuts
+" ==========================================================
 noremap <C-e> <esc>$
 noremap <C-a> <esc>0
 nnoremap K gg
@@ -60,7 +67,9 @@ nnoremap J G
 " - Mapleader set to comma
 let mapleader = ','
 
+" ==========================================================
 " - Windows Management
+" ==========================================================
 " <Ctrl>+hjkl for moving between splits
 set splitbelow
 set splitright
@@ -69,7 +78,9 @@ noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
+" ==========================================================
 " - Plugins
+" ==========================================================
 " Access with mapleader which is set to comma.
 " Align:                l
 " Ack:                  a
@@ -97,12 +108,16 @@ nnoremap <leader>c <Plug>Kwbd
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 noremap <silent> <leader>sv :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
+" ==========================================================
 " Settings
+" ==========================================================
 let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 let g:gitgutter_enabled = 0
 
+" ==========================================================
 " Silver Searcher
+" ==========================================================
 if executable('ag')
   let g:ackprg = 'ag --nogroup --column'
 
@@ -112,12 +127,9 @@ if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" Filetype Def
-autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
-autocmd BufRead,BufNewFile *.md set filetype=markdown
-autocmd BufRead,BufNewFile *path set filetype=sh
-autocmd BufRead,BufNewFile *aliases set filetype=sh
-autocmd BufRead,BufNewFile *profile set filetype=sh
+" ==========================================================
+" Filetype Specific
+" ==========================================================
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 
@@ -125,12 +137,17 @@ autocmd BufRead,BufNewFile *.md set filetype=markdown
 autocmd BufNewFile,BufRead .vimrc setlocal nowrap
 
 " Shell
+autocmd BufRead,BufNewFile *path set filetype=sh
+autocmd BufRead,BufNewFile *aliases set filetype=sh
+autocmd BufRead,BufNewFile *profile set filetype=sh
 augroup shell
-    autocmd!
+    autocmd! 
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
+" ==========================================================
 " Rails
+" ==========================================================
 autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
 autocmd User Rails silent! Rnavcommand observer       app/observers             -glob=**/* -suffix=_observer.rb
 autocmd User Rails silent! Rnavcommand feature        features                  -glob=**/* -suffix=.feature
@@ -139,7 +156,9 @@ autocmd User Rails silent! Rnavcommand mediator       app/mediators             
 autocmd User Rails silent! Rnavcommand stepdefinition features/step_definitions -glob=**/* -suffix=_steps.rb
 autocmd VimResized * :wincmd =
 
+" ==========================================================
 " TMUX Cursor Fix
+" ==========================================================
 if exists('$TMUX')
   let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
   let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
@@ -148,7 +167,9 @@ else
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
 
+" ==========================================================
 " Source More RC Files
+" ==========================================================
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
