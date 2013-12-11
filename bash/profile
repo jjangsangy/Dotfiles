@@ -14,9 +14,30 @@ if [[ -e ${HOME}/.jump.sh ]]; then
     . ${HOME}/.jump.sh
 fi
 
+if [[ -e $HOME/.dircolors ]] && $(which dircolors) > /dev/null; then
+    export LSCOLORS='--color=auto'
+    eval `dircolors $HOME/.dircolors`
+
+    # Adds ability to call on dark or light specific dircolors
+    if [[ -e $HOME/.dircolors_dark ]]; then
+        dark() {
+            # Calls the solarized dark specific dircolors for use
+            eval `dircolors $HOME/.dircolors_dark`
+        }
+    fi
+
+    if [[ -e $HOME/.dircolors_light ]]; then
+        light() {
+            # Calls the solarized light specific dircolors for use
+            eval `dircolors $HOME/.dircolors_light`
+        }
+    fi
+else
+    export CLICOLOR=1
+    export LSCOLORS=Exfxcxdxbxegedabagacad
+fi
+
 #[ENVAR]
-export CLICOLOR=1
-export LSCOLORS=Exfxcxdxbxegedabagacad
 export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
 

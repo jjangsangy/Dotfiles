@@ -5,11 +5,16 @@ alias gp="git push"
 
 # System
 alias myPATH="echo $PATH | tr ':' '\n' | sort"
+alias vp="vim ~/.profile"
+alias sp=". ~/.profile"
+alias va="vim ~/.aliases"
+alias sa=". ~/.aliases"
 
 # OS X
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 alias dsclean='find . -type f -name .DS_Store -print0 | xargs -0 rm'
+alias ls='ls $LSCOLORS'
 
 # SSH
 alias sshPi="ssh sang@raspberrypi.local"

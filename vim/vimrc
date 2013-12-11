@@ -62,14 +62,12 @@ let mapleader = ','
 
 " - Windows Management
 " <Ctrl>+hjkl for moving between splits
+set splitbelow
+set splitright
 noremap <C-h> <C-w>h
-noremap <C-H> <C-w>H
 noremap <C-j> <C-w>j
-noremap <C-J> <C-w>J
 noremap <C-k> <C-w>k
-noremap <C-K> <C-w>K
 noremap <C-l> <C-w>l
-noremap <C-L> <C-w>L
 
 " - Plugins
 " Access with mapleader which is set to comma.
