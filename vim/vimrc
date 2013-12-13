@@ -141,7 +141,7 @@ autocmd BufRead,BufNewFile *path set filetype=sh
 autocmd BufRead,BufNewFile *aliases set filetype=sh
 autocmd BufRead,BufNewFile *profile set filetype=sh
 augroup shell
-    autocmd! 
+    autocmd!
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
