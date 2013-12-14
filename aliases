@@ -3,6 +3,10 @@ alias gs="git status"
 alias gc="git commit -a -m"
 alias gp="git push"
 
+# Tmux
+alias tmux_home="tmux new-session -A -s home -n main"
+alias tmux_work="tmux new-session -A -s calient -n main"
+
 # System
 alias myPATH="echo $PATH | tr ':' '\n' | sort"
 alias vp="vim ~/.profile"
