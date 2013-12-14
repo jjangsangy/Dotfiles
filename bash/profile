@@ -1,27 +1,39 @@
-if [[ -e ${HOME}/.path ]]; then
+# ==========================================================
+# SOURCED FILES
+# ==========================================================
+# TODO: Source files with FOR LOOP rather than conditionals
+
+if [[ -r ${HOME}/.path ]]; then
     . ${HOME}/.path
 fi
 
-if [[ -e ${HOME}/.aliases ]]; then
+if [[ -r ${HOME}/.aliases ]]; then
     . ${HOME}/.aliases
 fi
 
-if [[ -e ${HOME}/.prompt.sh ]]; then
+if [[ -r ${HOME}/.prompt.sh ]]; then
     . ${HOME}/.prompt.sh
 fi
 
-if [[ -e ${HOME}/.jump.sh ]]; then
+if [[ -r ${HOME}/.jump.sh ]]; then
     . ${HOME}/.jump.sh
 fi
 
-# For Mac OS X this will only work with GNU Coreutils installed with homebrew or port
+# ==========================================================
+# DIRCOLORS
+# ==========================================================
+# AUTHOR: Sang Han
+# DEPENDS: GNU coreutils
+# For Mac OS X coreutils must be installed first either manually
+# or with a package manager.
 if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] \
     && [[ "$(ls --version)" =~ "GNU coreutils" ]]; then
 
     eval_dircolors() {
-        # Checks and evaluates for dircolors file in $HOME directory.
-        # Takes 1 argument that checks for particular dirfile style
-
+        # USAGE: By default, this function checks and evaluates .dircolors
+        #        in users $HOME directory.
+        #        Takes 1 argument which will be expanded to .dircolor_${STYLE}
+        #        for evaluating specific dircolor styles
         if [[  -n $1 ]]; then
             local STYLE=$1
         fi
@@ -46,30 +58,35 @@ if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] \
     fi
 fi
 
-#[ENVAR]
+# ==========================================================
+# ENVAR
+# ==========================================================
+# TODO: Move these exports into correct sourced files
 export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
 
-#[Functions]
-function red() {
-  RED=$(tput setaf 1)
-  NORMAL=$(tput sgr0)
-  echo -e "$RED$*$NORMAL"
+# ==========================================================
+# Functions
+# ==========================================================
+red() {
+    RED=$(tput setaf 1)
+    NORMAL=$(tput sgr0)
+    echo -e "$RED$*$NORMAL"
 }
 
-function green() {
-  GREEN=$(tput setaf 2)
-  NORMAL=$(tput sgr6)
-  echo -e "$GREEN$*$NORMAL"
+green() {
+    GREEN=$(tput setaf 2)
+    NORMAL=$(tput sgr6)
+    echo -e "$GREEN$*$NORMAL"
 }
 
-function yellow() {
-  YELLOW=$(tput setaf 3)
-  NORMAL=$(tput sgr0)
-  echo -e "$YELLOW$*$NORMAL"
+yellow() {
+    YELLOW=$(tput setaf 3)
+    NORMAL=$(tput sgr0)
+    echo -e "$YELLOW$*$NORMAL"
 }
 
-function ds () {
-	echo "Disk Space Utilization for $HOSTNAME"
-	df -h
+ds () {
+    echo "Disk Space Utilization for $HOSTNAME"
+    df -h
 }
