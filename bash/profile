@@ -14,27 +14,36 @@ if [[ -e ${HOME}/.jump.sh ]]; then
     . ${HOME}/.jump.sh
 fi
 
-if [[ -e $HOME/.dircolors ]] && $(which dircolors) > /dev/null; then
-    export LSCOLORS='--color=auto'
-    eval `dircolors $HOME/.dircolors`
+# For Mac OS X this will only work with GNU Coreutils installed with homebrew or port
+if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] \
+    && [[ "$(ls --version)" =~ "GNU coreutils" ]]; then
 
-    # Adds ability to call on dark or light specific dircolors
-    if [[ -e $HOME/.dircolors_dark ]]; then
-        dark() {
-            # Calls the solarized dark specific dircolors for use
-            eval `dircolors $HOME/.dircolors_dark`
-        }
-    fi
+    eval_dircolors() {
+        # Checks and evaluates for dircolors file in $HOME directory.
+        # Takes 1 argument that checks for particular dirfile style
 
-    if [[ -e $HOME/.dircolors_light ]]; then
-        light() {
-            # Calls the solarized light specific dircolors for use
-            eval `dircolors $HOME/.dircolors_light`
+        if [[  -n $1 ]]; then
+            local STYLE=$1
+        fi
+
+        if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
+            eval "$(dircolors $HOME/.dircolors${STYLE/#/_})"
+            export LSCOLORS='--color=auto'
+        else
+            export CLICOLOR=1; export LSCOLORS=Exfxcxdxbxegedabagacad
+        fi
         }
+
+    eval_dircolors
+
+    # Checks for .dircolors_light
+    if [[ "$COLORFGBG" == "11;15" ]]; then
+        eval_dircolors light
     fi
-else
-    export CLICOLOR=1
-    export LSCOLORS=Exfxcxdxbxegedabagacad
+    # Checks for .dircolors_dark
+    if [[ "$COLORFGBG" == "12;8" ]]; then
+        eval_dircolors dark
+    fi
 fi
 
 #[ENVAR]
