@@ -23,6 +23,8 @@ usage() {
 
     -h [help]
         Outputs usage directions
+    -k [key]
+        Specify your own public key located in $HOME/.ssh directory
 
 DOCUMENT
     exit 0
@@ -43,10 +45,14 @@ main() {
 }
 
 # Options
-while getopts ":h" options; do
-    case ${options} in
+    PUBKEY=
+while getopts 'k:h' OPTION; do
+    case $OPTION in
         h|help)
             usage
+            ;;
+        k|key)
+            PUBKEY="${OPTARG}"
             ;;
         \?)
             echo "Invalid option: -${OPTARG}" >&2
@@ -54,6 +60,7 @@ while getopts ":h" options; do
             ;;
     esac
 done
+    shift $((OPTIND - 1))
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
     clear

@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-
-if ! [[ -d $HOME/bin ]]; then
-	mkdir $HOME/bin
-fi
-# made a random comment
+#!/bin/bash
 
 if [[ $(uname -s) == "Linux" ]]; then
     APTPREINSTALL=(git git-core vim zsh curl wget)
