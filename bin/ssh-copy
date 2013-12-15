@@ -2,68 +2,118 @@
 #
 # FILE:         ssh-copy
 # AUTHOR:       Sang Han
-# VERSION:      2.0.0
-# DESCRIPTION:  Utility for automatically exporting ssh keys into remote servers for authentication
-#               Checks home .ssh directory for id_rsa or id_dsa public keys and appends them into the authorized_keys using a remote ssh server"
+# VERSION:      2.1
+# DESCRIPTION   Utility for automatically exporting ssh keys into remote servers for authentication.
+#               Checks $HOME/.ssh for id_rsa.pub or id_dsa.pub and appends them into
+#               the authorized_keys of remote host
+#               Checks home .ssh directory for id_rsa or id_dsa public keys and
+#               appends them into the authorized_keys using a remote ssh server
 # DEPENDS:      Secure Shell
 # CREATED:      5/28/2013
 
 usage() {
     cat <<- DOCUMENT
 
-    $(basename $0) [-h help]
+    $(basename $0) [-h help] [-t test] [-k key] [ -u user] [-s server]
 
-    Utility for automatically exporting ssh keys into remote servers for authentication
-    Checks home .ssh directory for id_rsa or id_dsa public keys and appends them into the authorized_keys using a remote ssh server"
+    Utility for automatically exporting ssh keys into remote servers for authentication.
+    Checks $HOME/.ssh for id_rsa.pub or id_dsa.pub and appends them into
+    the authorized_keys of remote host
 
     AUTHOR:     Sang Han
     COMPANY:    Calient Technologies
     YEAR:       2013
-    VERSION:    2.0.0
+    VERSION:    2.1
 
     -h [help]
         Outputs usage directions
+    -t [test]
+        Runs unit tests
     -k [key]
         Specify your own public key located in $HOME/.ssh directory
+    -u [user]
+        Specify user
+    -s [server]
+        Specify server
 
 DOCUMENT
     exit 0
 }
+test_names() {
+    printf "\$KEY is %s\n" "${KEY[i]}"
+    printf "\$PUBKEY is %s\n" "${PUBKEY[i]}"
+    printf "\$USERNAME is %s\n" "${USERNAME}"
+    printf "\$SERVER is %s\n" "${SERVER}"
+    printf "\n"
+}
+
+install_keys() {
+    cat "${PUBKEY[i]}" | \
+        ssh -l "$USERNAME" "$SERVER" "\
+            if [ -d ~/.ssh ]; then \
+                cat >> ~/.ssh/authorized_keys; \
+            else \
+                mkdir ~/.ssh; \
+                cat >> ~/.ssh/authorized_keys; \
+            fi"
+}
 
 main() {
-    if [ -f ~/.ssh/id_rsa.pub ]; then
-        read -p "User  " usr
-        read -p "Server " servr
-        cat ~/.ssh/id_rsa.pub | ssh -l "${usr}" "${servr}" "if [ -d ~/.ssh ]; then cat >> ~/.ssh/authorized_keys; else mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys; fi"
-    elif [ -f ~/.ssh/id_dsa.pub ]; then
-        read -p "User  " usr
-        read -p "Server " servr
-        cat ~/.ssh/id_dsa.pub | ssh -l "${usr}" "${servr}" "if [ -d ~/.ssh ]; then cat >> ~/.ssh/authorized_keys; else mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys; fi"
-    else
-        echo "public key does not exist"
+    # Declare default $KEY if not set already
+    if [[ -z $KEY ]]; then
+        declare -a KEY=(id_rsa id_dsa)
+    fi
+
+    for (( i=0; i<${#KEY[@]}; i+=1 )); do
+        local PUBKEY[i]="$HOME/.ssh/${KEY[i]}.pub"
+
+        # Unit Tests
+        if [[ $TEST = 1 ]]; then
+            test_names
+            continue
+        fi
+
+        if [[ -r "${PUBKEY[i]}" ]]; then
+            if [[ -z $USERNAME ]]; then
+                read -p "USERNAME:  " USERNAME
+            fi
+
+            if [[ -z $SERVER ]]; then
+                read -p "SERVER:    " SERVER
+            fi
+
+            install_keys
+        fi
+    done
+
+    if [[ $? == 1 ]]; then
+        echo "public key was not found" >&2
+        exit 1
     fi
 }
 
 # Options
-    PUBKEY=
-while getopts 'k:h' OPTION; do
+declare -i TEST=0
+while getopts "s:k:u:th" OPTION; do
     case $OPTION in
-        h|help)
-            usage
+        h) usage
             ;;
-        k|key)
-            PUBKEY="${OPTARG}"
+        k) KEY="${OPTARG}"
             ;;
-        \?)
-            echo "Invalid option: -${OPTARG}" >&2
+        t) TEST=1
+            ;;
+        u) USERNAME="${OPTARG}"
+            ;;
+        s) SERVER="${OPTARG}"
+            ;;
+        ?) echo "Invalid option: -${OPTARG}" >&2
+            usage >&2
             exit 1
             ;;
     esac
 done
-    shift $((OPTIND - 1))
+shift $((OPTIND - 1))
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
-    clear
     main
 fi
-
