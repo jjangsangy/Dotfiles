@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# FILE:         tm
+# AUTHOR:       Sang Han
+# VERSION:      1.0
+# DESCRIPTION:  Deploy tmux enviornment
+# DEPENDS:      tmux
+
+if [[ "$0" == "${BASH_SOURCE}" ]]; then
+    SESSION=$1
+
+    main() {
+        echo $SESSION
+        tmux new-session -A -d -s ${SESSION} -n main
+#       tmux send-keys -t ${SESSION} 'CalSMB' Enter
+        tmux split-window -v -t ${SESSION}
+        tmux select-layout -t ${SESSION} main-vertical
+        tmux attach -t ${SESSION}
+    }
+
+    main
+fi
