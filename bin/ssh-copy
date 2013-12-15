@@ -2,7 +2,7 @@
 #
 # FILE:         ssh-copy
 # AUTHOR:       Sang Han
-# VERSION:      2.1
+# VERSION:      2.2
 # DESCRIPTION   Utility for automatically exporting ssh keys into remote servers for authentication.
 #               Checks $HOME/.ssh for id_rsa.pub or id_dsa.pub and appends them into
 #               the authorized_keys of remote host
@@ -23,7 +23,7 @@ usage() {
     AUTHOR:     Sang Han
     COMPANY:    Calient Technologies
     YEAR:       2013
-    VERSION:    2.1
+    VERSION:    2.2
 
     -h [help]
         Outputs usage directions
@@ -39,6 +39,7 @@ usage() {
 DOCUMENT
     exit 0
 }
+
 test_names() {
     printf "\$KEY is %s\n" "${KEY[i]}"
     printf "\$PUBKEY is %s\n" "${PUBKEY[i]}"
@@ -58,6 +59,14 @@ install_keys() {
             fi"
 }
 
+check_auth() {
+    local CREDENTIAL=$1
+    if [[ -z ${!CREDENTIAL} ]]; then
+        read -p "${CREDENTIAL}:  " ${CREDENTIAL}
+    fi
+}
+
+
 main() {
     # Declare default $KEY if not set already
     if [[ -z $KEY ]]; then
@@ -74,15 +83,9 @@ main() {
         fi
 
         if [[ -r "${PUBKEY[i]}" ]]; then
-            if [[ -z $USERNAME ]]; then
-                read -p "USERNAME:  " USERNAME
-            fi
-
-            if [[ -z $SERVER ]]; then
-                read -p "SERVER:    " SERVER
-            fi
-
-            install_keys
+            check_auth USERNAME
+            check_auth SERVER
+            install_keys && break
         fi
     done
 
@@ -92,27 +95,26 @@ main() {
     fi
 }
 
-# Options
+# Parse Options
 declare -i TEST=0
 while getopts "s:k:u:th" OPTION; do
     case $OPTION in
         h) usage
             ;;
-        k) KEY="${OPTARG}"
+        k) KEY=$OPTARG
             ;;
         t) TEST=1
             ;;
-        u) USERNAME="${OPTARG}"
+        u) USERNAME=$OPTARG
             ;;
-        s) SERVER="${OPTARG}"
+        s) SERVER=$OPTARG
             ;;
-        ?) echo "Invalid option: -${OPTARG}" >&2
-            usage >&2
+        ?) (echo "Invalid option: -${OPTARG}"; usage) >&2
             exit 1
             ;;
     esac
 done
-shift $((OPTIND - 1))
+    shift $((OPTIND-1))
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
     main
