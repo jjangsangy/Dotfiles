@@ -6,17 +6,74 @@
 # DESCRIPTION:  Deploy tmux enviornment
 # DEPENDS:      tmux
 
+
+usage() {
+    cat <<- DOCUMENT
+
+    $(basename $0) [-h help]
+
+    Deploy custom tmux enviornment
+
+    AUTHOR:     Sang Han
+    YEAR:       2013
+    VERSION:    1.0
+
+    -h [help]
+        Outputs usage directions
+    -t [test]
+        Run unit tests
+    -w [work]
+        Deploy custom work enviornment settings
+
+DOCUMENT
+    exit 0
+}
+
+test_names() {
+    printf "\$WORK is %s\n" $WORK
+    printf "\$SESSION is %s\n" $SESSION
+    printf "\$TEST is %s\n" $TEST
+}
+
+work_session() {
+    if [[ WORK == 1 ]]; then
+        tmux send-keys -t $SESSION 'CalSMB' Enter
+    fi
+}
+
+main() {
+    # Unit Tests
+    if [[ $TEST = 1 ]]; then
+        test_names
+        exit
+    fi
+
+    tmux new-session -A -d -s $SESSION -n main
+    tmux split-window -v -t $SESSION
+    work_session
+    tmux select-layout -t $SESSION main-vertical
+    tmux attach -t $SESSION
+}
+
+# Parse Options
+declare -i WORK=0 TEST=0
+while getopts ':thw' OPTION; do
+    case ${OPTION} in
+        h) usage
+            ;;
+        w) WORK=1
+            ;;
+        t) TEST=1
+            ;;
+        ?) "Invalid option: -${OPTARG}" >&2
+            exit 1
+            ;;
+    esac
+done
+    shift $((OPTIND-1))
+
+
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
-    SESSION=$1
-
-    main() {
-        echo $SESSION
-        tmux new-session -A -d -s ${SESSION} -n main
-#       tmux send-keys -t ${SESSION} 'CalSMB' Enter
-        tmux split-window -v -t ${SESSION}
-        tmux select-layout -t ${SESSION} main-vertical
-        tmux attach -t ${SESSION}
-    }
-
+    SESSION=${1:=home}
     main
 fi
