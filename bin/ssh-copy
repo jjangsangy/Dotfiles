@@ -1,27 +1,62 @@
-#!/bin/sh
-
-# ssh-copy.sh  
+#!/bin/bash
 #
-#  Created by Sang Han on 5/28/13.
+# FILE:         ssh-copy
+# AUTHOR:       Sang Han
+# VERSION:      2.0.0
+# DESCRIPTION:  Utility for automatically exporting ssh keys into remote servers for authentication
+#               Checks home .ssh directory for id_rsa or id_dsa public keys and appends them into the authorized_keys using a remote ssh server"
+# DEPENDS:      Secure Shell
+# CREATED:      5/28/2013
 
+usage() {
+    cat <<- DOCUMENT
 
-# Checks home .ssh directory for id_rsa or id_dsa public keys and appends them into the authorized_keys using a remote ssh server"
+    $(basename $0) [-h help]
 
-clear
+    Utility for automatically exporting ssh keys into remote servers for authentication
+    Checks home .ssh directory for id_rsa or id_dsa public keys and appends them into the authorized_keys using a remote ssh server"
 
-if [ -f ~/.ssh/id_rsa.pub ]; then
-read -p "User  " usr
-read -p "Server " servr
-cat ~/.ssh/id_rsa.pub | ssh -l "${usr}" "${servr}" "if [ -d ~/.ssh ]; then cat >> ~/.ssh/authorized_keys; else mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys; fi"
+    AUTHOR:     Sang Han
+    COMPANY:    Calient Technologies
+    YEAR:       2013
+    VERSION:    2.0.0
 
-elif [ -f ~/.ssh/id_dsa.pub ]; then
-read -p "User  " usr
-read -p "Server " servr
-cat ~/.ssh/id_dsa.pub | ssh -l "${usr}" "${servr}" "if [ -d ~/.ssh ]; then cat >> ~/.ssh/authorized_keys; else mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys; fi"
+    -h [help]
+        Outputs usage directions
 
-else
+DOCUMENT
+    exit 0
+}
 
-echo "public key does not exist"
+main() {
+    if [ -f ~/.ssh/id_rsa.pub ]; then
+        read -p "User  " usr
+        read -p "Server " servr
+        cat ~/.ssh/id_rsa.pub | ssh -l "${usr}" "${servr}" "if [ -d ~/.ssh ]; then cat >> ~/.ssh/authorized_keys; else mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys; fi"
+    elif [ -f ~/.ssh/id_dsa.pub ]; then
+        read -p "User  " usr
+        read -p "Server " servr
+        cat ~/.ssh/id_dsa.pub | ssh -l "${usr}" "${servr}" "if [ -d ~/.ssh ]; then cat >> ~/.ssh/authorized_keys; else mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys; fi"
+    else
+        echo "public key does not exist"
+    fi
+}
 
+# Options
+while getopts ":h" options; do
+    case ${options} in
+        h|help)
+            usage
+            ;;
+        \?)
+            echo "Invalid option: -${OPTARG}" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [[ "$0" == "${BASH_SOURCE}" ]]; then
+    clear
+    main
 fi
-exit
+
