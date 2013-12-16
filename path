@@ -12,7 +12,6 @@ if [[ -d $HOME/Calient ]]; then
     export PATH=$HOME/Calient:$PATH
 fi
 
-which brew -s > /dev/null
-if [[ $? != 0 ]]; then
+if [[ $(which brew >& /dev/null) ]]; then
     export PATH=/usr/local/bin:$PATH
 fi
