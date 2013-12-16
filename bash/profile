@@ -26,21 +26,17 @@ fi
 # DEPENDS: GNU coreutils
 # For Mac OS X coreutils must be installed first either manually
 # or with a package manager.
-if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] \
-    && [[ "$(ls --version)" =~ "GNU coreutils" ]]; then
-
+if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] && [[ "$(ls --version)" =~ "GNU coreutils" ]]; then
+    alias ls='ls --color=auto'
     eval_dircolors() {
         # USAGE: By default, this function checks and evaluates .dircolors
         #        in users $HOME directory.
         #        Takes 1 argument which will be expanded to .dircolor_${STYLE}
         #        for evaluating specific dircolor styles
-        if [[  -n $1 ]]; then
-            local STYLE=$1
-        fi
+        [[  -n $1 ]] && local STYLE=$1
 
         if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
             eval "$(dircolors $HOME/.dircolors${STYLE/#/_})"
-            export LSCOLORS='--color=auto'
         else
             export CLICOLOR=1; export LSCOLORS=Exfxcxdxbxegedabagacad
         fi

@@ -14,7 +14,6 @@ alias sa=". ~/.aliases"
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 alias dsclean='find . -type f -name .DS_Store -print0 | xargs -0 rm'
-alias ls='ls $LSCOLORS'
 
 # SSH
 alias sshPi="ssh sang@raspberrypi.local"
