@@ -1,6 +1,3 @@
-if [[ -d /anaconda ]]; then
-    export PATH=/anaconda/bin:$PATH
-fi
 
 if [[ -f /Applications/MATLAB_R2013a.app/bin/matlab ]]; then
     export PATH=$PATH:/Applications/MATLAB_R2013a.app/bin
@@ -18,8 +15,4 @@ fi
 which brew -s > /dev/null
 if [[ $? != 0 ]]; then
     export PATH=/usr/local/bin:$PATH
-fi
-
-if [[ -d $HOME/Git/Go ]]; then
-    export GOPATH=$HOME/Git/Go
 fi
