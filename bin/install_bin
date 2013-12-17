@@ -41,7 +41,7 @@ check_destination() {
     fi
 }
 
-link_files() {
+link_file() {
         printf "%-25s linked to %-40s\n" "$file" "$HOME/bin/$file"
         ln "$file" "$bin_file" || continue
 }
@@ -54,13 +54,13 @@ test_files() {
             read -p "Would you like to overwrite it? [Yy]/[Nn]   " RESPONSE
             if [[ $RESPONSE =~ ^[Yy] ]]; then
                 rm $bin_file || continue
-                link_files
+                link_file
             else
                 printf "Script Exiting\n" >&2
                 exit 1
             fi
         else
-            move_file
+            link_file
         fi
     done
 }
