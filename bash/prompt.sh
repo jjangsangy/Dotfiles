@@ -2662,4 +2662,4 @@ if [ Cygwin = "$(uname -o 2>/dev/null)" ]; then
 __git_complete git.exe __git_main
 fi
 
-PS1='\[\033[36m\]Yes, Master?\[\033[m\] \[\e[0;33m\]Sang\[\e[0m\]:\[\033[36m\] ~$\[\033[m\] '  
+PS1='\[\033[36m\]Yes, Master?\[\033[m\] \[\e[0;33m\]Sang\[\e[0m\]:\[\033[36m\] ~$\[\033[m\] '

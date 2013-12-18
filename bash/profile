@@ -2,7 +2,7 @@
 # SOURCED FILES
 # ==========================================================
 
-for file in ${HOME}/\.{'path','aliases','promp.sh','jump.sh'}; do
+for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh'}; do
     [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
 done
 
