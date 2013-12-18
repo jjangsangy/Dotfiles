@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# FILE:         install_bin
+# AUTHOR:       Sang Han
+# VERSION:      1.0.0rc
+# DESCRIPTION   Install binnary executables
+# DEPENDS:      Dotfiles
+
+usage() {
+    cat <<- EOF
+    $(basename $0) [-h help]
+
+    Install utility for dotfile configs
+
+    AUTHOR:     Sang Han
+    YEAR:       2013
+    VERSION:    1.0.0rc
+
+    -h [help]
+        Outputs usage directions
+
+
+EOF
+    exit 0
+}
+
+SOURCE_DIRECTORY="$(dirname ${BASH_SOURCE[0]})"
+
+check_destination() {
+    # Create destination folder if it doesn't exist
+    local MYBIN="$HOME/bin"
+    if [[ ! -d "$MYBIN" ]]; then
+        printf "No bin folder at %s\n" "$MYBIN"
+        read -p "Would you like to make one? [Yy]/[Nn]   " RESPONSE
+            if [[ $RESPONSE =~ [Yy] ]]; then
+                mkdir $MYBIN
+            else
+                printf "Script Exiting\n" >&2
+                exit 1
+            fi
+    fi
+}
+
+link_file() {
+        printf "%-25s linked to %-40s\n" "$file" "$HOME/bin/$file"
+        ln "$file" "$bin_file" || continue
+}
+
+test_files() {
+    for file in *; do
+        local bin_file="$HOME/bin/$file"
+        if [[ -e "$bin_file" ]]; then
+            printf "%s file already exists\n" $bin_file
+            read -p "Would you like to overwrite it? [Yy]/[Nn]   " RESPONSE
+            if [[ $RESPONSE =~ ^[Yy] ]]; then
+                rm $bin_file || continue
+                link_file
+            else
+                printf "Script Exiting\n" >&2
+                exit 1
+            fi
+        else
+            link_file
+        fi
+    done
+}
+
+# Parse Options
+while getopts ":h" OPTION; do
+    case ${OPTION} in
+        h) usage
+            ;;
+        ?) echo "Invalid option: -${OPTARG}" >&2
+           exit 1
+            ;;
+    esac
+done
+    shift $(($OPTIND-1))
+
+main() {
+    check_destination
+    test_files
+}
+
+if [[ "$0" == ${BASH_SOURCE} ]]; then
+    main
+fi

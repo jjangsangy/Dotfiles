@@ -1,23 +1,10 @@
 # ==========================================================
 # SOURCED FILES
 # ==========================================================
-# TODO: Source files with FOR LOOP rather than conditionals
 
-if [[ -r ${HOME}/.path ]]; then
-    . ${HOME}/.path
-fi
-
-if [[ -r ${HOME}/.aliases ]]; then
-    . ${HOME}/.aliases
-fi
-
-if [[ -r ${HOME}/.prompt.sh ]]; then
-    . ${HOME}/.prompt.sh
-fi
-
-if [[ -r ${HOME}/.jump.sh ]]; then
-    . ${HOME}/.jump.sh
-fi
+for file in ${HOME}/\.{'path','aliases','promp.sh','jump.sh'}; do
+    [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
+done
 
 # ==========================================================
 # DIRCOLORS
