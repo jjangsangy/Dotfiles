@@ -18,6 +18,10 @@ usage() {
 
     -h [help]
         Outputs usage directions
+    -f [force]
+        force overwrite all files
+    -i [noclobber]
+        ensure that no files get overwritten during link
 
 
 EOF
@@ -66,9 +70,12 @@ test_files() {
 }
 
 # Parse Options
+declare -i FORCE=0
 while getopts ":h" OPTION; do
     case ${OPTION} in
         h) usage
+            ;;
+        f) FORCE=1
             ;;
         ?) echo "Invalid option: -${OPTARG}" >&2
            exit 1
