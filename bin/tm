@@ -60,8 +60,8 @@ default_name() {
 
 main() {
     tmux new-session -A -d -s $SESSION -n main
-    tmux split-window -v -t $SESSION
     work_session
+    tmux split-window -v -t $SESSION
     tmux select-layout -t $SESSION main-vertical
     tmux select-pane -t :.+
     tmux attach -t $SESSION
