@@ -6,6 +6,12 @@ for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh'}; do
     [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
 done
 
+if [[ "$OSTYPE" == "cygwin" ]]; then
+    for file in ${HOME}/\.{'.minttyrc','dark_cyg','light_cyg',}; do
+        [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
+    done
+fi
+
 # ==========================================================
 # DIRCOLORS
 # ==========================================================
@@ -15,7 +21,7 @@ done
 # or with a package manager.
 if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] && [[ "$(ls --version)" =~ "GNU coreutils" ]]; then
     alias ls='ls --color=auto'
-    eval_dircolors() {
+    function eval_dircolors() {
         # USAGE: By default, this function checks and evaluates .dircolors
         #        in users $HOME directory.
         #        Takes 1 argument which will be expanded to .dircolor_${STYLE}
@@ -24,29 +30,24 @@ if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] && [[ "$(ls --version)" =~ 
 
         if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
             eval "$(dircolors $HOME/.dircolors${STYLE/#/_})"
-        else
-            export CLICOLOR=1; export LSCOLORS=Exfxcxdxbxegedabagacad
         fi
         }
 
     eval_dircolors
 
-    # Checks for .dircolors_light
-    if [[ "$COLORFGBG" == "11;15" ]]; then
-        eval_dircolors light
-    fi
-    # Checks for .dircolors_dark
-    if [[ "$COLORFGBG" == "12;8" ]]; then
-        eval_dircolors dark
-    fi
+    [[ "$COLORFGBG" == "11;15" ]] && eval_dircolors light
+    [[ "$COLORFGBG" == "12;8" ]] && eval_dircolors dark
 fi
 
 # ==========================================================
 # ENVAR
 # ==========================================================
-# TODO: Move these exports into correct sourced files
 export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
+
+if [[ "$OSTYPE" =~ "darwin" ]]; then
+    export LSCOLORS=Exfxcxdxbxegedabagacad; CLICOLOR=1
+fi
 
 # ==========================================================
 # Functions
