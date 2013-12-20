@@ -1,4 +1,11 @@
 # ==========================================================
+# GENERAL SETTINGS
+# ==========================================================
+
+# VI MODE
+set -o vi
+
+# ==========================================================
 # SOURCED FILES
 # ==========================================================
 
@@ -44,6 +51,7 @@ fi
 # ==========================================================
 export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
+export EDITOR=vim
 
 if [[ "$OSTYPE" =~ "darwin" ]]; then
     export LSCOLORS=Exfxcxdxbxegedabagacad; CLICOLOR=1

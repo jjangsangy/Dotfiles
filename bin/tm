@@ -10,7 +10,7 @@
 usage() {
     cat <<- DOCUMENT
 
-    $(basename $0) [-h help]
+    $(basename $0) [-h help] [-t test] [-w work] [session]
 
     Deploy custom tmux enviornment
 
