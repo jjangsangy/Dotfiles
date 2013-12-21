@@ -15,16 +15,18 @@ call vundle#rc()
 " ==========================================================
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
-  source ~/.vimrc.bundles.local
+  source ~/.vim.bundles.local
 endif
 
 filetype plugin indent on
 
 " ==========================================================
-" Basic Configuration
+" Basic Settings
 " ==========================================================
+set hlsearch
 set nowrap
 set splitright
+set splitbelow
 set autoindent
 set autoread
 set backspace=2
@@ -57,22 +59,33 @@ if exists('$TMUX')  " Support resizing in tmux
 endif
 
 " ==========================================================
-" Keyboard Shortcuts
+" Shortcuts
 " ==========================================================
+" Edit Vimrc:           <leader>ev
+" Source Vimrc:         <leader>sv
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+
+" Code folding with space
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
+
+" Emacs style mappings
 noremap <C-e> <esc>$
 noremap <C-a> <esc>0
-nnoremap K gg
-nnoremap J G
+
+" open/close the quickfix window
+nnoremap <leader>c :copen<CR>
+nnoremap <leader>cc :cclose<CR>
 
 " - Mapleader set to comma
 let mapleader = ','
+
 
 " ==========================================================
 " - Windows Management
 " ==========================================================
 " <Ctrl>+hjkl for moving between splits
-set splitbelow
-set splitright
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
@@ -93,7 +106,6 @@ noremap <C-l> <C-w>l
 " Strip Whitespace:     space
 " Git Gutter:           g
 " Plug:                 c
-" Vimrc Source:         sv
 noremap <leader>l :Align
 nnoremap <leader>a :Ack<space>
 nnoremap <leader>b :CtrlPBuffer<CR>
@@ -105,8 +117,6 @@ nnoremap <leader>] :TagbarToggle<CR>
 nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
 nnoremap <leader>g :GitGutterToggle<CR>
 nnoremap <leader>c <Plug>Kwbd
-nnoremap <leader>ev :vsplit $MYVIMRC<cr>
-noremap <silent> <leader>sv :source ~/.vimrc<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
 " ==========================================================
 " Settings
@@ -145,9 +155,7 @@ augroup shell
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
-" ==========================================================
 " Rails
-" ==========================================================
 autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
 autocmd User Rails silent! Rnavcommand observer       app/observers             -glob=**/* -suffix=_observer.rb
 autocmd User Rails silent! Rnavcommand feature        features                  -glob=**/* -suffix=.feature
