@@ -79,7 +79,6 @@ main() {
         # Unit Tests
         if [[ $TEST = 1 ]]; then
             test_names
-            continue
         fi
 
         if [[ -r "${PUBKEY[i]}" ]]; then

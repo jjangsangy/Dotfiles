@@ -30,17 +30,22 @@ EOF
 
 SOURCE_DIRECTORY="$(dirname ${BASH_SOURCE[0]})"
 
+script_exit() {
+    printf "Script Exiting\n" >&2
+    exit 1
+}
+
 check_destination() {
-    # Create destination folder if it doesn't exist
-    local MYBIN="$HOME/bin"
-    if [[ ! -d "$MYBIN" ]]; then
-        printf "No bin folder at %s\n" "$MYBIN"
+#   Create destination folder if it doesn't exist
+#   Takes 1 argument for destination directory
+    local DESTINATION="${1-:$HOME/bin}"
+    if [[ ! -d "${DESTINATION}" ]]; then
+        printf "Folder %s does not exist\n" "${DESTINATION}"
         read -p "Would you like to make one? [Yy]/[Nn]   " RESPONSE
             if [[ $RESPONSE =~ [Yy] ]]; then
-                mkdir $MYBIN
+                mkdir ${DESTINATION}
             else
-                printf "Script Exiting\n" >&2
-                exit 1
+                script_exit
             fi
     fi
 }
@@ -49,6 +54,7 @@ link_file() {
         printf "%-25s linked to %-40s\n" "$file" "$HOME/bin/$file"
         ln "$file" "$bin_file" || continue
 }
+
 
 test_files() {
     for file in *; do
@@ -60,8 +66,7 @@ test_files() {
                 rm $bin_file || continue
                 link_file
             else
-                printf "Script Exiting\n" >&2
-                exit 1
+                script_exit
             fi
         else
             link_file

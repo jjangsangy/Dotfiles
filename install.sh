@@ -69,20 +69,6 @@ test_install() {
         printf "%s and %s\n" "${bash_config[i]}" "${bash_config[i]/#/$HOME/.}"
     done
 }
-# Parse Options
-declare -i TEST=0
-while getopts ":h" OPTION; do
-    case ${OPTION} in
-        h) usage
-            ;;
-        t) TEST=1
-            ;;
-        ?) echo "Invalid option: -${OPTARG}" >&2
-           exit 1
-            ;;
-    esac
-done
-    shift $(($OPTIND-1))
 
 install_osx() {
     # Files for OSX install
@@ -99,6 +85,21 @@ install_osx() {
         printf "%s and %s\n" "${bash_config[i]}" "${bash_config[i]/#/$HOME/.}"
     done
 }
+
+# Parse Options
+declare -i TEST=0
+while getopts ":h" OPTION; do
+    case ${OPTION} in
+        h) usage
+            ;;
+        t) TEST=1
+            ;;
+        ?) echo "Invalid option: -${OPTARG}" >&2
+           exit 1
+            ;;
+    esac
+done
+    shift $(($OPTIND-1))
 main() {
     if (($TEST==1)); then
         test_names
