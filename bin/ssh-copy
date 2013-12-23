@@ -127,7 +127,7 @@ done
     shift $((OPTIND-1))
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
-    [[ "$1" ]] && declare SERVER="$1"
+    [[ "${1}" ]] && SERVER="${1}"
     check_keys
     main
 fi
