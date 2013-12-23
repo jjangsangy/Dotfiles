@@ -8,7 +8,7 @@
 #               the authorized_keys of remote host
 #               Checks home .ssh directory for id_rsa or id_dsa public keys and
 #               appends them into the authorized_keys using a remote ssh server
-# DEPENDS:      Secure Shell
+# DEPENDS:      Secure Shell v2.0
 # CREATED:      5/28/2013
 
 # Global Variables
@@ -46,6 +46,7 @@ error_exit() {
     printf "ERROR due to ${1:-"Unknown Error"}"
     exit 1
 }
+
 test_names() {
     printf "\$KEY is %s\n" "${KEY[i]}"
     printf "\$PUBKEY is %s\n" "${PUBKEY[i]}"
