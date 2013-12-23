@@ -2,7 +2,7 @@
 #
 # FILE:         ssh-copy
 # AUTHOR:       Sang Han
-# VERSION:      2.2
+# VERSION:      2.3
 # DESCRIPTION   Utility for automatically exporting ssh keys into remote servers for authentication.
 #               Checks $HOME/.ssh for id_rsa.pub or id_dsa.pub and appends them into
 #               the authorized_keys of remote host
@@ -26,7 +26,7 @@ usage() {
     AUTHOR:     Sang Han
     COMPANY:    Calient Technologies
     YEAR:       2013
-    VERSION:    2.2
+    VERSION:    2.3
 
     -h [help]
         Outputs usage directions
