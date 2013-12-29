@@ -6,7 +6,6 @@
 # DESCRIPTION:  Deploy tmux enviornment
 # DEPENDS:      tmux
 
-
 usage() {
     cat <<- DOCUMENT
 
@@ -40,7 +39,6 @@ work_session() {
         tmux send-keys -t $SESSION 'CalSMB' Enter
     fi
 }
-
 
 default_name() {
     # Set default name of session
@@ -83,7 +81,6 @@ while getopts ':thw' OPTION; do
     esac
 done
     shift $((OPTIND-1))
-
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
     default_name ${1}

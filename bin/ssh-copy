@@ -56,6 +56,9 @@ test_names() {
 }
 
 install_keys() {
+    # Reads the public key file with cat and then logs into ssh server
+    # and appends the public key file at the end of the authorized_key file
+    # within $HOME
     cat "${PUBKEY[i]}" | \
         ssh -l "$LOGIN_USER" "$SERVER" "\
             if [ -d ~/.ssh ]; then \
@@ -76,6 +79,8 @@ check_keys() {
 }
 
 check_auth() {
+    # Checks if proper credentials have been given as $1. After credential has
+    # been checked, will read and bind the variable.
     local CREDENTIAL=$1
     if [[ ! ${!CREDENTIAL} ]]; then
         read -p "${CREDENTIAL}:  " ${CREDENTIAL}

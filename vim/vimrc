@@ -9,7 +9,7 @@ filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-" - install Vundle bundles
+" - Install Vundle bundles
 " ==========================================================
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
@@ -63,7 +63,7 @@ endif
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
-" Code folding with space
+" Code folding with <Space>
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
 
@@ -117,6 +117,10 @@ nnoremap <leader>c <Plug>Kwbd
 let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 let g:gitgutter_enabled = 0
+
+" Set magenta a magenta bar on lines exceeding 80 chars
+highlight ColorColumn ctermbg=magenta
+call matchadd('ColorColumn', '\%81v', 100)
 
 " - Silver Searcher
 " ==========================================================
