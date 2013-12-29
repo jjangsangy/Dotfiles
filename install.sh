@@ -6,6 +6,7 @@
 # DESCRIPTION   Install utility for dotfile configs
 # DEPENDS:      Dotfiles
 
+# Global Variables
 DOTFILES="$(dirname ${BASH_SOURCE[0]})"
 
 usage() {
@@ -88,7 +89,7 @@ install_osx() {
 
 # Parse Options
 declare -i TEST=0
-while getopts ":h" OPTION; do
+while getopts ":th" OPTION; do
     case ${OPTION} in
         h) usage
             ;;
@@ -98,8 +99,7 @@ while getopts ":h" OPTION; do
            exit 1
             ;;
     esac
-done
-    shift $(($OPTIND-1))
+
 main() {
     if (($TEST==1)); then
         test_names
