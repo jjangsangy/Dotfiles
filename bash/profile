@@ -61,7 +61,7 @@ red() {
 
 green() {
     GREEN=$(tput setaf 2)
-    NORMAL=$(tput sgr6)
+    NORMAL=$(tput sgr0)
     echo -e "$GREEN$*$NORMAL"
 }
 
