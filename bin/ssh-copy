@@ -87,6 +87,15 @@ check_auth() {
     fi
 }
 
+check_server() {
+    SERVER=$1
+    if [[ "$SERVER" =~ @ ]]; then
+        LOGIN_USER=${SERVER%@*}
+        SERVER=${SERVER#*@}
+        return
+    fi
+}
+
 main() {
     # Declare default $KEY if not set already
     if [[ -z $KEY ]]; then
@@ -100,6 +109,7 @@ main() {
         # Unit Test runs every iteration
         if (($TEST==1)); then
             test_names
+            return
         fi
 
         # Gather necessary parameters
@@ -132,7 +142,10 @@ done
     shift $((OPTIND-1))
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
-    [[ "${1}" ]] && SERVER="${1}"
+
+    if [[ $# = 1 ]]; then
+        check_server $1
+    fi
     check_keys
     main
 fi
