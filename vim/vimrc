@@ -9,6 +9,9 @@ filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
+" - Mapleader set to comma
+let mapleader = ','
+
 " - Install Vundle bundles
 " ==========================================================
 if filereadable(expand("~/.vimrc.bundles"))
@@ -48,7 +51,7 @@ set tabstop=4
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu
 set wildmode=longest,list,full
-set foldcolumn=4
+set foldcolumn=2
 
 " Enable basic mouse behavior such as resizing buffers.
 set mouse=a
@@ -60,7 +63,7 @@ endif
 " ==========================================================
 " Edit Vimrc:           <leader>ev
 " Source Vimrc:         <leader>sv
-nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <silent> <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
 
 " Code folding with <Space>
@@ -74,9 +77,6 @@ noremap <C-a> <esc>0
 " open/close the quickfix window
 nnoremap <leader>c :copen<CR>
 nnoremap <leader>cc :cclose<CR>
-
-" - Mapleader set to comma
-let mapleader = ','
 
 " - Windows Management
 " ==========================================================
@@ -117,6 +117,7 @@ nnoremap <leader>c <Plug>Kwbd
 let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 let g:gitgutter_enabled = 0
+let g:BASH_GuiSnippetBrowser = 'commandline'
 
 " Set magenta a magenta bar on lines exceeding 80 chars
 highlight ColorColumn ctermbg=magenta
@@ -147,17 +148,17 @@ autocmd BufRead,BufNewFile *aliases set filetype=sh
 autocmd BufRead,BufNewFile *profile set filetype=sh
 augroup shell
     autocmd!
+     let g:BASH_GuiSnippetBrowser = 'commandline'
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
-" Rails
-autocmd User Rails silent! Rnavcommand decorator      app/decorators            -glob=**/* -suffix=_decorator.rb
-autocmd User Rails silent! Rnavcommand observer       app/observers             -glob=**/* -suffix=_observer.rb
-autocmd User Rails silent! Rnavcommand feature        features                  -glob=**/* -suffix=.feature
-autocmd User Rails silent! Rnavcommand job            app/jobs                  -glob=**/* -suffix=_job.rb
-autocmd User Rails silent! Rnavcommand mediator       app/mediators             -glob=**/* -suffix=_mediator.rb
-autocmd User Rails silent! Rnavcommand stepdefinition features/step_definitions -glob=**/* -suffix=_steps.rb
-autocmd VimResized * :wincmd =
+" Python
+augroup Python
+    autocmd!
+    let g:pymode = 1
+    let g:pymode_folding = 1
+    let g:pymode_run_bind = '<leader>r'
+augroup END
 
 " - TMUX Cursor Fix
 " ==========================================================

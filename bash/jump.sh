@@ -1,11 +1,47 @@
-# Checks for marks directory, and creates it
+#!/bin/bash
+# FILE:         Jump
+# AUTHOR:       Sang Han
+# VERSION:      1.1.0
+# DESCRIPTION:  Automated tool for quickly traversing the shell in
+#               unix based filesystems.
+
+# Defines user directory for storing symlinks
 export MARKPATH=$HOME/.marks
 if ! [[ -d "$MARKPATH" ]]; then
-    echo "No directory at $MARKPATH"
-    echo "Directory being created"
+    printf "No directory at %s\nDirectory being created\n" "${MARKPATH}"
     mkdir -p "$MARKPATH"
 fi
 
+usage() {
+
+    PROGNAME=$(basename "${BASH_SOURCE}")
+    PROGDIR=$(dirname "${BASH_SOURCE}")
+
+    cat <<- EOF
+    $PROGNAME [-h help] [-s silent]
+
+    Automated tool for quickly traversing the shell in
+    unix based filesystems.
+
+    File is meant to be sourced from .bashrc or .profile
+    at the start of a session. Executing this file directly
+    will automatically source itself by writing to .bashrc
+    or .profile
+
+    AUTHOR:     Sang Han
+    YEAR:       2013
+    VERSION:    1.1.0
+
+    -h [help]
+        Outputs usage directions
+    -t [test]
+        Runs internal unit tests
+    -i [install]
+        Perform installation
+
+EOF
+    exit 0
+}
 
 jump() {
     cd -P "$MARKPATH/$1" 2> /dev/null || echo "No such mark: $1"
@@ -35,4 +71,47 @@ _completemarks() {
 }
 
 complete -F _completemarks jump unmark
+
+if [ $0 = $BASH_SOURCE ]; then
+    # Internal script functions and logic
+
+    # Parse Options
+    declare -i TEST=0 INSTALL=0
+    while getopts ":ht" OPTION; do
+        case ${OPTION} in
+            h) usage
+                ;;
+            t) TEST=1
+                ;;
+            i) INSTALL=1
+                ;;
+            \?) echo "Invalid option: -${OPTARG}" >&2
+                exit 1
+                ;;
+        esac
+    done
+        shift $(($OPTIND-1))
+
+    install_jump() {
+    # Automated install script
+        cat <<- JUMP >> $HOME/.jump.sh
+            export MARKPATH=$HOME/.mark
+            $(declare -f {mark,unmark,_completemarks,jump})
+JUMP
+
+        cat <<- JUMP_SOURCE >> $HOME/.profile
+            [ -f $HOME/.jump.sh ]; then
+                source $HOME/.jump.sh
+            fi
+JUMP_SOURCE
+    }
+
+    # If ran with -i flag, run install script
+    if [ $INSTALL = 1 ]; then
+        install_jump
+    fi
+
+fi
+
+
 
