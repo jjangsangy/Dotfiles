@@ -78,10 +78,6 @@ noremap <C-a> <esc>0
 nnoremap <leader>c :copen<CR>
 nnoremap <leader>cc :cclose<CR>
 
-" save and close file
-nnoremap <C-w> <esc>:w<CR>
-nnoremap <C-w><c-w> <esc>:wq<CR>
-
 " - Windows Management
 " ==========================================================
 " <Ctrl>+hjkl for moving between splits
