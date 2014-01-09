@@ -16,7 +16,7 @@ let mapleader = ','
 " ==========================================================
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
-  source ~/.vim.bundles.local
+  source ~/.vimrc.bundles.local
 endif
 
 filetype plugin indent on
@@ -77,6 +77,10 @@ noremap <C-a> <esc>0
 " open/close the quickfix window
 nnoremap <leader>c :copen<CR>
 nnoremap <leader>cc :cclose<CR>
+
+" save and close file
+nnoremap <C-w> <esc>:w<CR>
+nnoremap <C-w><c-w> <esc>:wq<CR>
 
 " - Windows Management
 " ==========================================================
