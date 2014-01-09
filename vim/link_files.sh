@@ -11,7 +11,7 @@
 #        AUTHOR: Sang Han, shan@calient.net
 #       COMPANY: Calient Technologies
 #       CREATED: 01/09/2014
-#      REVISION: 1.0.0
+#      REVISION: 1.1.0
 #===============================================================================
 
 # Global Variables
@@ -22,14 +22,14 @@ FILELIST=("vimrc" "vimrc.local" "vimrc.bundles" "vimrc.bundles.local")
 usage() {
     cat <<- END_DOC
 
-    link_files.sh   [ -h help] [ -t test ]
+    link_files.sh   [-h help] [-t test]
 
     DESCRIPTION: links files to home directory
 
     AUTHOR:      Sang Han, shan@calient.net
     COMPANY:     Calient Technologies
     CREATED:     01/09/2014
-    REVISION:    1.0.0
+    REVISION:    1.1.0
     REQUIREMENTS: ---
 
     -h [help]
@@ -38,6 +38,14 @@ usage() {
         Runs internal unit tests
 
 END_DOC
+
+exit 0
+}
+
+test_names() {
+    printf "\$TEST is %s\n" "${TEST}"
+    printf "\$FILELIST is %s\n" "${FILELIST[*]}"
+    exit 1
 }
 
 # Parse Options
@@ -55,9 +63,33 @@ while getopts ":ht" OPTION; do
 done
     shift $(($OPTIND-1))
 
+prompt_delete() {
+    read -p "File $LINK_DEST already exists, would you like to delete it? \
+        [Yy]/[Nn]:  " RESPONSE
+
+    if [[ $RESPONSE =~ [Yy] ]]; then
+        rm "${LINK_DEST}"
+        link_files
+    else
+        return
+    fi
+
+}
+
+link_files() {
+    ln -s "${LINK_SOURCE}" "${LINK_DEST}"
+}
+
 main() {
-    for file in "${FILELIST[@]}"; do
-        ln -s ${PROGDIR}/${file} ${HOME}/\.${file}
+    # Unit Test Switch
+    if (($TEST==1)); then
+        test_names
+    fi
+
+    for FILE in "${FILELIST[@]}"; do
+        local LINK_SOURCE=${PROGDIR}/${FILE}
+        local LINK_DEST=${HOME}/\.${FILE}
+        link_files >/dev/null 2>&1 || prompt_delete
     done
 }
 
