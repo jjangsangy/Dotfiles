@@ -119,7 +119,6 @@ main() {
             install_keys && break
         fi
     done
-
 }
 
 # GETOPTS
@@ -132,7 +131,7 @@ while getopts ":k:l:th" OPTION; do
             ;;
         t) TEST=1
             ;;
-        l) LOGIN_USER=$OPTARG
+        l) LOGIN_USER=$OPTAR
             ;;
         ?) { echo "Invalid option: -${OPTARG}"; usage; } >&2
             exit 1
