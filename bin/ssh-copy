@@ -131,7 +131,7 @@ while getopts ":k:l:th" OPTION; do
             ;;
         t) TEST=1
             ;;
-        l) LOGIN_USER=$OPTAR
+        l) LOGIN_USER=$OPTARG
             ;;
         ?) { echo "Invalid option: -${OPTARG}"; usage; } >&2
             exit 1

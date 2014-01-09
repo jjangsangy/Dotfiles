@@ -44,6 +44,7 @@ fi
 export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
 export EDITOR=vim
+export HISTIGNORE=ls:cd:echo
 
 # ==========================================================
 # Functions
