@@ -65,12 +65,14 @@ main() {
 }
 
 # Parse Options
-declare -i TEST=0 LINK_ALL=0 LINK_BASH=0
+declare -i TEST=0
+declare -a LINK_BASH=(path.sh profile jump.sh dircolors{_light,dark,})
+declare -a LINK_ALL=("aliases" "path" "$LINK_BASH[@]")
 while getopts ":htab" OPTION; do
     case ${OPTION} in
         h) usage
             ;;
-        a) LINK_ALL=1
+        a) LINK_ALL=("aliases" "path" "$LINK_BASH[@]")
             ;;
         b) LINK_BASH=1
             ;;
@@ -83,7 +85,7 @@ while getopts ":htab" OPTION; do
 done
     shift $(($OPTIND-1))
 
-if [[ "$0" == $BASH_SOURCE[0] ]]; then
+if [[ "$0" == $BASH_SOURCE ]]; then
     ((TEST==1)) && test_global
     main
 fi

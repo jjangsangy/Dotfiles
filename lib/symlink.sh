@@ -9,9 +9,10 @@
 #       CREATED: 01/09/2014
 #      REVISION: 1.0.0
 #===============================================================================
+
 test_local() {
-    printf "\$LINK_SOURCE is %s\n" "${LINK_SOURCE}"
-    printf "\$LINK_DEST is %s\n" "${LINK_DEST}"
+    printf "\$LINK_SOURCE and \$LINK_DEST is \
+        \n%s\n%s\n\n" "${LINK_SOURCE}" "${LINK_DEST}"
 }
 
 test_param(){
@@ -24,7 +25,8 @@ link_files() {
 }
 
 prompt_delete() {
-    read -p "File $LINK_DEST already exists, would you like to delete it? \
+    read -p "File $LINK_DEST already exists\n \
+        would you like to delete it?\n \
         [Yy]/[Nn]:  " RESPONSE
 
     if [[ $RESPONSE =~ [Yy] ]]; then
