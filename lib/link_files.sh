@@ -27,10 +27,13 @@ link_files() {
     ln -s "${LINK_SOURCE}" "${LINK_DEST}"
 }
 
-main() {
+link() {
+    declare -a FILELIST=("$@")
+
     for FILE in "${FILELIST[@]}"; do
-        local LINK_SOURCE=${PROGDIR}/${FILE}
+        local LINK_SOURCE=${PROGDIR:="${HOME}/Dotfiles"}/${FILE}
         local LINK_DEST=${HOME}/\.${FILE}
         link_files >/dev/null 2>&1 || prompt_delete
     done
 }
+
