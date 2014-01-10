@@ -7,7 +7,7 @@
 #
 #   DESCRIPTION: links files to home directory
 #
-#       OPTIONS: -h [help] -t [test]
+#       OPTIONS: -h [help] -a [all] -b [bash] -t [test]
 #        AUTHOR: Sang Han, shan@calient.net
 #       CREATED: 01/09/2014
 #      REVISION: 1.1.0
@@ -22,7 +22,7 @@ LIB_SYMLINK="$PROGDIR/lib/symlink.sh"
 if [[ -r "$LIB_SYMLINK" ]]; then
     source "$LIB_SYMLINK"
 else
-    printf "symlink library cannot be found at ${LIB_SYMLINK}" >&2
+    printf "symlink library cannot be found at ${LIB_SYMLINK}\n" >&2
     exit 1
 fi
 
@@ -41,6 +41,10 @@ usage() {
 
     -h [help]
         Outputs usage directions
+    -a [all]
+        Creates symlinks for all files
+    -b [bash]
+        Creates symlink for only bash specific files
     -t [test]
         Runs internal unit tests
 
@@ -49,17 +53,26 @@ END_DOC
 exit 0
 }
 
-test_names() {
+test_global() {
     printf "\$TEST is %s\n" "${TEST}"
-    printf "\$FILELIST is %s\n" "${FILELIST[*]}"
-    exit 1
+    printf "\$PROGDIR is %s\n" "${PROGDIR}"
+    printf "\$PROGNAME is %s\n" "${PROGNAME}"
+    printf "\$LIB_SYMLINK is %s\n" "${LIB_SYMLINK}"
+}
+
+main() {
+    link foo bar baz qux
 }
 
 # Parse Options
-declare -i TEST=0
-while getopts ":ht" OPTION; do
+declare -i TEST=0 LINK_ALL=0 LINK_BASH=0
+while getopts ":htab" OPTION; do
     case ${OPTION} in
         h) usage
+            ;;
+        a) LINK_ALL=1
+            ;;
+        b) LINK_BASH=1
             ;;
         t) TEST=1
             ;;
@@ -70,7 +83,7 @@ while getopts ":ht" OPTION; do
 done
     shift $(($OPTIND-1))
 
-if [[ "$0" == $BASH_SOURCE ]]; then
-    printf "symlink library cannot be found at ${LIB_SYMLINK}" >&2
+if [[ "$0" == $BASH_SOURCE[0] ]]; then
+    ((TEST==1)) && test_global
+    main
 fi
-
