@@ -3,7 +3,7 @@ alias myPATH="echo $PATH | tr ':' '\n' | sort"
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 
-alias sshPi="ssh sang@raspberrypi.calient.local"
+alias sshPi="ssh sang@192.168.108.5"
 alias sshApps="ssh root@sangapps.com"
 alias sshCloud="ssh root@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
