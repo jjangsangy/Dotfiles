@@ -1,7 +1,5 @@
 Bundle 'vim-scripts/restore_view.vim'
 Bundle 'jelera/vim-javascript-syntax'
 Bundle 'Raimondi/delimitMate'
-Bundle 'Valloric/YouCompleteMe'
-Bundle 'klen/python-mode'
 Bundle 'vim-scripts/bash-support.vim'
 Bundle 'bling/vim-airline'

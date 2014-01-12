@@ -66,8 +66,6 @@ main() {
 
 # Parse Options
 declare -i TEST=0
-declare -a LINK_BASH=(path.sh profile jump.sh dircolors{_light,dark,})
-declare -a LINK_ALL=("aliases" "path" "$LINK_BASH[@]")
 while getopts ":htab" OPTION; do
     case ${OPTION} in
         h) usage

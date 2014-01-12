@@ -18,3 +18,4 @@ profile = [
 
 for item in profile:
     print item
+
