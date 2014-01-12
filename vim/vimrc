@@ -2,15 +2,18 @@
 " ==========================================================
 set nocompatible
 syntax enable
+
 " }}}
 " Vundle {{{
 filetype on
 filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
+
 " }}}
 " - Mapleader set to comma {{{
 let mapleader = ','
+
 " }}}
 " - Install Vundle bundles {{{
 " ==========================================================
@@ -20,6 +23,7 @@ if filereadable(expand("~/.vimrc.bundles"))
 endif
 
 filetype plugin indent on
+
 " }}}
 " - Basic Settings {{{
 " ==========================================================
@@ -52,11 +56,13 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu
 set wildmode=longest,list,full
 set foldcolumn=2
+
 " Enable basic mouse behavior such as resizing buffers. {{{
 set mouse=a
 if exists('$TMUX')  " Support resizing in tmux
   set ttymouse=xterm2
 endif
+
 " }}}
     " }}}
 " - Shortcuts {{{
@@ -66,18 +72,22 @@ endif
 " Source Vimrc:         <leader>sv
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+
 " }}}
 " Code folding with <Space> {{{
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
+
 " }}}
 " Emacs style mappings {{{
 noremap <C-e> <esc>$
 noremap <C-a> <esc>0
+
 " }}}
 " open/close the quickfix window {{{
 nnoremap <leader>c :copen<CR>
 nnoremap <leader>cc :cclose<CR>
+
 " }}}
     " }}}
 " - Windows Management {{{
@@ -87,6 +97,7 @@ noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
+
 " }}}
     " }}}
 " - Plugins {{{
@@ -114,6 +125,7 @@ nnoremap <leader>] :TagbarToggle<CR>
 nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
 nnoremap <leader>g :GitGutterToggle<CR>
 nnoremap <leader>c <Plug>Kwbd
+
 " }}}
 " - Settings "{{{
 " ==========================================================
@@ -122,10 +134,12 @@ let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 let g:gitgutter_enabled = 0
 let g:BASH_GuiSnippetBrowser = 'commandline'
+
 " }}}
 " Line 80 gets a tag {{{
 highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%81v', 100)
+
 " }}}
     " }}}
 " - Silver Searcher"{{{
@@ -135,10 +149,12 @@ if executable('ag')
   let g:ackprg = 'ag --nogroup --column'
 
   set grepprg=ag\ --nogroup\ --nocolor
+
 " }}}
 " Use ag in CtrlP for listing files {{{
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
+
 " }}}
 "     }}}
 " - Filetype Specific {{{
@@ -146,12 +162,14 @@ endif
 " Miscelaneous Filetypes {{{
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
+
 " }}}
 " Vimrc Filetype Specific {{{
 augroup filetype_vim
     autocmd!
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
+
 "    }}}
 " Shell Filetype Specific {{{
 autocmd BufRead,BufNewFile *path set filetype=sh
@@ -162,6 +180,7 @@ augroup shell
      let g:BASH_GuiSnippetBrowser = 'commandline'
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
+
 "    }}}
 " Python Filetype Specific {{{
 augroup Python
@@ -170,6 +189,7 @@ augroup Python
     let g:pymode_folding = 1
     let g:pymode_run_bind = '<leader>r'
 augroup END
+
 "    }}}
 " }}}
 " - TMUX Cursor Fix {{{
@@ -181,6 +201,7 @@ else
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
+
 " }}}
 " - Source More RC Files {{{
 " ==========================================================
