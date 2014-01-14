@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import optparse
 import os
+import log_conf, logging
 
 def main():
     u = optparse.OptionParser(
@@ -9,20 +10,27 @@ def main():
             version     = "1.1rc",
             usage       = "%prog [directory]"
             )
+    u.add_option('-f', '--filetype', help='selects specific filetype extensions')
     (options, arguments) = u.parse_args()
-    path = arguments[0]
+    logging.debug('options are %s', options)
+    logging.debug('arguments are %s', arguments)
+
     if len(arguments) == 1:
-        for pathname in os.listdir(path):
-            print pathname
-    elif len(arguments) == 2:
+        path = arguments[0]
+        if options.filetype is not None:
+            filetype = options.filetype
+        else:
+            filetype = str()
+
         from glob import glob
-        filetype = arguments[1]
-        for pathname in glob(os.path.join(path,'*')+filetype):
-            filename = pathname.split('/')[-1]
-            print filename.split('.'+filetype)[0]
+        pathname = os.path.join(path,'*')
+        for path in glob(pathname+filetype):
+            filename = path.split('/')[-1]
+            print filename
     else:
         u.print_help()
 
 
 if __name__ == '__main__':
+    log_conf.setup_logging()
     main()
