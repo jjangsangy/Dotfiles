@@ -1,0 +1,13 @@
+# inputrc set up for use with iterm2
+set editing-mode emacs
+
+set convert-meta on
+set completion-ignore-case on
+
+"\C-x\C-r": re-read-init-file
+
+"\e\e[D": backward-word
+"\e\e[C": forward-word
+
+# Meta-Z: "cd - && ls"
+"\e[Z": "\e-1\C-i"
