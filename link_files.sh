@@ -7,24 +7,16 @@
 #
 #   DESCRIPTION: links files to home directory
 #
-#       OPTIONS: -h [help] -a [all] -b [bash] -t [test]
-#        AUTHOR: Sang Han, shan@calient.net
+#       OPTIONS: -h [help] -t [test]
+#        AUTHOR: Sang Han
 #       CREATED: 01/09/2014
-#      REVISION: 1.1.0
-#       DEPENDS: lib/symlink.sh
+#      REVISION: 1.2.0
 #===============================================================================
 
 # Global Variables
 PROGNAME=$(basename "${BASH_SOURCE}")
 PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB_SYMLINK="$PROGDIR/lib/symlink.sh"
-
-if [[ -r "$LIB_SYMLINK" ]]; then
-    source "$LIB_SYMLINK"
-else
-    printf "symlink library cannot be found at ${LIB_SYMLINK}\n" >&2
-    exit 1
-fi
+FILELIST=("aliases" "path" "bash/profile" "bash/jump.sh" "bash/inputrc" "bash/dircolors" "bash/dircolors_light" "bash/dircolors_dark" "bash/prompt.sh")
 
 usage() {
     cat <<- END_DOC
@@ -36,15 +28,11 @@ usage() {
     AUTHOR:      Sang Han, shan@calient.net
     COMPANY:     Calient Technologies
     CREATED:     01/09/2014
-    REVISION:    1.1.0
-    REQUIREMENTS: symlink.sh library
+    REVISION:    1.2.0
+    REQUIREMENTS: ---
 
     -h [help]
         Outputs usage directions
-    -a [all]
-        Creates symlinks for all files
-    -b [bash]
-        Creates symlink for only bash specific files
     -t [test]
         Runs internal unit tests
 
@@ -53,26 +41,33 @@ END_DOC
 exit 0
 }
 
-test_global() {
+test_names() {
     printf "\$TEST is %s\n" "${TEST}"
-    printf "\$PROGDIR is %s\n" "${PROGDIR}"
-    printf "\$PROGNAME is %s\n" "${PROGNAME}"
-    printf "\$LIB_SYMLINK is %s\n" "${LIB_SYMLINK}"
+    printf "\$FILELIST is %s\n" "${FILELIST[*]}"
+    return
 }
 
-main() {
-    link foo bar baz qux
+test_source() {
+    if [ -f "$LINK_SOURCE" ]; then
+        printf "$(tput setaf 4)\$LINK_SOURCE$(tput sgr0) file exists at %s\n" "${LINK_SOURCE}"
+    else
+        printf "$(tput setaf 1)\$LINK_SOURCE$(tput sgr0) file does not exists at %s\n" "${LINK_SOURCE}"
+    fi
+}
+
+test_dest() {
+    if [ -f "$LINK_DEST" ]; then
+        printf "$(tput setaf 4)\$LINK_DEST$(tput sgr0) file exists at %s\n\n" "${LINK_DEST}"
+    else
+        printf "$(tput setaf 1)\$LINK_DEST$(tput sgr0) file does not exists at %s\n\n" "${LINK_DEST}"
+    fi
 }
 
 # Parse Options
 declare -i TEST=0
-while getopts ":htab" OPTION; do
+while getopts ":ht" OPTION; do
     case ${OPTION} in
         h) usage
-            ;;
-        a) LINK_ALL=("aliases" "path" "$LINK_BASH[@]")
-            ;;
-        b) LINK_BASH=1
             ;;
         t) TEST=1
             ;;
@@ -83,7 +78,48 @@ while getopts ":htab" OPTION; do
 done
     shift $(($OPTIND-1))
 
+prompt_delete() {
+    # Prompts the user authorization for deleting original file at $LINK_DEST.
+    # After authorization is granted, file is deleted and replaced with
+    # a symlink from $LINK_SOURCE
+    read -p "File $LINK_DEST already exists, would you like to delete it? \
+        [Yy]/[Nn]:  " RESPONSE
+
+    if [[ $RESPONSE =~ [Yy] ]]; then
+        rm "${LINK_DEST}"
+        link_files
+    else
+        return
+    fi
+}
+
+link_files() {
+    # TODO: Add support for symlinking directories
+    ln -s "${LINK_SOURCE}" "${LINK_DEST}"
+}
+
+main() {
+    if (($TEST==1)); then
+        # Test global variable names
+        test_names
+    fi
+
+    # Iterate through indexed array of files.
+    # If file is located within a subdirectory, the name of parent is stripped
+    for FILE in "${FILELIST[@]}"; do
+        local LINK_SOURCE=${PROGDIR}/${FILE}
+        local LINK_DEST=${HOME}/\.${FILE##*/}
+        if (($TEST==1)); then
+            # Test source and destination directory. Existing files
+            # are highlighted blue and non-existing files are red.
+            test_source
+            test_dest
+            continue
+        fi
+        link_files >/dev/null 2>&1 || prompt_delete
+    done
+}
+
 if [[ "$0" == $BASH_SOURCE ]]; then
-    ((TEST==1)) && test_global
     main
 fi
