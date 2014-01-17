@@ -25,8 +25,7 @@ usage() {
 
     DESCRIPTION: links files to home directory
 
-    AUTHOR:      Sang Han, shan@calient.net
-    COMPANY:     Calient Technologies
+    AUTHOR:      Sang Han
     CREATED:     01/09/2014
     REVISION:    1.2.0
     REQUIREMENTS: ---
@@ -41,8 +40,10 @@ END_DOC
 exit 0
 }
 
-test_names() {
+test_globals() {
     printf "\$TEST is %s\n" "${TEST}"
+    printf "\$PROGNAME is %s\n" "${PROGNAME}"
+    printf "\$PROGDIR is %s\n" "${PROGDIR}"
     printf "\$FILELIST is %s\n" "${FILELIST[*]}"
     return
 }
@@ -62,21 +63,6 @@ test_dest() {
         printf "$(tput setaf 1)\$LINK_DEST$(tput sgr0) file does not exists at %s\n\n" "${LINK_DEST}"
     fi
 }
-
-# Parse Options
-declare -i TEST=0
-while getopts ":ht" OPTION; do
-    case ${OPTION} in
-        h) usage
-            ;;
-        t) TEST=1
-            ;;
-        \?) echo "Invalid option: -${OPTARG}" >&2
-            exit 1
-            ;;
-    esac
-done
-    shift $(($OPTIND-1))
 
 prompt_delete() {
     # Prompts the user authorization for deleting original file at $LINK_DEST.
@@ -98,10 +84,25 @@ link_files() {
     ln -s "${LINK_SOURCE}" "${LINK_DEST}"
 }
 
+# Parse Options
+declare -i TEST=0
+while getopts ":ht" OPTION; do
+    case ${OPTION} in
+        h) usage
+            ;;
+        t) TEST=1
+            ;;
+        \?) echo "Invalid option: -${OPTARG}" >&2
+            exit 1
+            ;;
+    esac
+done
+    shift $(($OPTIND-1))
+
 main() {
     if (($TEST==1)); then
         # Test global variable names
-        test_names
+        test_globals
     fi
 
     # Iterate through indexed array of files.
