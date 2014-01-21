@@ -27,7 +27,7 @@ filetype plugin indent on
 " }}}
 " - Basic Settings {{{
 " ==========================================================
-set hlsearch
+set nohlsearch
 set nowrap
 set splitright
 set splitbelow
@@ -100,6 +100,22 @@ noremap <C-l> <C-w>l
 
 " }}}
     " }}}
+" - Gui Options {{{
+" ==========================================================
+if (&t_Co == 256 || has('gui_running'))
+    set guifont=Inconsolata-dz:h14
+    if ($TERM_PROGRAM == 'iTerm.app')
+        colorscheme Tomorrow-Night
+    endif
+    if has("gui_macvim")
+        colorscheme solarized
+        set background=dark         "set colorscheme background
+        call togglebg#map("<F5>")   "toggle background color with F5
+        set guioptions-=rLmT        "remove scroll bars
+    endif
+endif
+
+" }}}
 " - Plugins {{{
 " ==========================================================
 " Access with mapleader which is set to comma.
@@ -134,6 +150,7 @@ let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims=1
 let g:gitgutter_enabled = 0
 let g:BASH_GuiSnippetBrowser = 'commandline'
+let g:ctrlp_max_files = 0
 
 " }}}
 " Line 80 gets a tag {{{
@@ -142,7 +159,7 @@ call matchadd('ColorColumn', '\%81v', 100)
 
 " }}}
     " }}}
-" - Silver Searcher"{{{
+" - Silver Searcher {{{
 " ==========================================================
 " use ag if exists {{{
 if executable('ag')
