@@ -17,7 +17,7 @@
 # Global Variables
 PROGNAME=$(basename "${BASH_SOURCE}")
 PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FILELIST=("vimrc" "vimrc.local" "vimrc.bundles" "vimrc.bundles.local")
+FILELIST=("" ".local" ".bundles" ".bundles.local" "tmux.conf")
 
 usage() {
     cat <<- END_DOC
@@ -45,7 +45,23 @@ exit 0
 test_names() {
     printf "\$TEST is %s\n" "${TEST}"
     printf "\$FILELIST is %s\n" "${FILELIST[*]}"
-    exit 1
+    return
+}
+
+test_source() {
+    if [ -f "$LINK_SOURCE" ]; then
+        printf "$(tput setaf 4)\$LINK_SOURCE$(tput sgr0) file exists at %s\n" "${LINK_SOURCE}"
+    else
+        printf "$(tput setaf 1)\$LINK_SOURCE$(tput sgr0) file does not exists at %s\n" "${LINK_SOURCE}"
+    fi
+}
+
+test_dest() {
+    if [ -f "$LINK_DEST" ]; then
+        printf "$(tput setaf 4)\$LINK_DEST$(tput sgr0) file exists at %s\n\n" "${LINK_DEST}"
+    else
+        printf "$(tput setaf 1)\$LINK_DEST$(tput sgr0) file does not exists at %s\n\n" "${LINK_DEST}"
+    fi
 }
 
 # Parse Options
@@ -73,7 +89,6 @@ prompt_delete() {
     else
         return
     fi
-
 }
 
 link_files() {
@@ -89,6 +104,11 @@ main() {
     for FILE in "${FILELIST[@]}"; do
         local LINK_SOURCE=${PROGDIR}/${FILE}
         local LINK_DEST=${HOME}/\.${FILE}
+        if (($TEST==1)); then
+            test_source
+            test_dest
+            continue
+        fi
         link_files >/dev/null 2>&1 || prompt_delete
     done
 }

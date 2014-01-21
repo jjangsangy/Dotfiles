@@ -1,4 +1,4 @@
-" - Sang Han's Vimrc {{{
+" - Sang Han's  {{{
 " ==========================================================
 set nocompatible
 syntax enable
@@ -67,11 +67,11 @@ endif
     " }}}
 " - Shortcuts {{{
 " ==========================================================
-" Vimrc File Shortcuts {{{
-" Edit Vimrc:           <leader>ev
-" Source Vimrc:         <leader>sv
-nnoremap <silent> <leader>ev :vsplit $MYVIMRC<cr>
-nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo 'vimrc reloaded'"<CR>
+"  File Shortcuts {{{
+" Edit :           <leader>ev
+" Source :         <leader>sv
+nnoremap <silent> <leader>ev :vsplit $MY<cr>
+nnoremap <silent> <leader>sv :source $MY<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
 
 " }}}
 " Code folding with <Space> {{{
@@ -181,7 +181,7 @@ autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 
 " }}}
-" Vimrc Filetype Specific {{{
+"  Filetype Specific {{{
 augroup filetype_vim
     autocmd!
     autocmd FileType vim setlocal foldmethod=marker
