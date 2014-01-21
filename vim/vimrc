@@ -102,14 +102,14 @@ noremap <C-l> <C-w>l
     " }}}
 " - Gui Options {{{
 " ==========================================================
-if (&t_Co == 256 || has('gui_running'))
+if (&t_Co == 256 || has ('gui_running'))
+    set background=dark
+    colorscheme solarized
     set guifont=Inconsolata-dz:h14
     if ($TERM_PROGRAM == 'iTerm.app')
         colorscheme Tomorrow-Night
     endif
     if has("gui_macvim")
-        colorscheme solarized
-        set background=dark         "set colorscheme background
         call togglebg#map("<F5>")   "toggle background color with F5
         set guioptions-=rLmT        "remove scroll bars
     endif
