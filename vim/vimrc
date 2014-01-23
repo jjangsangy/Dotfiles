@@ -70,8 +70,8 @@ endif
 "  File Shortcuts {{{
 " Edit :           <leader>ev
 " Source :         <leader>sv
-nnoremap <silent> <leader>ev :vsplit $MY<cr>
-nnoremap <silent> <leader>sv :source $MY<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
+nnoremap <silent> <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
 
 " }}}
 " Code folding with <Space> {{{
