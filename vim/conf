@@ -1,6 +1,5 @@
 --enable-perlinterp
 --enable-pythoninterp
---enable-python3interp=OPTS
 --enable-cscope
 --enable-sniff
 --enable-multibyte
