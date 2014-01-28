@@ -77,6 +77,8 @@ nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo
 " Code folding with <Space> {{{
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
+noremap <C-r> zr
+noremap <C-m> zm
 
 " }}}
 " Emacs style mappings {{{
@@ -100,25 +102,6 @@ noremap <C-l> <C-w>l
 
 " }}}
     " }}}
-" - Gui Options {{{
-" ==========================================================
-if (&t_Co == 256 || has ('gui_running'))
-    set background=dark
-    colorscheme solarized
-    set guifont=Inconsolata-dz:h14
-
-    if ($TERM_PROGRAM == 'iTerm.app')
-        colorscheme Tomorrow-Night
-    endif
-
-    if has("gui_macvim")
-        call togglebg#map("<F5>")   "toggle background color with F5
-        set guioptions-=rLmT        "remove scroll bars
-        colorscheme solarized
-    endif
-endif
-
-" }}}
 " - Plugins {{{
 " ==========================================================
 " Access with mapleader which is set to comma.
@@ -150,9 +133,8 @@ nnoremap <leader>c <Plug>Kwbd
 " ==========================================================
 " Plugin settings {{{
 let g:ctrlp_match_window = 'order:ttb,max:20'
-let g:NERDSpaceDelims=1
+let g:NERDSpaceDelims = 1
 let g:gitgutter_enabled = 0
-let g:BASH_GuiSnippetBrowser = 'commandline'
 let g:ctrlp_max_files = 0
 
 " }}}
@@ -219,6 +201,26 @@ augroup Python
 augroup END
 
 "    }}}
+" }}}
+" - Gui Options {{{
+" ==========================================================
+if (&t_Co == 256 || has ('gui_running'))
+    set background=dark
+    colorscheme solarized
+    set guifont=Inconsolata-dz:h14
+
+    if ($TERM_PROGRAM == 'iTerm.app')
+        colorscheme Tomorrow-Night
+    endif
+
+    if has("gui_macvim")
+        call togglebg#map("<F5>")   "toggle background color with F5
+        set guioptions-=rLmT        "remove scroll bars
+        colorscheme solarized
+        let g:BASH_GuiSnippetBrowser = 'gui'
+    endif
+endif
+
 " }}}
 " - TMUX Cursor Fix {{{
 " ==========================================================
