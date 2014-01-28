@@ -106,12 +106,15 @@ if (&t_Co == 256 || has ('gui_running'))
     set background=dark
     colorscheme solarized
     set guifont=Inconsolata-dz:h14
+
     if ($TERM_PROGRAM == 'iTerm.app')
         colorscheme Tomorrow-Night
     endif
+
     if has("gui_macvim")
         call togglebg#map("<F5>")   "toggle background color with F5
         set guioptions-=rLmT        "remove scroll bars
+        colorscheme solarized
     endif
 endif
 
@@ -179,6 +182,7 @@ endif
 " Miscelaneous Filetypes {{{
 autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
 autocmd BufRead,BufNewFile *.md set filetype=markdown
+autocmd BufRead,BufNewFile README set filetype=markdown
 
 " }}}
 "  Filetype Specific {{{
@@ -189,16 +193,23 @@ augroup END
 
 "    }}}
 " Shell Filetype Specific {{{
-autocmd BufRead,BufNewFile *path set filetype=sh
-autocmd BufRead,BufNewFile *aliases set filetype=sh
-autocmd BufRead,BufNewFile *profile set filetype=sh
 augroup shell
     autocmd!
-     let g:BASH_GuiSnippetBrowser = 'commandline'
+    autocmd BufRead,BufNewFile *path set filetype=sh
+    autocmd BufRead,BufNewFile *aliases set filetype=sh
+    autocmd BufRead,BufNewFile *profile set filetype=sh
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
 "    }}}
+" Git Filetype Specific {{{
+augroup filetype_git
+    autocmd!
+    autocmd BufRead, .gitconfig setlocal noexpandtab
+    autocmd BufRead, config setlocal noexpandtab
+augroup END
+
+" }}}
 " Python Filetype Specific {{{
 augroup Python
     autocmd!
