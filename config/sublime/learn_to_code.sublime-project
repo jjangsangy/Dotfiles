@@ -1,0 +1,21 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "/Volumes/StorEDGE/Documents/learn_python"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Volumes/StorEDGE/Documents/Learn-C"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Volumes/StorEDGE/Documents/code_academy"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Volumes/StorEDGE/Documents/learn_bash"
+		}
+	]
+}
