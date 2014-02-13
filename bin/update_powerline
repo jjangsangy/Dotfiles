@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+cd /Users/jjangsangy/Git/powerline-shell
+./install.py
+mv powerline-shell.py $HOME/.powerline-shell.py

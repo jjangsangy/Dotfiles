@@ -56,6 +56,9 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu
 set wildmode=longest,list,full
 set foldcolumn=2
+set nobackup
+set nowritebackup
+set noswapfile
 
 " Enable basic mouse behavior such as resizing buffers. {{{
 set mouse=a
@@ -143,6 +146,11 @@ highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%81v', 100)
 
 " }}}
+" Better Indentation {{{
+vnoremap < <gv  " better indentation
+vnoremap > >gv  " better indentation
+
+" }}}
     " }}}
 " - Silver Searcher {{{
 " ==========================================================
@@ -205,17 +213,18 @@ augroup END
 " - Gui Options {{{
 " ==========================================================
 if (&t_Co == 256 || has ('gui_running'))
-    set background=dark
-    colorscheme solarized
+    colorscheme Tomorrow-Night
     set guifont=Inconsolata-dz:h14
 
     if ($TERM_PROGRAM == 'iTerm.app')
-        colorscheme Tomorrow-Night
+        set background=dark
+        colorscheme solarized
     endif
 
     if has("gui_macvim")
         call togglebg#map("<F5>")   "toggle background color with F5
         set guioptions-=rLmT        "remove scroll bars
+        set background=dark
         colorscheme solarized
         let g:BASH_GuiSnippetBrowser = 'gui'
     endif

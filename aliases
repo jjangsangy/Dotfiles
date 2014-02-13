@@ -7,6 +7,7 @@ alias sshPi="ssh sang@192.168.108.5"
 alias sshApps="ssh root@sangapps.com"
 alias sshCloud="ssh root@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
+alias sshSRV="ssh sang@srv.sangcloud.com"
 
 alias Inventory="open /Volumes/Optical\ Comp/Inventory/MEMS"
 alias PinData="open /Volumes/PubStore/_Production\ Data/MEMs\ PROBE\ DATA/OSF"
