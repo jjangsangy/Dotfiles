@@ -206,6 +206,7 @@ augroup Python
     let g:pymode = 1
     let g:pymode_folding = 1
     let g:pymode_run_bind = '<leader>r'
+    nnoremap <leader>z :!python %<CR>
 augroup END
 
 "    }}}

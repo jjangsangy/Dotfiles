@@ -1,0 +1,5 @@
+#/usr/bin/env bash
+
+if [[ $0 == ${BASH_SOURCE[0]} ]]; then
+    pip install $1 --upgrade
+fi
