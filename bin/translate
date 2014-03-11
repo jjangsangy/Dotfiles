@@ -10,15 +10,17 @@ from argparse import ArgumentParser, FileType
 from os.path import dirname, abspath, join
 from functools import wraps
 
-# Retrieves API Key in same directory
+# Retrieves API Key
 def api_key(filename):
     program_directory = dirname(abspath(__file__))
     filepath = join(program_directory, filename)
     with open(filepath, 'rt') as key:
         return key.readline().strip()
 
-# Decorates a request object and outputs the field with translated text
+# Requests Object Decorator
 def formatting(request):
+    ''' Wraps the response of a HTTP GET request and returns 
+    data field containing translated text. '''
     @wraps(request)
     def translated_text(*args, **kwargs):
         response = request(*args, **kwargs).json()
@@ -55,14 +57,12 @@ if __name__ == '__main__':
         description='''
             A command line utility for translating text
             using Google Translate v2 API.
-            Takes input from stdin and writes to stdout.
-            ''',
+            Takes input from stdin and writes to stdout. ''',
         epilog='''
             User must have a google developers API key tied to a
             billing account. There must be a file located in
             the same directory containing that key in plain text for the
-            HTTP request to authenticate.
-            ''')
+            HTTP request to authenticate. ''')
     parser.add_argument('-v', '--version',
             action='version', version='%(prog)s 1.0')
     parser.add_argument('source',
