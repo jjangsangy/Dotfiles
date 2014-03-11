@@ -9,6 +9,7 @@ import requests
 from argparse import ArgumentParser, FileType
 from os.path import dirname, abspath, join
 from functools import wraps
+from multiprocessing.dummy import Pool as ThreadPool
 
 # Retrieves API Key
 def api_key(filename):
@@ -31,26 +32,26 @@ def formatting(request):
 # User can specify what to name the key in this method.
 # Default directory point to same directory as python executible.
 @formatting
-def request(target, text, *source):
-    '''Makes HTTP GET Request to Google Translate API'''
+def post_request(text):
     base = 'https://www.googleapis.com/language/translate/v2'
     key = api_key('translate_api.key')
     params = {
         'key': key,
         'format': 'text',
         'prettyprint': 'true',
-        'source': source,
-        'target': target,
+        'source': args.source,
+        'target': args.dest,
         'q': text
     }
-    return requests.get(base, params=params)
+    headers = {'X-HTTP-Method-Override': 'GET'}
+    return requests.post(base, params=params, headers=headers)
 
 def main():
-    try:
-        for line in sys.stdin:
-            sys.stdout.write(request(args.dest, line, args.source))
-    except KeyboardInterrupt:
-        sys.exit(0)
+    lines = [line for line in sys.stdin]
+    pool = ThreadPool(8)
+    results = pool.map(post_request, lines)
+    for result in results:
+        sys.stdout.write(result)
 
 if __name__ == '__main__':
     parser = ArgumentParser(
