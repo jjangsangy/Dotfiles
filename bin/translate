@@ -25,9 +25,12 @@ def formatting(request):
         return response['data']['translations'][0]['translatedText']
     return translated_text
 
-# Makes HTTP GET Request to Google Translate API
+# The API Key is stored in a seperate file as a security measure.
+# User can specify what to name the key in this method.
+# Default directory point to same directory as python executible.
 @formatting
 def request(target, text, *source):
+    ''' Makes HTTP GET Request to Google Translate API'''
     base = 'https://www.googleapis.com/language/translate/v2'
     key = api_key('translate_api.key')
     params = {
