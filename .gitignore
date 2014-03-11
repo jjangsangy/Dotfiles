@@ -27,6 +27,7 @@ ren
 *.log
 *.sql
 *.sqlite
+*.key
 # }}}
 # OS generated files/folders {{{
 .DS_Store
