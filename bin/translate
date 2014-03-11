@@ -73,6 +73,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--file',
             help='''Specify file as input''',
             metavar='path',
+            dest='file',
             type=FileType('r'))
     args = parser.parse_args()
 
