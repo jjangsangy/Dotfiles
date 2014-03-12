@@ -32,7 +32,7 @@ def formatting(request):
 # User can specify what to name the key in this method.
 # Default directory point to same directory as python executible.
 @formatting
-def post_request(text):
+def post_request(target, text, source=None):
     base = 'https://www.googleapis.com/language/translate/v2'
     key = api_key('translate_api.key')
     params = {
@@ -40,13 +40,17 @@ def post_request(text):
         'format': 'text',
         'prettyprint': 'true',
         'source': args.source,
-        'target': args.dest,
+        'target': target,
         'q': text
     }
     headers = {'X-HTTP-Method-Override': 'GET'}
     return requests.post(base, params=params, headers=headers)
 
 def main():
+    for line in sys.stdin:
+        sys.stdout.write(post_request(args.dest, line, args.source))
+
+def threaded_main():
     lines = [line for line in sys.stdin]
     pool = ThreadPool(8)
     results = pool.map(post_request, lines)
