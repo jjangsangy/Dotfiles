@@ -2,6 +2,8 @@ alias myPATH="echo $PATH | tr ':' '\n' | sort"
 
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
+alias gc='git commit'
+alias gp='git push'
 
 alias sshPi="ssh sang@192.168.108.5"
 alias sshApps="ssh root@sangapps.com"
@@ -18,6 +20,9 @@ alias FHTraveler="open /Volumes/Public/Calient/24\ OSF/Faceplate/Traveler"
 alias HAN="open /Volumes/PubStore/_SB\ Employees/HAN"
 alias PartialProbe="open /Volumes/Public/Calient/AutoProber/Data/Partial\ Probe"
 alias QData="open /Volumes/Public/Calient/AutoProber/Data/Q\ measurement"
+
+alias ipy='cd ~/Projects/IPythonNB/ && ipython notebook --profile=sang'
+alias nbserver='ipython notebook --profile=nbserver'
 
 # OS Specific
 if [[ $OSTYPE == "cygwin" ]]; then
