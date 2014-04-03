@@ -18,25 +18,23 @@ fi
 # DEPENDS: GNU coreutils
 # For Mac OS X coreutils must be installed first either manually
 # or with a package manager.
-if [[ "$(dircolors --version)" =~ "GNU coreutils" ]] && [[ "$(ls --version)" =~ "GNU coreutils" ]]; then
-    alias ls='ls --color=auto'
-    function eval_dircolors() {
-        # USAGE: By default, this function checks and evaluates .dircolors
-        #        in users $HOME directory.
-        #        Takes 1 argument which will be expanded to .dircolor_${STYLE}
-        #        for evaluating specific dircolor styles
-        [[  -n $1 ]] && local STYLE=$1
+alias 'ls=ls --color=auto'
+eval_dircolors() {
+    # USAGE: By default, this function checks and evaluates .dircolors
+    #        in users $HOME directory.
+    #        Takes 1 argument which will be expanded to .dircolor_${STYLE}
+    #        for evaluating specific dircolor styles
+    [[  -n $1 ]] && local STYLE=$1
 
-        if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
-            eval "$(dircolors $HOME/.dircolors${STYLE/#/_})"
-        fi
-        }
+    if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
+        eval "$(dircolors $HOME/.dircolors${STYLE/#/_})"
+    fi
+}
 
-    eval_dircolors
+eval_dircolors
 
-    [[ "$COLORFGBG" == "11;15" ]] && eval_dircolors light
-    [[ "$COLORFGBG" == "12;8" ]] && eval_dircolors dark
-fi
+[[ "$COLORFGBG" == "11;15" ]] && eval_dircolors light
+[[ "$COLORFGBG" == "12;8" ]] && eval_dircolors dark
 
 # ==========================================================
 # ENVAR
@@ -44,30 +42,30 @@ fi
 export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$PATH
 export EDITOR=vim
-export HISTIGNORE=ls:cd:echo
+export HISTIGNORE="ls:cd:echo:history:clear"
+export WORKON_HOME=$HOME/.virtualenvs
+export PIP_VIRTUALENV_BASE=$WORKON_HOME
+export PROJECT_HOME=$HOME/Projects
+export HOMEBREW_EDITOR=vim
+export HOMEBREW_VERBOSE=true
+export PIP_RESPECT_VIRTUALENV=true
+
+source /usr/local/bin/virtualenvwrapper.sh
+source "${HOME}/.virtualenvs/py3k/bin/activate"
+# source "${HOME}/.powerline.sh"
+
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    source $(brew --prefix)/etc/bash_completion
+fi
 
 # ==========================================================
 # Functions
 # ==========================================================
-red() {
-    RED=$(tput setaf 1)
-    NORMAL=$(tput sgr0)
-    echo -e "$RED$*$NORMAL"
-}
 
-green() {
-    GREEN=$(tput setaf 2)
-    NORMAL=$(tput sgr0)
-    echo -e "$GREEN$*$NORMAL"
-}
-
-yellow() {
-    YELLOW=$(tput setaf 3)
-    NORMAL=$(tput sgr0)
-    echo -e "$YELLOW$*$NORMAL"
-}
-
-ds () {
-    echo "Disk Space Utilization for $HOSTNAME"
-    df -h
+clean_pyc() {
+    for file in *; do
+        if [[ -f $file ]] && [[ $file =~ pyc$ ]]; then
+            rm $file
+        fi
+    done
 }
