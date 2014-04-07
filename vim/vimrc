@@ -70,11 +70,17 @@ endif
     " }}}
 " - Shortcuts {{{
 " ==========================================================
-"  File Shortcuts {{{
+"  Source and Edit VIMRC{{{
 " Edit :           <leader>ev
 " Source :         <leader>sv
-nnoremap <silent> <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
+
+" Save and Quit
+nnoremap <leader>ss :w<CR>
+nnoremap <leader>sq :wq<CR>
+nnoremap <leader>qq :q!<CR>
+nnoremap <leader>cc :close<CR>
 
 " }}}
 " Code folding with <Space> {{{
@@ -89,11 +95,6 @@ noremap <C-e> <esc>$
 noremap <C-a> <esc>0
 
 " }}}
-" open/close the quickfix window {{{
-nnoremap <leader>c :copen<CR>
-nnoremap <leader>cc :cclose<CR>
-
-" }}}
     " }}}
 " - Windows Management {{{
 " ==========================================================
@@ -104,7 +105,18 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " }}}
-    " }}}
+" Tab Management {{{
+nnoremap <Up>   :tabnext<CR>
+nnoremap <Down> :tabprevious<CR>
+nnoremap <C-n>  :tabnew<CR>
+
+" }}}
+" Buffer Management {{{
+nnoremap <Right> :bnext<CR>
+nnoremap <Left>  :bprevious<CR>
+
+" }}}
+"     }}}
 " - Plugins {{{
 " ==========================================================
 " Access with mapleader which is set to comma.
@@ -119,17 +131,17 @@ noremap <C-l> <C-w>l
 " Strip Whitespace:     space
 " Git Gutter:           g
 " Plug:                 c
-noremap <leader>l :Align
-nnoremap <leader>a :Ack<space>
-nnoremap <leader>b :CtrlPBuffer<CR>
-nnoremap <leader>d :NERDTreeToggle<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
-nnoremap <leader>t :CtrlP<CR>
-nnoremap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
-nnoremap <leader>] :TagbarToggle<CR>
-nnoremap <leader><space> :call whitespace#strip_trailing()<CR>
-nnoremap <leader>g :GitGutterToggle<CR>
-nnoremap <leader>c <Plug>Kwbd
+noremap <leader>l           :Align
+nnoremap <leader>a          :Ack<space>
+nnoremap <leader>b          :CtrlPBuffer<CR>
+nnoremap <leader>d          :NERDTreeToggle<CR>
+nnoremap <leader>f          :NERDTreeFind<CR>
+nnoremap <leader>t          :CtrlP<CR>
+nnoremap <leader>T          :CtrlPClearCache<CR>:CtrlP<CR>
+nnoremap <leader>]          :TagbarToggle<CR>
+nnoremap <leader><Space>    :call whitespace#strip_trailing()<CR>
+nnoremap <leader>g          :GitGutterToggle<CR>
+nnoremap <leader>c          <Plug>Kwbd
 
 " }}}
 " - Settings "{{{
@@ -139,6 +151,8 @@ let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims = 1
 let g:gitgutter_enabled = 0
 let g:ctrlp_max_files = 0
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
 
 " }}}
 " Line 80 gets a tag {{{
@@ -204,6 +218,7 @@ augroup END
 augroup Python
     autocmd!
     let g:pymode = 1
+    let python_highlight_all = 1
     let g:pymode_folding = 1
     let g:pymode_run_bind = '<leader>r'
     nnoremap <leader>z :!python %<CR>
@@ -218,14 +233,15 @@ if (&t_Co == 256 || has ('gui_running'))
     set guifont=Inconsolata-dz:h14
 
     if ($TERM_PROGRAM == 'iTerm.app')
-        set background=dark
+        call togglebg#map("<F5>")   "toggle background color with F5
+        set background=light
         colorscheme solarized
     endif
 
     if has("gui_macvim")
         call togglebg#map("<F5>")   "toggle background color with F5
         set guioptions-=rLmT        "remove scroll bars
-        set background=dark
+        set background=light
         colorscheme solarized
         let g:BASH_GuiSnippetBrowser = 'gui'
     endif

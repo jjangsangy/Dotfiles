@@ -4,6 +4,7 @@ alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 alias gc='git commit'
 alias gp='git push'
+alias vimrc='vim ~/.vimrc'
 
 alias sshPi="ssh sang@192.168.108.5"
 alias sshApps="ssh root@sangapps.com"
