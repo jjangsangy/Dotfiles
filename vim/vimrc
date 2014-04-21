@@ -1,4 +1,4 @@
-" - Sang Han's  {{{
+" - Sang Han's Vimrc  {{{
 " ==========================================================
 set nocompatible
 syntax enable
@@ -18,8 +18,8 @@ let mapleader = ','
 " - Install Vundle bundles {{{
 " ==========================================================
 if filereadable(expand("~/.vimrc.bundles"))
-  source ~/.vimrc.bundles
-  source ~/.vimrc.bundles.local
+    source ~/.vimrc.bundles
+    source ~/.vimrc.bundles.local
 endif
 
 filetype plugin indent on
@@ -95,7 +95,11 @@ noremap <C-e> <esc>$
 noremap <C-a> <esc>0
 
 " }}}
-    " }}}
+"{{{ Sort with <Leader>s
+vnoremap <Leader>s :sort<CR>
+
+" }}}
+" }}}
 " - Windows Management {{{
 " ==========================================================
 " <Ctrl>+hjkl for moving between splits {{{
@@ -105,15 +109,23 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " }}}
+" {{{ Easy resize windows with arrow keys
+noremap <Up> <c-w>+
+noremap <Down> <c-w>-
+noremap <Left> <c-w>>
+noremap <Right> <c-w><
+
+" }}}
+
 " Tab Management {{{
-nnoremap <Up>   :tabnext<CR>
-nnoremap <Down> :tabprevious<CR>
+" nnoremap <Up>   :tabnext<CR>
+" nnoremap <Down> :tabprevious<CR>
 nnoremap <C-n>  :tabnew<CR>
 
 " }}}
 " Buffer Management {{{
-nnoremap <Right> :bnext<CR>
-nnoremap <Left>  :bprevious<CR>
+" nnoremap <Right> :bnext<CR>
+" nnoremap <Left>  :bprevious<CR>
 
 " }}}
 "     }}}
@@ -147,12 +159,12 @@ nnoremap <leader>c          <Plug>Kwbd
 " - Settings "{{{
 " ==========================================================
 " Plugin settings {{{
-let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:NERDSpaceDelims = 1
-let g:gitgutter_enabled = 0
-let g:ctrlp_max_files = 0
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#fnamemod = ':t'
+let g:ctrlp_match_window = 'order:ttb,max:20'
+let g:ctrlp_max_files = 0
+let g:gitgutter_enabled = 0
 
 " }}}
 " Line 80 gets a tag {{{
@@ -161,8 +173,8 @@ call matchadd('ColorColumn', '\%81v', 100)
 
 " }}}
 " Better Indentation {{{
-vnoremap < <gv  " better indentation
-vnoremap > >gv  " better indentation
+vnoremap < <gv
+vnoremap > >gv
 
 " }}}
     " }}}
@@ -217,10 +229,6 @@ augroup END
 " Python Filetype Specific {{{
 augroup Python
     autocmd!
-    let g:pymode = 1
-    let python_highlight_all = 1
-    let g:pymode_folding = 1
-    let g:pymode_run_bind = '<leader>r'
     nnoremap <leader>z :!python %<CR>
 augroup END
 
@@ -229,20 +237,18 @@ augroup END
 " - Gui Options {{{
 " ==========================================================
 if (&t_Co == 256 || has ('gui_running'))
-    colorscheme Tomorrow-Night
     set guifont=Inconsolata-dz:h14
+    call togglebg#map("<F5>")   "toggle background color with F5
+    colorscheme solarized
 
-    if ($TERM_PROGRAM == 'iTerm.app')
-        call togglebg#map("<F5>")   "toggle background color with F5
+    if strftime("%H") >= 5 && strftime("%H") <= 17
         set background=light
-        colorscheme solarized
+    else
+        set background=dark
     endif
 
     if has("gui_macvim")
-        call togglebg#map("<F5>")   "toggle background color with F5
         set guioptions-=rLmT        "remove scroll bars
-        set background=light
-        colorscheme solarized
         let g:BASH_GuiSnippetBrowser = 'gui'
     endif
 endif
@@ -251,17 +257,17 @@ endif
 " - TMUX Cursor Fix {{{
 " ==========================================================
 if exists('$TMUX')
-  let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-  let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
+    let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
+    let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
 else
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
 
 " }}}
 " - Source More RC Files {{{
 " ==========================================================
 if filereadable(expand("~/.vimrc.local"))
-  source ~/.vimrc.local
+    source ~/.vimrc.local
 endif
 " }}}

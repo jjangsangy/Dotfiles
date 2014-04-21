@@ -7,8 +7,8 @@ alias gp='git push'
 alias vimrc='vim ~/.vimrc'
 
 alias sshPi="ssh sang@192.168.108.5"
-alias sshApps="ssh root@sangapps.com"
-alias sshCloud="ssh root@sangcloud.com"
+alias sshApps="ssh sang@sangapps.com"
+alias sshCloud="ssh sang@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
 alias sshSRV="ssh sang@srv.sangcloud.com"
 
