@@ -124,8 +124,8 @@ nnoremap <C-n>  :tabnew<CR>
 
 " }}}
 " Buffer Management {{{
-" nnoremap <Right> :bnext<CR>
-" nnoremap <Left>  :bprevious<CR>
+nnoremap <Right> :bnext<CR>
+nnoremap <Left>  :bprevious<CR>
 
 " }}}
 "     }}}
@@ -165,6 +165,8 @@ let g:airline#extensions#tabline#fnamemod = ':t'
 let g:ctrlp_match_window = 'order:ttb,max:20'
 let g:ctrlp_max_files = 0
 let g:gitgutter_enabled = 0
+let g:used_javascript_libs = 'angularjs'
+let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
 
 " }}}
 " Line 80 gets a tag {{{
@@ -226,10 +228,17 @@ augroup filetype_git
 augroup END
 
 " }}}
+" HTML Filetype Specific{{{
+augroup filetype_html
+    autocmd!
+    autocmd FileType html setlocal shiftwidth=2 softtabstop=2
+augroup END
+
+" }}}
 " Python Filetype Specific {{{
 augroup Python
     autocmd!
-    nnoremap <leader>z :!python %<CR>
+    autocmd FileType python nnoremap <leader>z :!python %<CR>
 augroup END
 
 "    }}}
@@ -238,10 +247,10 @@ augroup END
 " ==========================================================
 if (&t_Co == 256 || has ('gui_running'))
     set guifont=Inconsolata-dz:h14
-    call togglebg#map("<F5>")   "toggle background color with F5
+    call togglebg#map("<F5>")
     colorscheme solarized
 
-    if strftime("%H") >= 5 && strftime("%H") <= 17
+    if strftime("%H") >= 5 && strftime("%H") <= 20
         set background=light
     else
         set background=dark

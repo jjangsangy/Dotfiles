@@ -9,4 +9,7 @@ Bundle 'Shougo/vimproc'
 Bundle 'Shougo/vimshell'
 Bundle 'elzr/vim-json'
 Bundle 'Shougo/unite.vim'
+Bundle "sudar/vim-arduino-syntax"
 Bundle 'Rykka/riv.vim'
+Bundle 'javascript-libraries-syntax'
+Bundle 'mattn/emmet-vim'

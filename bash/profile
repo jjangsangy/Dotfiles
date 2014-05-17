@@ -40,22 +40,40 @@ eval_dircolors
 # ENVAR
 # ==========================================================
 export GREP_OPTIONS='--color=auto'
-export PATH=/usr/local/bin:${HOME}/bin:$PATH
+export PATH=/usr/local/bin:${HOME}/bin:$HOME/.cabal/bin:$HOME/.rvm/bin:$PATH
 export EDITOR=vim
 export HISTIGNORE="ls:cd:echo:history:clear"
-export WORKON_HOME=$HOME/.virtualenvs
-export PIP_VIRTUALENV_BASE=$WORKON_HOME
 export PROJECT_HOME=$HOME/Projects
-export HOMEBREW_EDITOR=vim
-export HOMEBREW_VERBOSE=true
 export PIP_RESPECT_VIRTUALENV=true
 
-source /usr/local/bin/virtualenvwrapper.sh
-source "${HOME}/.virtualenvs/py3k/bin/activate"
-# source "${HOME}/.powerline.sh"
+source "$HOME/.rvm/scripts/rvm"
 
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-    source $(brew --prefix)/etc/bash_completion
+# ==========================================================
+# Depreciated Modules
+# ==========================================================
+
+# export WORKON_HOME=$HOME/.virtualenvs
+# export PIP_VIRTUALENV_BASE=$WORKON_HOME
+# source "${HOME}/.powerline.sh"
+# source activate py27
+
+# source /usr/local/bin/virtualenvwrapper.sh
+# source "${HOME}/.virtualenvs/py3k/bin/activate"
+
+# eval "$(pyenv init -)"
+# export PYENV_VERSION="py34"
+
+
+# ==========================================================
+# Homebrew
+# ==========================================================
+if [ "$(brew --prefix)" = "/usr/local" ]; then
+    export HOMEBREW_EDITOR=vim
+    export HOMEBREW_VERBOSE=true
+
+    if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
+        source "$(brew --prefix)/etc/bash_completion"
+    fi
 fi
 
 # ==========================================================
@@ -69,3 +87,66 @@ clean_pyc() {
         fi
     done
 }
+
+# ==========================================================
+# Completions
+# ==========================================================
+
+_pip_completion()
+{
+    COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
+                   COMP_CWORD=$COMP_CWORD \
+                   PIP_AUTO_COMPLETE=1 $1 ) )
+}
+complete -o default -F _pip_completion pip
+
+# Anaconda
+eval "$(register-python-argcomplete conda)"
+
+# NPM Completion
+COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
+COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
+export COMP_WORDBREAKS
+
+if type complete &>/dev/null; then
+  _npm_completion () {
+    local si="$IFS"
+    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
+                           COMP_LINE="$COMP_LINE" \
+                           COMP_POINT="$COMP_POINT" \
+                           npm completion -- "${COMP_WORDS[@]}" \
+                           2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  complete -F _npm_completion npm
+elif type compdef &>/dev/null; then
+  _npm_completion() {
+    si=$IFS
+    compadd -- $(COMP_CWORD=$((CURRENT-1)) \
+                 COMP_LINE=$BUFFER \
+                 COMP_POINT=0 \
+                 npm completion -- "${words[@]}" \
+                 2>/dev/null)
+    IFS=$si
+  }
+  compdef _npm_completion npm
+elif type compctl &>/dev/null; then
+  _npm_completion () {
+    local cword line point words si
+    read -Ac words
+    read -cn cword
+    let cword-=1
+    read -l line
+    read -ln point
+    si="$IFS"
+    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
+                       COMP_LINE="$line" \
+                       COMP_POINT="$point" \
+                       npm completion -- "${words[@]}" \
+                       2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  compctl -K _npm_completion npm
+fi
+
+

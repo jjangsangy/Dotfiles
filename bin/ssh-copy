@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # FILE:         ssh-copy
 # AUTHOR:       Sang Han
@@ -14,7 +14,7 @@
 # Global Variables
 PROGNAME="$(basename $0)"
 
-usage() {
+function usage() {
     cat <<- DOCUMENT
 
     $PROGNAME [-h] [-t] [-k key] [-l login] [server]
@@ -38,16 +38,16 @@ usage() {
         Specify user login credentials
 
 
-DOCUMENT
+	DOCUMENT
     exit 0
 }
 
-error_exit() {
+function error_exit() {
     printf "ERROR due to ${1:-"Unknown Error"}"
     exit 1
 }
 
-test_names() {
+function test_names() {
     printf "\$KEY is %s\n" "${KEY[i]}"
     printf "\$PUBKEY is %s\n" "${PUBKEY[i]}"
     printf "\$LOGIN_USER is %s\n" "${LOGIN_USER}"
@@ -55,7 +55,7 @@ test_names() {
     printf "\n"
 }
 
-install_keys() {
+function install_keys() {
     # Reads the public key file with cat and then logs into ssh server
     # and appends the public key file at the end of the authorized_key file
     # within $HOME
@@ -69,7 +69,7 @@ install_keys() {
             fi"
 }
 
-check_keys() {
+function check_keys() {
     # Checks $HOME/.ssh directory for default keys
     if [[ $HOME/.ssh/*.pub ]]; then
         return
@@ -78,7 +78,7 @@ check_keys() {
     fi
 }
 
-check_auth() {
+function check_auth() {
     # Checks if proper credentials have been given as $1. After credential has
     # been checked, will read and bind the variable.
     local CREDENTIAL=$1
@@ -87,7 +87,7 @@ check_auth() {
     fi
 }
 
-check_server() {
+function check_server() {
     SERVER=$1
     if [[ "$SERVER" =~ @ ]]; then
         LOGIN_USER=${SERVER%@*}
