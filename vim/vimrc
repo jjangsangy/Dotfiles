@@ -56,6 +56,7 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu
 set wildmode=longest,list,full
 set foldcolumn=2
+set foldlevelstart=20
 set nobackup
 set nowritebackup
 set noswapfile
@@ -167,6 +168,7 @@ let g:ctrlp_max_files = 0
 let g:gitgutter_enabled = 0
 let g:used_javascript_libs = 'angularjs'
 let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
+let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 
 " }}}
 " Line 80 gets a tag {{{
@@ -253,7 +255,7 @@ if (&t_Co == 256 || has ('gui_running'))
     if strftime("%H") >= 5 && strftime("%H") <= 20
         set background=light
     else
-        set background=dark
+        set background=light
     endif
 
     if has("gui_macvim")

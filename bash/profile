@@ -88,6 +88,21 @@ clean_pyc() {
     done
 }
 
+py34() {
+    local activate="${HOME}/anaconda/envs/py34/bin/activate"
+    if [ -f "${activate}" ]; then
+        source "${activate}" py34
+    fi
+}
+
+
+py27() {
+    local activate="${HOME}/anaconda/envs/py27/bin/activate"
+    if [ -f "${activate}" ]; then
+        source "${activate}" py27
+    fi
+}
+
 # ==========================================================
 # Completions
 # ==========================================================
@@ -101,7 +116,7 @@ _pip_completion()
 complete -o default -F _pip_completion pip
 
 # Anaconda
-eval "$(register-python-argcomplete conda)"
+# eval "$(register-python-argcomplete conda)"
 
 # NPM Completion
 COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}

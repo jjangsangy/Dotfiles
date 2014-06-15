@@ -5,16 +5,10 @@
 --enable-multibyte
 --enable-hangulinput
 --enable-fontset
---enable-gtk2-check
---enable-gnome-check
---enable-motif-check
---enable-athena-check
---enable-nextaw-check
 --enable-carbon-check
 --with-vim-name=vim
---with-ex-name=sang
---with-compiledby=sang
+--with-ex-name=vim
+--with-compiledby="Sang Han"
 --with-luajit
 --with-x
---with-gnome
 --with-features=huge

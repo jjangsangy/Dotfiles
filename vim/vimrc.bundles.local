@@ -13,3 +13,5 @@ Bundle "sudar/vim-arduino-syntax"
 Bundle 'Rykka/riv.vim'
 Bundle 'javascript-libraries-syntax'
 Bundle 'mattn/emmet-vim'
+Bundle 'Glench/Vim-Jinja2-Syntax'
+Bundle 'vim-scripts/MatlabFilesEdition'

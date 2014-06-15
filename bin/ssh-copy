@@ -1,21 +1,5 @@
 #!/usr/bin/env bash
-#
-# FILE:         ssh-copy
-# AUTHOR:       Sang Han
-# VERSION:      2.3
-# DESCRIPTION   Utility for automatically exporting ssh keys into remote servers for authentication.
-#               Checks $HOME/.ssh for id_rsa.pub or id_dsa.pub and appends them into
-#               the authorized_keys of remote host
-#               Checks home .ssh directory for id_rsa or id_dsa public keys and
-#               appends them into the authorized_keys using a remote ssh server
-# DEPENDS:      Secure Shell v2.0
-# CREATED:      5/28/2013
-
-# Global Variables
-PROGNAME="$(basename $0)"
-
-function usage() {
-    cat <<- DOCUMENT
+usage() { cat <<- DOCUMENT
 
     $PROGNAME [-h] [-t] [-k key] [-l login] [server]
 
@@ -42,8 +26,11 @@ function usage() {
     exit 0
 }
 
+# Global Variables
+PROGNAME="$(basename "$0")"
+
 function error_exit() {
-    printf "ERROR due to ${1:-"Unknown Error"}"
+    printf "ERROR due to %s"  "${1:-"Unknown Error"}"
     exit 1
 }
 
@@ -59,7 +46,7 @@ function install_keys() {
     # Reads the public key file with cat and then logs into ssh server
     # and appends the public key file at the end of the authorized_key file
     # within $HOME
-    cat "${PUBKEY[i]}" | \
+    cat < "${PUBKEY[i]}" | \
         ssh -l "$LOGIN_USER" "$SERVER" "\
             if [ -d ~/.ssh ]; then \
                 cat >> ~/.ssh/authorized_keys; \
@@ -83,7 +70,7 @@ function check_auth() {
     # been checked, will read and bind the variable.
     local CREDENTIAL=$1
     if [[ ! ${!CREDENTIAL} ]]; then
-        read -p "${CREDENTIAL}:  " ${CREDENTIAL}
+        read -p "${CREDENTIAL}:  " "${CREDENTIAL}"
     fi
 }
 
@@ -97,22 +84,20 @@ function check_server() {
 }
 
 main() {
-    # Declare default $KEY if not set already
-    if [[ -z $KEY ]]; then
-        declare -a KEY=("id_rsa" "id_dsa")
-    fi
+    # Declare default key files to find if user does not specify
+    if [[ -z $KEY ]]; then declare -a KEY=("id_rsa" "id_dsa"); fi
 
     for (( i=0; i<${#KEY[@]}; i+=1 )); do
         # Path to key file
         local PUBKEY[i]=$HOME/.ssh/${KEY[i]}.pub
 
         # Unit Test runs every iteration
-        if (($TEST==1)); then
+        if ((TEST==1)); then
             test_names
             return
         fi
 
-        # Gather necessary parameters
+        # Gather necessary login credentials
         if [[ -r "${PUBKEY[i]}" ]]; then
             check_auth LOGIN_USER
             check_auth SERVER
@@ -121,7 +106,7 @@ main() {
     done
 }
 
-# GETOPTS
+# Option Parsing
 declare -i TEST=0
 while getopts ":k:l:th" OPTION; do
     case $OPTION in
@@ -142,9 +127,9 @@ done
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
 
-    if [[ $# = 1 ]]; then
-        check_server $1
-    fi
+    # Validate user input
+    if [[ $# = 1 ]]; then check_server "$1"; fi
     check_keys
+
     main
 fi

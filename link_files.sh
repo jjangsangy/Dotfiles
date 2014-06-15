@@ -1,51 +1,69 @@
-#!/bin/bash
-#===============================================================================
-#
-#          FILE: link_files.sh
-#
-#         USAGE: ./link_files.sh
-#
-#   DESCRIPTION: links files to home directory
-#
-#       OPTIONS: -h [help] -t [test]
-#        AUTHOR: Sang Han
-#       CREATED: 01/09/2014
-#      REVISION: 1.2.0
-#===============================================================================
+#!/usr/bin/env bash
+# ==============================================================================
+usage() { cat <<- DOCUMENT
 
-# Global Variables
-PROGNAME=$(basename "${BASH_SOURCE}")
-PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FILELIST=("aliases" "path" "bash/profile" "bash/jump.sh" "bash/inputrc" "bash/dircolors" "bash/dircolors_light" "bash/dircolors_dark" "bash/prompt.sh")
-
-usage() {
-    cat <<- END_DOC
-
-    link_files.sh   [-h help] [-t test]
-
-    DESCRIPTION: links files to home directory
+    usage: $PROGNAME [-h help] [-t test]
 
     AUTHOR:      Sang Han
     CREATED:     01/09/2014
-    REVISION:    1.2.0
-    REQUIREMENTS: ---
+    REVISION:    1.3
 
-    -h [help]
-        Outputs usage directions
-    -t [test]
-        Runs internal unit tests
+    $COLOR DESCRIPTION:
+        Program for automating users preferred login shell enviornment.
+        Symbolically links the startup files located within dotfiles
+        repository and links them to to users \$HOME variable prepended
+        with a dot. If the startup file already and a collision occurs,
+        user will be prompted for deletion.
 
-END_DOC
+    REQUIREMENTS:
+        Program must be called while present working directory is within
+        the root of the Dotfiles repository.
 
-exit 0
+    OPTIONS:
+        -h [help]
+            Outputs usage directions
+        -t [test]
+            Runs internal unit tests
+
+    EXAMPLES:
+        Run unit tests and prints out all assigned values and variables
+        ./${PROGNAME} -t
+
+        Run program:
+        ./$PROGNAME
+
+    TODO: Allow the usage of a configuration file to specified rather than
+          just reading from global variables.
+    TODO: Allow the option of copying the files rather than symbolic linking
+
+
+	DOCUMENT
 }
+# ==============================================================================
+# Global Variables
+# ==============================================================================
+readonly PROGNAME=$(basename "${BASH_SOURCE}")
+readonly PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly FILELIST=("aliases" \
+                   "path" \
+                   "bash/profile" \
+                   "bash/jump.sh" \
+                   "bash/inputrc" \
+                   "bash/dircolors" \
+                   "bash/dircolors_light" \
+                   "bash/dircolors_dark" \
+                   "bash/prompt.sh")
 
-test_globals() {
-    printf "\$TEST is %s\n" "${TEST}"
-    printf "\$PROGNAME is %s\n" "${PROGNAME}"
-    printf "\$PROGDIR is %s\n" "${PROGDIR}"
-    printf "\$FILELIST is %s\n" "${FILELIST[*]}"
-    return
+# ==============================================================================
+# Tests
+# ==============================================================================
+test_variables() {
+    declare -a variables=(${*})
+    for var in "${variables[@]}"; do
+        printf "%30s = %s\n" \
+            "$(tput setaf 9)\$${var}$(tput sgr0)" \
+            "$(tput setaf 3)${!var}$(tput sgr0)"
+    done
 }
 
 test_source() {
@@ -64,10 +82,12 @@ test_dest() {
     fi
 }
 
-prompt_delete() {
-    # Prompts the user authorization for deleting original file at $LINK_DEST.
-    # After authorization is granted, file is deleted and replaced with
-    # a symlink from $LINK_SOURCE
+function prompt_delete() {
+# ===============================================================================
+# Prompts the user authorization for deleting original file at $LINK_DEST.
+# After authorization is granted, file is deleted and replaced with
+# a symlink from $LINK_SOURCE
+# ===============================================================================
     read -p "File $LINK_DEST already exists, would you like to delete it? \
         [Yy]/[Nn]:  " RESPONSE
 
@@ -79,48 +99,49 @@ prompt_delete() {
     fi
 }
 
-link_files() {
-    # TODO: Add support for symlinking directories
+function link_files() {
+# ===============================================================================
+# TODO: Add support for symlinking entire directories
+# ===============================================================================
     ln -s "${LINK_SOURCE}" "${LINK_DEST}"
 }
 
-# Parse Options
+# ===============================================================================
+# Parameters
+# ===============================================================================
 declare -i TEST=0
 while getopts ":ht" OPTION; do
     case ${OPTION} in
         h) usage
+           exit 0
             ;;
         t) TEST=1
             ;;
-        \?) echo "Invalid option: -${OPTARG}" >&2
-            exit 1
+       \?) echo "Invalid option: -${OPTARG}" >&2
+           exit 1
             ;;
     esac
 done
     shift $(($OPTIND-1))
 
+# ===============================================================================
+# Main
+# ===============================================================================
 main() {
-    if (($TEST==1)); then
-        # Test global variable names
-        test_globals
+    if ((TEST==1)); then
+        test_variables TEST PROGNAME PROGDIR FILELIST; printf "\n"
     fi
 
-    # Iterate through indexed array of files.
-    # If file is located within a subdirectory, the name of parent is stripped
+    # If file is located within a subdirectory
+    # the name of parent is stripped
     for FILE in "${FILELIST[@]}"; do
-        local LINK_SOURCE=${PROGDIR}/${FILE}
-        local LINK_DEST=${HOME}/\.${FILE##*/}
-        if (($TEST==1)); then
-            # Test source and destination directory. Existing files
-            # are highlighted blue and non-existing files are red.
-            test_source
-            test_dest
-            continue
-        fi
+        local LINK_SOURCE="${PROGDIR}/${FILE}"
+        local LINK_DEST="${HOME}/.${FILE##*/}"
+        if ((TEST==1)); then test_source && test_dest; continue; fi
         link_files >/dev/null 2>&1 || prompt_delete
     done
 }
 
-if [[ "$0" == $BASH_SOURCE ]]; then
+if [ "$0" = "${BASH_SOURCE}" ]; then
     main
 fi
