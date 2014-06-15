@@ -8,7 +8,6 @@ usage() { cat <<- DOCUMENT
     the authorized_keys of remote host
 
     AUTHOR:     Sang Han
-    COMPANY:    Calient Technologies
     YEAR:       2013
     VERSION:    2.3
 
