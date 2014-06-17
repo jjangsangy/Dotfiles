@@ -6,7 +6,7 @@ usage() { cat <<- DOCUMENT
 
     AUTHOR:      Sang Han
     CREATED:     01/09/2014
-    REVISION:    1.3
+    REVISION:    1.4
 
     $COLOR DESCRIPTION:
         Program for automating users preferred login shell enviornment.
