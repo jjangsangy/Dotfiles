@@ -79,8 +79,8 @@ fi
 # ==========================================================
 # Functions
 # ==========================================================
-
-clean_pyc() {
+# Remove .pyc bytecode
+function clean_pyc() {
     for file in *; do
         if [[ -f $file ]] && [[ $file =~ pyc$ ]]; then
             rm $file
@@ -88,7 +88,13 @@ clean_pyc() {
     done
 }
 
-py34() {
+# Clean Pesky .DS.Store files
+function clean_ds() {
+    find . -type f -name '.DS_Store' -exec rm '{}' \;
+}
+
+
+function py34() {
     local activate="${HOME}/anaconda/envs/py34/bin/activate"
     if [ -f "${activate}" ]; then
         source "${activate}" py34
@@ -96,7 +102,7 @@ py34() {
 }
 
 
-py27() {
+function py27() {
     local activate="${HOME}/anaconda/envs/py27/bin/activate"
     if [ -f "${activate}" ]; then
         source "${activate}" py27

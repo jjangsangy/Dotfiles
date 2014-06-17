@@ -2,7 +2,7 @@
 # ==============================================================================
 usage() { cat <<- DOCUMENT
 
-    usage: $PROGNAME [-h help] [-t test]
+    usage: $PROGNAME [-h help] [-t test] [-f file]
 
     AUTHOR:      Sang Han
     CREATED:     01/09/2014
@@ -24,6 +24,8 @@ usage() { cat <<- DOCUMENT
             Outputs usage directions
         -t [test]
             Runs internal unit tests
+        -f [file]
+            Reference external file
 
     EXAMPLES:
         Run unit tests and prints out all assigned values and variables
@@ -31,6 +33,9 @@ usage() { cat <<- DOCUMENT
 
         Run program:
         ./$PROGNAME
+
+        Use your own config file:
+        ./$PROGNAME -f config_file
 
     TODO: Allow the usage of a configuration file to specified rather than
           just reading from global variables.
@@ -44,15 +49,6 @@ usage() { cat <<- DOCUMENT
 # ==============================================================================
 readonly PROGNAME=$(basename "${BASH_SOURCE}")
 readonly PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly FILELIST=("aliases" \
-                   "path" \
-                   "bash/profile" \
-                   "bash/jump.sh" \
-                   "bash/inputrc" \
-                   "bash/dircolors" \
-                   "bash/dircolors_light" \
-                   "bash/dircolors_dark" \
-                   "bash/prompt.sh")
 
 # ==============================================================================
 # Tests
@@ -68,17 +64,33 @@ test_variables() {
 
 test_source() {
     if [ -f "$LINK_SOURCE" ]; then
-        printf "$(tput setaf 4)\$LINK_SOURCE$(tput sgr0) file exists at %s\n" "${LINK_SOURCE}"
+        printf "$(tput setaf 4)\
+            \$LINK_SOURCE\
+                $(tput sgr0)\
+                file exists at %s\n" \
+            "${LINK_SOURCE}"
     else
-        printf "$(tput setaf 1)\$LINK_SOURCE$(tput sgr0) file does not exists at %s\n" "${LINK_SOURCE}"
+        printf "$(tput setaf 1)\
+            \$LINK_SOURCE\
+                $(tput sgr0)\
+                file does not exists at %s\n" \
+            "${LINK_SOURCE}"
     fi
 }
 
 test_dest() {
     if [ -f "$LINK_DEST" ]; then
-        printf "$(tput setaf 4)\$LINK_DEST$(tput sgr0) file exists at %s\n\n" "${LINK_DEST}"
+        printf "$(tput setaf 4)\
+            \$LINK_DEST\
+                $(tput sgr0)\
+                file exists at %s\n\n" \
+            "${LINK_DEST}"
     else
-        printf "$(tput setaf 1)\$LINK_DEST$(tput sgr0) file does not exists at %s\n\n" "${LINK_DEST}"
+        printf "$(tput setaf 1)\
+            \$LINK_DEST\
+                $(tput sgr0)\
+                file does not exists at %s\n\n" \
+            "${LINK_DEST}"
     fi
 }
 
@@ -110,12 +122,15 @@ function link_files() {
 # Parameters
 # ===============================================================================
 declare -i TEST=0
-while getopts ":ht" OPTION; do
+declare -a FILELIST
+while getopts "f:ht" OPTION; do
     case ${OPTION} in
         h) usage
            exit 0
             ;;
         t) TEST=1
+            ;;
+        f) CONFIG_FILE="${OPTARG}"
             ;;
        \?) echo "Invalid option: -${OPTARG}" >&2
            exit 1
@@ -128,17 +143,22 @@ done
 # Main
 # ===============================================================================
 main() {
+    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/link.conf"}") )
     if ((TEST==1)); then
-        test_variables TEST PROGNAME PROGDIR FILELIST; printf "\n"
+        test_variables TEST PROGNAME PROGDIR FILELIST CONFIG_FILE; printf "\n"
     fi
 
     # If file is located within a subdirectory
     # the name of parent is stripped
     for FILE in "${FILELIST[@]}"; do
-        local LINK_SOURCE="${PROGDIR}/${FILE}"
-        local LINK_DEST="${HOME}/.${FILE##*/}"
-        if ((TEST==1)); then test_source && test_dest; continue; fi
-        link_files >/dev/null 2>&1 || prompt_delete
+        if [ -f "${PROGDIR}/${FILE}" ]; then
+            local LINK_SOURCE="${PROGDIR}/${FILE}"
+            local LINK_DEST="${HOME}/.${FILE##*/}"
+
+            if ((TEST==1)); then test_source && test_dest; continue; fi
+
+            link_files >/dev/null 2>&1 || prompt_delete
+        fi
     done
 }
 
