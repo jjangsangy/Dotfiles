@@ -27,7 +27,6 @@ between BSD machines. Some of those exceptions below.
   binaries prepended with `g`
 * Files and directory highlighting requires coreutils `ls` and `dircolors`.
   You can either rename binaries or create a new symbolic link like so
-  or just symbolically linking files like so.
 
 ``` bash
     # Symbolically links `gls` to `ls`
@@ -42,7 +41,7 @@ between BSD machines. Some of those exceptions below.
   .bash_profile for login shells and not .profile
 
 link_files.sh
-----------
+-------------
 
 * Will automatically create a symbolic link between Dotfiles
   into users home directory.
