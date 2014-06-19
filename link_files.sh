@@ -24,6 +24,8 @@ usage() { cat <<- DOCUMENT
             Outputs usage directions
         -t [test]
             Runs internal unit tests
+        -v [verbose]
+            Prints out all test output to screen
         -f [file]
             Reference external file
 
@@ -121,9 +123,9 @@ function link_files() {
 # ===============================================================================
 # Parameters
 # ===============================================================================
-declare -i TEST=0
+declare -i TEST=0 VERBOSE=0
 declare -a FILELIST
-while getopts "f:ht" OPTION; do
+while getopts "f:htv" OPTION; do
     case ${OPTION} in
         h) usage
            exit 0
@@ -131,6 +133,8 @@ while getopts "f:ht" OPTION; do
         t) TEST=1
             ;;
         f) CONFIG_FILE="${OPTARG}"
+            ;;
+        v) VERBOSE=1
             ;;
        \?) echo "Invalid option: -${OPTARG}" >&2
            exit 1
@@ -144,7 +148,7 @@ done
 # ===============================================================================
 main() {
     FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/link.conf"}") )
-    if ((TEST==1)); then
+    if ((TEST==1 || VERBOSE==1)); then
         test_variables TEST PROGNAME PROGDIR FILELIST CONFIG_FILE; printf "\n"
     fi
 
@@ -156,6 +160,7 @@ main() {
             local LINK_DEST="${HOME}/.${FILE##*/}"
 
             if ((TEST==1)); then test_source && test_dest; continue; fi
+            if ((VERBOSE==1)); then test_source && test_dest;fi
 
             link_files >/dev/null 2>&1 || prompt_delete
         fi
