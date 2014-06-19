@@ -130,7 +130,4 @@ File /Users/jjangsangy/.inputrc already exists, would you like to delete it?    
         $LINK_DEST        file exists at /Users/jjangsangy/.dircolors
 
 File /Users/jjangsangy/.dircolors already exists, would you like to delete it   [Yy]/[Nn]:
-        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/dircolors_light
-        $LINK_DEST        file exists at /Users/jjangsangy/.dircolors_light
-
 ```
