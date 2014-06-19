@@ -31,8 +31,8 @@ between BSD machines. Some of those exceptions below.
 ``` bash
     # Symbolically links `gls` to `ls`
 
-    $ ln -s $(brew --prefix)/bin/gls $(brew --prefix)/bin/ls
-    $ ln -s $(brew --prefix)/bin/gdircolors $(brew --prefix)/bin/dircolors
+    $ ln -s "$(brew --prefix)/bin/gls" "$(brew --prefix)/bin/ls"
+    $ ln -s "$(brew --prefix)/bin/gdircolors" "$(brew --prefix)/bin/dircolors"
 ```
 
 ### Debian or Ubuntu
@@ -65,6 +65,7 @@ link_files.sh
     $ ./link_files.sh -t
 
            $TEST = 1
+        $VERBOSE = 0
        $PROGNAME = link_files.sh
         $PROGDIR = /Users/jjangsangy/Dotfiles
     $CONFIG_FILE = link.conf
@@ -92,4 +93,44 @@ link_files.sh
 
     $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/dircolors_dark
     $LINK_DEST        file exists at /Users/jjangsangy/.dircolors_dark
+```
+
+* Or run with [-v] flag for verbose mode
+
+``` bash
+    $ ./link_files.sh -v -f vim/vim.conf
+
+           $TEST = 0
+        $VERBOSE = 1
+       $PROGNAME = link_files.sh
+        $PROGDIR = /Users/jjangsangy/Dotfiles
+    $CONFIG_FILE = vim/vim.conf
+
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/aliases
+        $LINK_DEST        file exists at /Users/jjangsangy/.aliases
+
+File /Users/jjangsangy/.aliases already exists, would you like to delete it?    [Yy]/[Nn]:
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/path
+        $LINK_DEST        file exists at /Users/jjangsangy/.path
+
+File /Users/jjangsangy/.path already exists, would you like to delete it?       [Yy]/[Nn]:
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/profile
+        $LINK_DEST        file exists at /Users/jjangsangy/.profile
+
+File /Users/jjangsangy/.profile already exists, would you like to delete it?    [Yy]/[Nn]:
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/jump.sh
+        $LINK_DEST        file exists at /Users/jjangsangy/.jump.sh
+
+File /Users/jjangsangy/.jump.sh already exists, would you like to delete it?    [Yy]/[Nn]:
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/inputrc
+        $LINK_DEST        file exists at /Users/jjangsangy/.inputrc
+
+File /Users/jjangsangy/.inputrc already exists, would you like to delete it?    [Yy]/[Nn]:
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/dircolors
+        $LINK_DEST        file exists at /Users/jjangsangy/.dircolors
+
+File /Users/jjangsangy/.dircolors already exists, would you like to delete it   [Yy]/[Nn]:
+        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/bash/dircolors_light
+        $LINK_DEST        file exists at /Users/jjangsangy/.dircolors_light
+
 ```
