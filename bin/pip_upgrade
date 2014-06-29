@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
+# Defaults to pip2 unless otherwise specified
+if [ "$1" = 3 ]; then
+    PYTHON_VERSION=3
+fi
+
 function outdated() {
     # List out outdated python packages delimited by newline
-    pip list --outdated \
+    pip${PYTHON_VERSION} list --outdated \
         | sed \
             -e 's/(.*//g' \
             -e '/^Could/ d' \
@@ -10,7 +15,7 @@ function outdated() {
 }
 
 main() {
-    echo "Unpacking outdated packages"
+    echo "Unpacking outdated packages for Python ${PYTHON_VERSION:-2}"
     declare -a list=( $(outdated) )
 
     # Loop through each package and install upgrade
@@ -18,14 +23,14 @@ main() {
         printf "Installing Package: %-20s" "${list[i]}"
 
         # Checks for successful installation
-        if [ "$(pip install --upgrade "${list[i]}" &>/dev/null)" ]; then
+        if [ "pip${PYTHON_VERSION} install --upgrade ${list[i]} >/dev/null" ]; then
             printf "$(tput setaf 2)%s$(tput sgr0)\n" "Success"
         else
-            printf "$(tput setaf 1)%s$(tput sgr0)\n" "Failed"
+            printf "$(tput setaf 1)%s$(tput sgr0)\n" "Fail"
         fi
     done
 }
 
-if [[ "$0" == "${BASH_SOURCE}" ]]; then
+if [ "$0" = "${BASH_SOURCE}" ]; then
     main
 fi

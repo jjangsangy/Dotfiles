@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+# ==============================================================================
+  readonly VERSION=0.1 BUILD="test"
+# ==============================================================================
+usage() {
+    local progname="${argv[0]}"
+
+    # Terminal Formatting
+    local u=$(tput smul) _u_=$(tput rmul)
+    local lightfg=$(tput setab 7) _lightfg_=$(tput sgr0)
+    local blue=$(tput setaf 4) _blue_=$(tput sgr0)
+    local green=$(tput setaf 2) _green_=$(tput sgr0)
+    local red=$(tput setaf 1) _red_=$(tput sgr0)
+    local cyan=$(tput setaf 6) _cyan_=$(tput sgr0)
+
+    cat <<- DOCUMENT
+
+    ${u}AUTHOR:${_u_}      Sang Han
+    ${u}CREATED:${_u_}     06/29/2014
+    ${u}REVISION:${_u_}    ${VERSION}-${BUILD}
+
+    ${u}USAGE:${_u_}
+	    ${lightfg}${progname}${_lightfg_} [ ${blue}-h|--help${_blue_} ] [ [${blue}-p|--prefix${_blue_}] ${cyan}package_base${_cyan_} ] ${red}env${_red_}
+
+    ${u}DESCRIPTION:${_u_}
+	    ${cyan}Convenience wrapper for detecting and sourcing conda enviornments${_cyan_}
+
+    ${u}OPTIONS:${_u_} \
+	${cyan}
+        -h --help:
+            Outputs usage.
+        -p --prefix:
+            Specify custom prefix directory
+	${_cyan_}
+	${red}
+        Prefix Default: \$HOME/anaconda/envs
+	${_red_} \
+
+	DOCUMENT
+}
+
+# ==============================================================================
+# Global Variables
+# ==============================================================================
+declare -r argv=("$(basename "${BASH_SOURCE}")" "$@")
+declare -i argc="($#) + 1"
+
+# ==============================================================================
+# Functions
+# ==============================================================================
+function activate() {
+    # Input Validation
+    if ((argc-1 == 1)); then
+        local venv="${argv[1]}"
+    else
+        printf "$(tput setaf 1)%s$(tput sgr0)\n" \
+            "Please specify an enviornment" >&2
+        for envs in "${envdir}/"*; do
+            if [ -r "${envs}/bin/activate" ]; then
+                printf "$(tput setaf 2)%s$(tput sgr0)\n" \
+                    "${envs##*/}" >&2
+            fi
+        done
+        return 1
+    fi
+
+    local activation="${envdir}/${venv}/bin/activate"
+    if [ -f "${activation}" ]; then
+        source "$activation" "$venv"
+    fi
+}
+
+# ===============================================================================
+# Parameters
+# ===============================================================================
+# Long Arguments
+for arg; do
+    declare delim=""
+    case "$arg" in
+        --help)     args="${args}-h ";;
+        --prefix)   args="${args}-p ";;
+
+         *) [[ "${argv[i]:0:1}" == "-" ]] || delim="\""
+             args="${args}${delim}${arg}${delim} ";;
+    esac
+done; eval set -- $args
+
+# Short Arguments
+while getopts "p:h" OPTION; do
+    case ${OPTION} in
+        h) usage
+           exit 0
+            ;;
+        p) readonly PREFIX="${OPTARG}"
+            ;;
+       \?) echo "Invalid option: -${OPTARG}" >&2
+           exit 1
+            ;;
+    esac
+done
+    shift $(($OPTIND-1))
+
+# ===============================================================================
+# Main Function
+# ===============================================================================
+main() {
+    # Check for Anaconda Directory
+    local envdir=${PREFIX:="$HOME/anacondas/envs"}
+    if ! [ -d "$envdir" ]; then
+        printf "No directory at %s\n" \
+            "$(tput setaf 1)${envdir}$(tput sgr0)" >&2
+        return 1
+    fi
+    activate
+}
+
+# ===============================================================================
+# Program Entry Point
+# ===============================================================================
+if [ "$0" = "${BASH_SOURCE}" ]; then
+    main
+fi

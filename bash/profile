@@ -82,8 +82,10 @@ fi
 # Remove .pyc bytecode
 function clean_pyc() {
     for file in *; do
-        if [[ -f $file ]] && [[ $file =~ pyc$ ]]; then
-            rm $file
+        if [[ -f "$file" ]] && [[ "$file" =~ pyc$ ]]; then
+            rm "$file"
+        elif [[ -d "$file" ]] && [ $file = "__pycache__" ]; then
+            rm -rf "$file"
         fi
     done
 }
@@ -91,22 +93,6 @@ function clean_pyc() {
 # Clean Pesky .DS.Store files
 function clean_ds() {
     find . -type f -name '.DS_Store' -exec rm '{}' \;
-}
-
-
-function py34() {
-    local activate="${HOME}/anaconda/envs/py34/bin/activate"
-    if [ -f "${activate}" ]; then
-        source "${activate}" py34
-    fi
-}
-
-
-function py27() {
-    local activate="${HOME}/anaconda/envs/py27/bin/activate"
-    if [ -f "${activate}" ]; then
-        source "${activate}" py27
-    fi
 }
 
 # ==========================================================

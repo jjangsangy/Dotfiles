@@ -9,7 +9,7 @@ usage() { cat <<- DOCUMENT
 
     AUTHOR:     Sang Han
     YEAR:       2013
-    VERSION:    2.3
+    VERSION:    2.4
 
     -h [help]
         Outputs usage directions
@@ -22,7 +22,6 @@ usage() { cat <<- DOCUMENT
 
 
 	DOCUMENT
-    exit 0
 }
 
 # Global Variables
@@ -33,12 +32,13 @@ function error_exit() {
     exit 1
 }
 
-function test_names() {
-    printf "\$KEY is %s\n" "${KEY[i]}"
-    printf "\$PUBKEY is %s\n" "${PUBKEY[i]}"
-    printf "\$LOGIN_USER is %s\n" "${LOGIN_USER}"
-    printf "\$SERVER is %s\n" "${SERVER}"
-    printf "\n"
+function test_variables() {
+    declare -a variables=(${*})
+    for var in "${variables[@]}"; do
+        printf "%30s = %s\n" \
+            "$(tput setaf 9)\$${var}$(tput sgr0)" \
+            "$(tput setaf 3)${!var}$(tput sgr0)"
+    done
 }
 
 function install_keys() {
@@ -83,23 +83,18 @@ function check_server() {
 }
 
 main() {
-    # Declare default key files to find if user does not specify
-    if [[ -z $KEY ]]; then declare -a KEY=("id_rsa" "id_dsa"); fi
+    # Default Public Keys
+    if [ -z $KEY ]; then declare -a KEY=("id_rsa" "id_dsa"); fi
 
     for (( i=0; i<${#KEY[@]}; i+=1 )); do
-        # Path to key file
-        local PUBKEY[i]=$HOME/.ssh/${KEY[i]}.pub
+        local PUBKEY[i]="$HOME/.ssh/${KEY[i]}.pub"
 
-        # Unit Test runs every iteration
-        if ((TEST==1)); then
-            test_names
-            return
-        fi
+        # Test Keys
+        if ((TEST==1)); then test_variables KEY[i] PUBKEY[i]; continue; fi
 
         # Gather necessary login credentials
         if [[ -r "${PUBKEY[i]}" ]]; then
-            check_auth LOGIN_USER
-            check_auth SERVER
+            check_auth LOGIN_USER; check_auth SERVER
             install_keys && break
         fi
     done
@@ -110,6 +105,7 @@ declare -i TEST=0
 while getopts ":k:l:th" OPTION; do
     case $OPTION in
         h) usage
+           exit 0
             ;;
         k) KEY=$OPTARG
             ;;
@@ -125,10 +121,11 @@ done
     shift $((OPTIND-1))
 
 if [[ "$0" == "${BASH_SOURCE}" ]]; then
-
     # Validate user input
-    if [[ $# = 1 ]]; then check_server "$1"; fi
-    check_keys
+    if [ $# = 1 ]; then check_server "$1"; fi; check_keys
+
+    # Test Globals
+    if ((TEST==1)); then test_variables SERVER LOGIN_USER; fi
 
     main
 fi
