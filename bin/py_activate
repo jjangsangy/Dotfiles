@@ -5,14 +5,6 @@
 usage() {
     local progname="${argv[0]}"
 
-    # Terminal Formatting
-    local u=$(tput smul) _u_=$(tput rmul)
-    local lightfg=$(tput setab 7) _lightfg_=$(tput sgr0)
-    local blue=$(tput setaf 4) _blue_=$(tput sgr0)
-    local green=$(tput setaf 2) _green_=$(tput sgr0)
-    local red=$(tput setaf 1) _red_=$(tput sgr0)
-    local cyan=$(tput setaf 6) _cyan_=$(tput sgr0)
-
     cat <<- DOCUMENT
 
     ${u}AUTHOR:${_u_}      Sang Han
@@ -45,6 +37,14 @@ usage() {
 declare -r argv=("$(basename "${BASH_SOURCE}")" "$@")
 declare -i argc="($#) + 1"
 
+# Terminal Formatting
+readonly u=$(tput smul) _u_=$(tput rmul)
+readonly lightfg=$(tput setab 7) _lightfg_=$(tput sgr0)
+readonly blue=$(tput setaf 4) _blue_=$(tput sgr0)
+readonly green=$(tput setaf 2) _green_=$(tput sgr0)
+readonly red=$(tput setaf 1) _red_=$(tput sgr0)
+readonly cyan=$(tput setaf 6) _cyan_=$(tput sgr0)
+
 # ==============================================================================
 # Functions
 # ==============================================================================
@@ -53,12 +53,16 @@ function activate() {
     if ((argc-1 == 1)); then
         local venv="${argv[1]}"
     else
-        printf "$(tput setaf 1)%s$(tput sgr0)\n" \
-            "Please specify an enviornment" >&2
+        printf "\n${u}%s${_u_}\n" \
+            "Please select an enviornment" >&2
+        printf "${u}PREFIX:${_u_}\n%s \n\n" \
+            "${cyan}${envdir}${_cyan_}" >&2
+
         for envs in "${envdir}/"*; do
             if [ -r "${envs}/bin/activate" ]; then
-                printf "$(tput setaf 2)%s$(tput sgr0)\n" \
+                printf "${blue}%s${_blue_}: " \
                     "${envs##*/}" >&2
+                printf "%s" "$(${envs}/bin/python --version)"
             fi
         done
         return 1
@@ -103,12 +107,13 @@ done
 # ===============================================================================
 # Main Function
 # ===============================================================================
-main() {
+function main
+	{
     # Check for Anaconda Directory
-    local envdir=${PREFIX:="$HOME/anacondas/envs"}
+    local envdir=${PREFIX:="$HOME/anaconda/envs"}
     if ! [ -d "$envdir" ]; then
         printf "No directory at %s\n" \
-            "$(tput setaf 1)${envdir}$(tput sgr0)" >&2
+            "${red}${envdir}${_red_}" >&2
         return 1
     fi
     activate
