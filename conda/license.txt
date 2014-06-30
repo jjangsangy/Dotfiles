@@ -1,0 +1,13 @@
+{
+    "_license_version": "1.1",
+    "company": "California Colleges",
+    "email": "sah002@californiacolleges.edu",
+    "end_date": "2015-04-18",
+    "issued": "2014-04-18",
+    "name": "Sang Han",
+    "packages": "numbapro mkl iopro",
+    "product": "Academic",
+    "qty": "1",
+    "sig": "167b719d8c4b039ab84e5eb9ac03f9b0a86c8004cc0b029c97293bfd6d422b2619eba48a194e04e9db1ec49748fa76e9ab71be1b9941683658b36c45aafc922a",
+    "vendor": "continuum"
+}

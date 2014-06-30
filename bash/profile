@@ -45,6 +45,8 @@ export EDITOR=vim
 export HISTIGNORE="ls:cd:echo:history:clear"
 export PROJECT_HOME="${HOME}/Projects"
 export PIP_RESPECT_VIRTUALENV=true
+
+# Conda
 export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
 
 source "$HOME/.rvm/scripts/rvm"
