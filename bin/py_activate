@@ -60,23 +60,19 @@ function activate() {
     fi
 }
 
-function find_envs() {
-    return
-}
-
 function check_input() {
     # TODO: Grab avaiable enviornments and check against them
     if ((argc-1 == 1)); then
         local venv="${argv[1]}"
     else
-        printf "\n${u}%s${_u_}\n" \
+        printf "\n${f[u]}%s${f[_]}\n\n" \
             "Please select an enviornment" >&2
-        printf "${u}PREFIX:${_u_}\n%s \n\n" \
-            "${cyan}${envdir}${_cyan_}" >&2
+        printf "${f[u]}PREFIX:${f[_]}\n%s \n\n" \
+            "${f[cyan]}${envdir}${f[_]}" >&2
         # Replace with Indexed Array
         for envs in "${envdir}/"*; do
             if [ -r "${envs}/bin/activate" ]; then
-                printf "${blue}%s${_blue_}: " \
+                printf "${f[blue]}%s${f[_]}: " \
                     "${envs##*/}" >&2
                 printf "%s" "$(${envs}/bin/python --version)"
 
