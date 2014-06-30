@@ -1,0 +1,11 @@
+channels:
+  - binstar
+  - defaults
+  - jjangsangy.bincloud.com
+always_yes: True
+create_default_packages:
+  - python
+  - pip
+show_channel_urls: True
+track_features:
+      - mkl
