@@ -7,49 +7,65 @@ usage() {
 
     cat <<- DOCUMENT
 
-    ${u}AUTHOR:${_u_}      Sang Han
-    ${u}CREATED:${_u_}     06/29/2014
-    ${u}REVISION:${_u_}    ${VERSION}-${BUILD}
+    ${f[u]}AUTHOR:${f[_]}      Sang Han
+    ${f[u]}CREATED:${f[_]}     06/29/2014
+    ${f[u]}REVISION:${f[_]}    $VERSION-$BUILD
 
-    ${u}USAGE:${_u_}
-	    ${lightfg}${progname}${_lightfg_} [ ${blue}-h|--help${_blue_} ] [ [${blue}-p|--prefix${_blue_}] ${cyan}package_base${_cyan_} ] ${red}env${_red_}
+    ${f[u]}USAGE:${f[_]}
+	    ${f[lightfg]}${f[progname]}${f[_]} ${f[blue]}[-h|--help]${f[_]} ${f[green]}[${f[_]}${f[blue]}[-p|--prefix]${f[_]} ${f[green]}package_base]${f[_]} ${f[red]}env${f[_]}
 
-    ${u}DESCRIPTION:${_u_}
-	    ${cyan}Convenience wrapper for detecting and sourcing conda enviornments${_cyan_}
+    ${f[u]}DESCRIPTION:${f[_]}
+	    ${f[cyan]}Convenience wrapper for detecting and sourcing conda enviornments${f[_]}
 
-    ${u}OPTIONS:${_u_} \
-	${cyan}
+    ${f[u]}OPTIONS:${f[_]} \
+	${f[cyan]}
         -h --help:
             Outputs usage.
         -p --prefix:
             Specify custom prefix directory
-	${_cyan_}
-	${red}
+	${f[_]}
+	${f[red]}
         Prefix Default: \$HOME/anaconda/envs
-	${_red_} \
+	${f[_]} \
 
 	DOCUMENT
 }
-
 # ==============================================================================
 # Global Variables
 # ==============================================================================
 declare -r argv=("$(basename "${BASH_SOURCE}")" "$@")
 declare -i argc="($#) + 1"
 
-# Terminal Formatting
-readonly u=$(tput smul) _u_=$(tput rmul)
-readonly lightfg=$(tput setab 7) _lightfg_=$(tput sgr0)
-readonly blue=$(tput setaf 4) _blue_=$(tput sgr0)
-readonly green=$(tput setaf 2) _green_=$(tput sgr0)
-readonly red=$(tput setaf 1) _red_=$(tput sgr0)
-readonly cyan=$(tput setaf 6) _cyan_=$(tput sgr0)
+# Text Format Bindings
+# ==============================================================================
+# Note: This feature only works on BASH 4+.
+#       Machines running earlier versions of the shell will output
+declare -A f=(
+       [u]=$(tput smul)
+     [red]=$(tput setaf 1)
+   [green]=$(tput setaf 2)
+    [blue]=$(tput setaf 4)
+    [cyan]=$(tput setaf 6)
+ [lightfg]=$(tput setab 7)
+       [_]=$(tput sgr0)
+)
 
 # ==============================================================================
 # Functions
 # ==============================================================================
 function activate() {
-    # Input Validation
+    local activation="${envdir}/${venv}/bin/activate"
+    if [ -f "${activation}" ]; then
+        source "$activation" "$venv"
+    fi
+}
+
+function find_envs() {
+    return
+}
+
+function check_input() {
+    # TODO: Grab avaiable enviornments and check against them
     if ((argc-1 == 1)); then
         local venv="${argv[1]}"
     else
@@ -57,20 +73,16 @@ function activate() {
             "Please select an enviornment" >&2
         printf "${u}PREFIX:${_u_}\n%s \n\n" \
             "${cyan}${envdir}${_cyan_}" >&2
-
+        # Replace with Indexed Array
         for envs in "${envdir}/"*; do
             if [ -r "${envs}/bin/activate" ]; then
                 printf "${blue}%s${_blue_}: " \
                     "${envs##*/}" >&2
                 printf "%s" "$(${envs}/bin/python --version)"
+
             fi
         done
         return 1
-    fi
-
-    local activation="${envdir}/${venv}/bin/activate"
-    if [ -f "${activation}" ]; then
-        source "$activation" "$venv"
     fi
 }
 
@@ -84,7 +96,7 @@ for arg; do
         --help)     args="${args}-h ";;
         --prefix)   args="${args}-p ";;
 
-         *) [[ "${argv[i]:0:1}" == "-" ]] || delim="\""
+         *) [ "${argv[i]:0:1}" = "-" ] || delim="\""
              args="${args}${delim}${arg}${delim} ";;
     esac
 done; eval set -- $args
@@ -107,8 +119,7 @@ done
 # ===============================================================================
 # Main Function
 # ===============================================================================
-function main
-	{
+main() {
     # Check for Anaconda Directory
     local envdir=${PREFIX:="$HOME/anaconda/envs"}
     if ! [ -d "$envdir" ]; then
@@ -116,6 +127,7 @@ function main
             "${red}${envdir}${_red_}" >&2
         return 1
     fi
+    check_input
     activate
 }
 

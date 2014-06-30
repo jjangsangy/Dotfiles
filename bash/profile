@@ -43,8 +43,9 @@ export GREP_OPTIONS='--color=auto'
 export PATH=/usr/local/bin:${HOME}/bin:$HOME/.cabal/bin:$HOME/.rvm/bin:$PATH
 export EDITOR=vim
 export HISTIGNORE="ls:cd:echo:history:clear"
-export PROJECT_HOME=$HOME/Projects
+export PROJECT_HOME="${HOME}/Projects"
 export PIP_RESPECT_VIRTUALENV=true
+export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
 
 source "$HOME/.rvm/scripts/rvm"
 
@@ -98,7 +99,6 @@ function clean_ds() {
 # ==========================================================
 # Completions
 # ==========================================================
-
 _pip_completion()
 {
     COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
