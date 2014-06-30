@@ -24,9 +24,10 @@ usage() {
         -p --prefix:
             Specify custom prefix directory
 	${f[_]}
-	${f[red]}
-        Prefix Default: \$HOME/anaconda/envs
-	${f[_]} \
+    ${f[u]}ENVAR:${f[_]}
+        CONDA_ENVS_PATH: ${f[blue]}${CONDA_ENVS_PATH}${f[_]}
+	
+        Prefix Default: ${f[red]}\$HOME/anaconda/envs${f[_]}
 
 	DOCUMENT
 }
@@ -35,6 +36,7 @@ usage() {
 # ==============================================================================
 declare -r argv=("$(basename "${BASH_SOURCE}")" "$@")
 declare -i argc="($#) + 1"
+
 
 # Text Format Bindings
 # ==============================================================================
@@ -54,23 +56,17 @@ declare -A f=(
 # Functions
 # ==============================================================================
 function activate() {
-    local activation="${envdir}/${venv}/bin/activate"
-    if [ -f "${activation}" ]; then
-        source "$activation" "$venv"
-    fi
-}
-
-function check_input() {
-    # TODO: Grab avaiable enviornments and check against them
+    # Input Validation
     if ((argc-1 == 1)); then
-        local venv="${argv[1]}"
+        local venv=${argv[1]}
     else
         printf "\n${f[u]}%s${f[_]}\n\n" \
             "Please select an enviornment" >&2
         printf "${f[u]}PREFIX:${f[_]}\n%s \n\n" \
-            "${f[cyan]}${envdir}${f[_]}" >&2
-        # Replace with Indexed Array
-        for envs in "${envdir}/"*; do
+            "${f[cyan]}${env_path}${f[_]}" >&2
+
+        # TODO: Replace with Indexed Array
+        for envs in "${env_path}/"*; do
             if [ -r "${envs}/bin/activate" ]; then
                 printf "${f[blue]}%s${f[_]}: " \
                     "${envs##*/}" >&2
@@ -79,6 +75,11 @@ function check_input() {
             fi
         done
         return 1
+    fi
+
+    local activation="${env_path}/${venv}/bin/activate"
+    if [ -f "${activation}" ]; then
+        source "${activation}" "${venv}"
     fi
 }
 
@@ -117,13 +118,12 @@ done
 # ===============================================================================
 main() {
     # Check for Anaconda Directory
-    local envdir=${PREFIX:="$HOME/anaconda/envs"}
-    if ! [ -d "$envdir" ]; then
+    local env_path=${PREFIX:="$HOME/anaconda/envs"}
+    if ! [ -d "${env_path}" ]; then
         printf "No directory at %s\n" \
-            "${red}${envdir}${_red_}" >&2
+            "${f[red]}${env_path}${f[_]}" >&2
         return 1
     fi
-    check_input
     activate
 }
 
