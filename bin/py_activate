@@ -92,7 +92,7 @@ function error_no_input() {
     for envs in "${env_path}/"*; do
         if [ -r "${envs}/bin/activate" ]; then
             printf "${f[blue]}%s${f[_]}: " "${envs##*/}" >&2
-            printf "%s" "$(${envs}/bin/python --version)"
+            printf "%s" "$(${envs}/bin/python --version)" >&2
         fi
     done
 }
