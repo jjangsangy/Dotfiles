@@ -46,15 +46,9 @@ export HISTIGNORE="ls:cd:echo:history:clear"
 export PROJECT_HOME="${HOME}/Projects"
 export PIP_RESPECT_VIRTUALENV=true
 
-# Conda
-export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
-
-source "$HOME/.rvm/scripts/rvm"
-
 # ==========================================================
 # Depreciated Modules
 # ==========================================================
-
 # export WORKON_HOME=$HOME/.virtualenvs
 # export PIP_VIRTUALENV_BASE=$WORKON_HOME
 # source "${HOME}/.powerline.sh"
@@ -70,7 +64,7 @@ source "$HOME/.rvm/scripts/rvm"
 # ==========================================================
 # Homebrew
 # ==========================================================
-if [ "$(brew --prefix)" = "/usr/local" ]; then
+if brew --prefix &> /dev/null;  then
     export HOMEBREW_EDITOR=vim
     export HOMEBREW_VERBOSE=true
 
@@ -99,6 +93,24 @@ function clean_ds() {
 }
 
 # ==========================================================
+# Anaconda
+# ==========================================================
+if [ -d "$HOME/anaconda" ]; then
+    source "$HOME/anaconda/bin/activate" root &>/dev/null
+
+    export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
+
+    eval "$(register-python-argcomplete conda)"
+
+fi
+# ==========================================================
+# Ruby
+# ==========================================================
+if [ -d "$HOME/.rvm" ]; then
+    source "$HOME/.rvm/scripts/rvm"
+fi
+
+# ==========================================================
 # Completions
 # ==========================================================
 _pip_completion()
@@ -108,9 +120,6 @@ _pip_completion()
                    PIP_AUTO_COMPLETE=1 $1 ) )
 }
 complete -o default -F _pip_completion pip
-
-# Anaconda
-# eval "$(register-python-argcomplete conda)"
 
 # NPM Completion
 COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
@@ -157,5 +166,3 @@ elif type compctl &>/dev/null; then
   }
   compctl -K _npm_completion npm
 fi
-
-

@@ -34,14 +34,14 @@ usage() {
 # ==============================================================================
 # Global Variables
 # ==============================================================================
-declare -r argv=("$(basename "${BASH_SOURCE}")" "$@")
+declare -a argv=("$(basename "${BASH_SOURCE}")" "$@")
 declare -i argc="($#) + 1"
 
 
 # Text Format Bindings
 # ==============================================================================
 # Note: This feature only works on BASH 4+.
-#       Machines running earlier versions of the shell will output
+#       Machines running earlier versions of the shell output unformatted text
 declare -A f=(
        [u]=$(tput smul)
      [red]=$(tput setaf 1)
@@ -55,31 +55,82 @@ declare -A f=(
 # ==============================================================================
 # Functions
 # ==============================================================================
-function activate() {
-    # Input Validation
-    if ((argc-1 == 1)); then
-        local venv=${argv[1]}
-    else
-        printf "\n${f[u]}%s${f[_]}\n\n" \
-            "Please select an enviornment" >&2
-        printf "${f[u]}PREFIX:${f[_]}\n%s \n\n" \
-            "${f[cyan]}${env_path}${f[_]}" >&2
-
-        # TODO: Replace with Indexed Array
-        for envs in "${env_path}/"*; do
-            if [ -r "${envs}/bin/activate" ]; then
-                printf "${f[blue]}%s${f[_]}: " \
-                    "${envs##*/}" >&2
-                printf "%s" "$(${envs}/bin/python --version)"
-
+function check_input() {
+    if [ $argc = 2 ]; then
+        for env in ${ENV[@]}; do
+            if [ ${argv[1]} = ${env##*/} ]; then
+                return
             fi
         done
-        return 1
     fi
 
-    local activation="${env_path}/${venv}/bin/activate"
+    error_no_input PREFIX
+    exit 1
+}
+
+function load_envs() {
+    for ENVS in "${PREFIX}"/*; do
+        if [ -d "${ENVS}" ]; then
+            ENV+=($ENVS)
+        fi
+    done
+}
+
+function error_no_input() {
+    local env_path=${!1}
+
+    cat <<- ERROR_MESSAGE
+
+    ${f[u]}Please select an enviornment${f[_]}
+
+    ${f[u]}PREFIX:${f[_]}
+        ${f[cyan]}${env_path}${f[_]}
+
+	ERROR_MESSAGE
+
+    # Print out list of available envs
+    for envs in "${env_path}/"*; do
+        if [ -r "${envs}/bin/activate" ]; then
+            printf "${f[blue]}%s${f[_]}: " "${envs##*/}" >&2
+            printf "%s" "$(${envs}/bin/python --version)"
+        fi
+    done
+}
+
+function error_no_input() {
+    local env_path=${!1}
+
+    cat <<- ERROR_MESSAGE
+
+    ${f[u]}Please select an enviornment${f[_]}
+
+    ${f[u]}PREFIX:${f[_]}
+        ${f[cyan]}${env_path}${f[_]}
+
+	ERROR_MESSAGE
+
+    # Print out list of available envs
+    for envs in "${env_path}/"*; do
+        if [ -r "${envs}/bin/activate" ]; then
+            printf "${f[blue]}%s${f[_]}: " "${envs##*/}" >&2
+            printf "%s" "$(${envs}/bin/python --version)"
+        fi
+    done
+}
+
+function check_anaconda() {
+    if ! [ -d "${PREFIX}" ]; then
+        printf "No directory at %s\n" \
+            "${f[red]}${PREFIX}${f[_]}" >&2
+        exit 1
+    fi
+}
+
+function activate() {
+    local activation="${PREFIX}/${argv[1]}/bin/activate"
+    echo $activation
     if [ -f "${activation}" ]; then
-        source "${activation}" "${venv}"
+        source "${activation}" "${argv[1]}"
     fi
 }
 
@@ -99,6 +150,7 @@ for arg; do
 done; eval set -- $args
 
 # Short Arguments
+declare -a ENVS
 while getopts "p:h" OPTION; do
     case ${OPTION} in
         h) usage
@@ -117,13 +169,13 @@ done
 # Main Function
 # ===============================================================================
 main() {
-    # Check for Anaconda Directory
-    local env_path=${PREFIX:="$HOME/anaconda/envs"}
-    if ! [ -d "${env_path}" ]; then
-        printf "No directory at %s\n" \
-            "${f[red]}${env_path}${f[_]}" >&2
-        return 1
+    # Determine directory of PREFIX enviornments
+    if [ $CONDA_ENVS_PATH ] && [ -z $PREFIX ]; then
+        PREFIX=${CONDA_ENVS_PATH:="${HOME}/anaconda/envs"}
     fi
+
+    check_anaconda; load_envs
+    check_input
     activate
 }
 
