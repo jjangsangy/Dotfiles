@@ -95,8 +95,9 @@ function clean_ds() {
 # ==========================================================
 # Ruby
 # ==========================================================
-if [ -d "$HOME/.rvm" ]; then
-    source "$HOME/.rvm/scripts/rvm"
+if which rbenv &> /dev/null; then
+    export RBENV_ROOT="/usr/local/var/rbenv"
+    eval "$(rbenv init -)"
 fi
 
 # ==========================================================
