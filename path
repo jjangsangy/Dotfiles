@@ -1,17 +1,51 @@
 
-if [[ -f /Applications/MATLAB_R2013a.app/bin/matlab ]]; then
+# ==========================================================
+# Matlab
+# ==========================================================
+if [ -f "/Applications/MATLAB_R2013a.app/bin/matlab" ]; then
     export PATH=$PATH:/Applications/MATLAB_R2013a.app/bin
     alias matlab="matlab -nojvm -nosplash"
 fi
 
-if [[ -d $HOME/bin ]]; then
+# ==========================================================
+# Script Bin Folder
+# ==========================================================
+if [ -d "${HOME}/bin" ]; then
     export PATH=$HOME/bin:$PATH
 fi
 
-if [[ -d $HOME/Calient ]]; then
+# ==========================================================
+# Work
+# ==========================================================
+if [ -d "${HOME}/Calient" ]; then
     export PATH=$HOME/Calient:$PATH
 fi
 
-if [[ $(which brew >& /dev/null) ]]; then
-    export PATH=/usr/local/bin:$PATH
+# ==========================================================
+# Homebrew Package Manager
+# ==========================================================
+if [ "$(which brew &> /dev/null)" ]; then
+    export PATH="/usr/local/bin:${PATH}"
+fi
+
+# ==========================================================
+# Anaconda Python Distribution
+# ==========================================================
+if [ -d "${HOME}/anaconda" ]; then
+    export PATH="${PATH}:${HOME}/anaconda/bin"
+    export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
+
+    # Utility Function for activating Conda Virtual Env
+    function condaenv() {
+        if [ ${1} = "deactivate" ]; then
+            shift 1
+            source "${HOME}/anaconda/bin/deactivate"
+            source "${HOME}/.profile"
+            return
+        else
+            source activate "$@"
+            return
+        fi
+    }
+
 fi

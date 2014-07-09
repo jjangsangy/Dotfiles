@@ -11,8 +11,9 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
 " }}}
-" - Mapleader set to comma {{{
+" - Default Mappings {{{
 let mapleader = ','
+inoremap jk <ESC>
 
 " }}}
 " - Install Vundle bundles {{{

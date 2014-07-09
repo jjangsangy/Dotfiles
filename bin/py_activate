@@ -31,13 +31,6 @@ usage() {
 
 	DOCUMENT
 }
-# ==============================================================================
-# Global Variables
-# ==============================================================================
-declare -a argv=("$(basename "${BASH_SOURCE}")" "$@")
-declare -i argc="($#) + 1"
-
-
 # Text Format Bindings
 # ==============================================================================
 # Note: This feature only works on BASH 4+.
@@ -126,14 +119,6 @@ function check_anaconda() {
     fi
 }
 
-function activate() {
-    local activation="${PREFIX}/${argv[1]}/bin/activate"
-    echo $activation
-    if [ -f "${activation}" ]; then
-        source "${activation}" "${argv[1]}"
-    fi
-}
-
 # ===============================================================================
 # Parameters
 # ===============================================================================
@@ -156,27 +141,35 @@ while getopts "p:h" OPTION; do
         h) usage
            exit 0
             ;;
-        p) readonly PREFIX="${OPTARG}"
+        p) PREFIX="${OPTARG}"
             ;;
        \?) echo "Invalid option: -${OPTARG}" >&2
            exit 1
             ;;
     esac
 done
-    shift $(($OPTIND-1))
+    shift $((OPTIND-1))
 
 # ===============================================================================
 # Main Function
 # ===============================================================================
+declare -a argv=("$(basename "${BASH_SOURCE}")" "$@")
+declare -i argc="($#) + 1"
+
 main() {
     # Determine directory of PREFIX enviornments
-    if [ $CONDA_ENVS_PATH ] && [ -z $PREFIX ]; then
+    if [ -z ${CONDA_ENVS_PATH} ] || [ -z $PREFIX ]; then
         PREFIX=${CONDA_ENVS_PATH:="${HOME}/anaconda/envs"}
     fi
 
-    check_anaconda; load_envs
+    check_anaconda
+    load_envs
     check_input
-    activate
+
+    activation="${PREFIX}/${argv[1]}/bin/activate"
+    if [ -f "${activation}" ]; then
+        source "${activation}" "${argv[1]}"
+    fi
 }
 
 # ===============================================================================

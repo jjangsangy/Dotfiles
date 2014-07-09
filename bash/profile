@@ -93,17 +93,6 @@ function clean_ds() {
 }
 
 # ==========================================================
-# Anaconda
-# ==========================================================
-if [ -d "$HOME/anaconda" ]; then
-    source "$HOME/anaconda/bin/activate" root &>/dev/null
-
-    export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
-
-    eval "$(register-python-argcomplete conda)"
-
-fi
-# ==========================================================
 # Ruby
 # ==========================================================
 if [ -d "$HOME/.rvm" ]; then
