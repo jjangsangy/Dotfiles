@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function, unicode_literals
+
+from argparse import ArgumentParser
+import dateutil.parser
+import json
+import os
+import requests
+import sys
+sys.dont_write_bytecode = True
+
+# ==============================================================================
+# API Globals
+# ==============================================================================
+API_KEY = "2jAqS1oCOKTQMrn84UIgMp7kpHoYhZFSV0acxsb3fntyANwX"
+FEED_ID = 1323604224
+
+# ==============================================================================
+# Argument Parsing
+# ==============================================================================
+parser = ArgumentParser()
+parser.add_argument('-v', '--version', action='version', version='0.0.1')
+parser.add_argument('stream', nargs='?', help='Grab a feed datastream')
+parser.add_argument('--limit', metavar='lim', default='100',
+                    help='Default: 100, Max: 1000')
+parser.add_argument('--filetype', default='csv',
+                    metavar='ft', help='Default: csv',
+                    choices=('json', 'csv', 'xml'))
+parser.add_argument('--duration', default='12hours',
+                    metavar='time',
+                    help='Default: 6hours')
+parser.add_argument('--interval', default=30,
+                    metavar='rep', help='Default: 30')
+args = parser.parse_args()
+
+# ==============================================================================
+# Functions
+# ==============================================================================
+def connect(limit, interval, duration, filetype):
+    base = "https://api.xively.com/v2/feeds"
+    headers = {"X-ApiKey": API_KEY,
+               "Host": "api.xively.com",
+               "Content-Encoding": "utf-8,gzip"}
+    params = {"duration": duration,
+              "interval": interval,
+              "limit": limit}
+    url = "/".join([str(base), str(FEED_ID)])
+    request = requests.get(".".join([url, filetype]),
+                            headers=headers,
+                            params=params)
+    return request
+
+def main():
+    """Currently only supports csv parsing and formatting"""
+    request = connect(args.limit, args.interval, args.duration, args.filetype)
+
+    if request.ok:
+        print('{0:8} {1:10}'.format('Temp F', 'Device'), 'DateTime')
+        points = (data.split(',') for data in request.text.split('\n'))
+        for point in points:
+            print('{0:8} {1:10}'.format(point[2], point[0]),
+                  dateutil.parser.parse(point[1].replace('T', ' ')).ctime())
+    elif request.status_code != requests.codes.ok:
+        return request.raise_for_status()
+    else:
+        return 'Program failed to execute'
+
+# ==============================================================================
+# Entry Point
+# ==============================================================================
+if __name__ == '__main__':
+    sys.exit(main())

@@ -41,3 +41,5 @@ Icon*
 Calient
 env
 # }}}
+
+bin/jacurl.sh

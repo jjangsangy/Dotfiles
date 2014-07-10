@@ -76,7 +76,7 @@ endif
 " Edit :           <leader>ev
 " Source :         <leader>sv
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
-nnoremap <silent> <leader>sv :source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
+nnoremap <silent> <leader>sv :w<CR>:source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
 
 " Save and Quit
 nnoremap <leader>ss :w<CR>
@@ -249,7 +249,7 @@ augroup END
 " - Gui Options {{{
 " ==========================================================
 if (&t_Co == 256 || has ('gui_running'))
-    set guifont=Inconsolata-dz:h14
+    set guifont=Ubuntu\ Mono:h16
     call togglebg#map("<F5>")
     colorscheme solarized
 
