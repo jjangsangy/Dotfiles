@@ -11,7 +11,7 @@ way.
 """
 from __future__ import print_function, unicode_literals
 
-from argparse import ArgumentParser
+from   argparse import ArgumentParser
 import dateutil.parser
 import json
 import requests
@@ -25,7 +25,7 @@ sys.dont_write_bytecode = True
 # API Globals
 # ==============================================================================
 API_KEY = "2jAqS1oCOKTQMrn84UIgMp7kpHoYhZFSV0acxsb3fntyANwX"
-FEED = "1323604224"
+FEED    = "1323604224"
 
 # ==============================================================================
 # Argument Parsing
@@ -64,19 +64,19 @@ args = parser.parse_args()
 # TODO: Replace Third Party Requests Module with urllib
 def connect():
     """Composes a request to Xively API endpoint and returns a response object"""
-    base = "https://api.xively.com/v2/feeds"
-    url = '{base}/{feed}.{ext}'.format(
+    base = 'https://api.xively.com/v2/feeds'
+    url  = '{base}/{feed}.{ext}'.format(
         base=base, feed=FEED, ext=args.filetype
     )
     headers = {
         "X-ApiKey": API_KEY,
-        "Host": "api.xively.com",
+            "Host": "api.xively.com",
     }
     params = {
         "datastreams": args.stream,
-        "duration": args.duration,
-        "interval": args.interval,
-        "limit": args.limit
+           "duration": args.duration,
+           "interval": args.interval,
+              "limit": args.limit
     }
     return requests.get(url, headers=headers, params=params)
 
@@ -107,20 +107,23 @@ def to_xml(resp):
 # TODO: Better Datetime handling for passing to plotting and analytics methods
 # Warning: Currently only supports handling csv formatted output
 def main():
-    """Main Program"""
     request = connect()
     if request.ok:
-        # Handle and format response object
         points = (data.split(',') for data in request.text.split('\n'))
+        # Header
         print('{date:10} {time:9} {device:9} {temperature:10}'.format(
-            date='Date', time='Time', temperature='Temp F', device='Device'))
+                   date = 'Date',
+                   time = 'Time',
+            temperature = 'Temp F',
+                 device = 'Device'
+        ))
+        # Values
         for point in points:
-            print(
-                dateutil.parser.parse(point[1].replace('T', ' ')).ctime()[0:-4],
+            print(dateutil.parser.parse(point[1].replace('T', ' ')).ctime()[0:-4],
                 '{device:9} {temperature:0= 6.2f}'.format(
-                    device=point[0], temperature=float(point[2])
-                 )
-             )
+                         device = point[0],
+                    temperature = float(point[2])
+        ))
     elif request.status_code != requests.codes.ok:
         return request.raise_for_status()
     else:
