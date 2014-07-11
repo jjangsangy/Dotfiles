@@ -8,6 +8,8 @@ import json
 import os
 import requests
 import sys
+
+# Don't generate *.pyc/__pycache__ for single file programs
 sys.dont_write_bytecode = True
 
 # TODO: Convert to package for easy distribution to windows machines
@@ -77,12 +79,12 @@ def connect():
 
 # TODO: Add Support for JSON and XML
 # TODO: Better Datetime handling for passing to plotting and analytics methods
-# Currently only supports csv parsing and formatting
+# Warning: Currently only supports handling csv formatted output
 def main():
-    """Main Entry point"""
+    """Main Program"""
     request = connect()
     if request.ok:
-        # Handle and format CSV response object
+        # Handle and format response object
         points = (data.split(',') for data in request.text.split('\n'))
         print('{0:8} {1:10}'.format('Temp F', 'Device'), 'DateTime')
         for point in points:
