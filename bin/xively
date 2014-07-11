@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Author: Sang Han 2014
+
+A console script and REST API Client for Xively data.
+Only supports a minimal amount of features necessary
+for collecting and formatting data and HTTP/1.1 GET Requests.
+More complicated features and logic should not be implemented in this
+way.
+"""
 from __future__ import print_function, unicode_literals
 
 from argparse import ArgumentParser
@@ -17,11 +26,12 @@ sys.dont_write_bytecode = True
 # API Globals
 # ==============================================================================
 API_KEY = "2jAqS1oCOKTQMrn84UIgMp7kpHoYhZFSV0acxsb3fntyANwX"
-FEED_ID = 1323604224
-
+FEED = "1323604224"
+ 
 # ==============================================================================
 # Argument Parsing
 # ==============================================================================
+# TODO: Allow specifying the start and end time for reading.
 # TODO: Move parser out of global scope
 parser = ArgumentParser()
 parser.add_argument(
@@ -32,24 +42,24 @@ parser.add_argument(
     help='Grab a feed datastream'
 )
 parser.add_argument(
-    '--limit', metavar='lim', default='100',
-    help='Default: 100, Max: 1000'
+    '--limit', metavar='lim',
+    help='Maximum data points returned per call Default: 100, Max: 1000'
 )
 parser.add_argument(
     '--filetype', default='csv', metavar='ft', choices=('json', 'csv', 'xml'),
-    help='Default: csv'
+    help='Specity returned markup language Default: csv'
 )
 parser.add_argument(
-    '--duration', default='12hours', metavar='time',
-    help='Default: 6hours'
+    '--duration', default=None, metavar='time',
+    help='Duration period over where data is collected, Default: 6hours'
 )
 parser.add_argument(
     '--interval', default=30, metavar='rep',
-    help='Default: 30'
+    help='Only grab at intervals of Default: 30s'
 )
 parser.add_argument(
     '--channel', default=None, metavar='stream-id',
-    help='Specify a datastream'
+    help='Specify a datastream object'
 )
 args = parser.parse_args()
 
@@ -61,12 +71,11 @@ def connect():
     """Composes a request to Xively API endpoint and returns a response object"""
     base = "https://api.xively.com/v2/feeds"
     url = '{base}/{feed}.{ext}'.format(
-        base=base, feed=FEED_ID, ext=args.filetype
+        base=base, feed=FEED, ext=args.filetype
     )
     headers = {
         "X-ApiKey": API_KEY,
         "Host": "api.xively.com",
-        "Content-Encoding": "utf-8,gzip"
     }
     params = {
         "datastreams": args.channel,
@@ -75,6 +84,27 @@ def connect():
         "limit": args.limit
     }
     return requests.get(url, headers=headers, params=params)
+
+
+# Function Scaffold
+# TODO: Move formatting and parsing logit out of main
+def to_csv(resp):
+    """Handle parsing comma seperated files"""
+    pass
+
+# Function Scaffold
+def to_json(resp):
+    """Unpack Response object and returns using JSON schema mapped to Python Dict"""
+    try:
+        # Requests
+        return resp.json()
+    except:
+        return json.loads(resp.text)
+
+# Function Scaffold
+def to_xml(resp):
+    """Handle parsing XML"""
+    pass
 
 
 # TODO: Add Support for JSON and XML
