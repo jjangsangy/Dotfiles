@@ -10,6 +10,7 @@ import requests
 import sys
 sys.dont_write_bytecode = True
 
+# TODO: Convert to package for easy distribution to windows machines
 # ==============================================================================
 # API Globals
 # ==============================================================================
@@ -19,55 +20,81 @@ FEED_ID = 1323604224
 # ==============================================================================
 # Argument Parsing
 # ==============================================================================
+# TODO: Move parser out of global scope
 parser = ArgumentParser()
-parser.add_argument('-v', '--version', action='version', version='0.0.1')
-parser.add_argument('stream', nargs='?', help='Grab a feed datastream')
-parser.add_argument('--limit', metavar='lim', default='100',
-                    help='Default: 100, Max: 1000')
-parser.add_argument('--filetype', default='csv',
-                    metavar='ft', help='Default: csv',
-                    choices=('json', 'csv', 'xml'))
-parser.add_argument('--duration', default='12hours',
-                    metavar='time',
-                    help='Default: 6hours')
-parser.add_argument('--interval', default=30,
-                    metavar='rep', help='Default: 30')
-parser.add_argument('--channel', default=None, metavar='stream-id',
-                    help='Specify a datastream')
+parser.add_argument(
+    '-v', '--version', action='version', version='0.0.1'
+)
+parser.add_argument(
+    'stream', nargs='?',
+    help='Grab a feed datastream'
+)
+parser.add_argument(
+    '--limit', metavar='lim', default='100',
+    help='Default: 100, Max: 1000'
+)
+parser.add_argument(
+    '--filetype', default='csv', metavar='ft', choices=('json', 'csv', 'xml'),
+    help='Default: csv'
+)
+parser.add_argument(
+    '--duration', default='12hours', metavar='time',
+    help='Default: 6hours'
+)
+parser.add_argument(
+    '--interval', default=30, metavar='rep',
+    help='Default: 30'
+)
+parser.add_argument(
+    '--channel', default=None, metavar='stream-id',
+    help='Specify a datastream'
+)
 args = parser.parse_args()
 
 # ==============================================================================
 # Functions
 # ==============================================================================
-def connect(limit, interval, duration, filetype):
+# TODO: Replace Third Party Requests Module with urllib
+def connect():
+    """Composes a request to Xively API endpoint and returns a response object"""
     base = "https://api.xively.com/v2/feeds"
-    headers = {"X-ApiKey": API_KEY,
-               "Host": "api.xively.com",
-               "Content-Encoding": "utf-8,gzip"}
-    params = {"datastreams": args.channel,
-              "duration": duration,
-              "interval": interval,
-              "limit": limit}
-    url = "/".join([str(base), str(FEED_ID)])
-    request = requests.get(".".join([url, filetype]),
-                            headers=headers,
-                            params=params)
-    return request
+    url = '{base}/{feed}.{ext}'.format(
+        base=base, feed=FEED_ID, ext=args.filetype
+    )
+    headers = {
+        "X-ApiKey": API_KEY,
+        "Host": "api.xively.com",
+        "Content-Encoding": "utf-8,gzip"
+    }
+    params = {
+        "datastreams": args.channel,
+        "duration": args.duration,
+        "interval": args.interval,
+        "limit": args.limit
+    }
+    return requests.get(url, headers=headers, params=params)
 
+
+# TODO: Add Support for JSON and XML
+# TODO: Better Datetime handling for passing to plotting and analytics methods
+# Currently only supports csv parsing and formatting
 def main():
-    """Currently only supports csv parsing and formatting"""
-    request = connect(args.limit, args.interval, args.duration, args.filetype)
-
+    """Main Entry point"""
+    request = connect()
     if request.ok:
-        print('{0:8} {1:10}'.format('Temp F', 'Device'), 'DateTime')
+        # Handle and format CSV response object
         points = (data.split(',') for data in request.text.split('\n'))
+        print('{0:8} {1:10}'.format('Temp F', 'Device'), 'DateTime')
         for point in points:
-            print('{0:8} {1:10}'.format(point[2], point[0]),
-                  dateutil.parser.parse(point[1].replace('T', ' ')).ctime())
+            print(
+                '{0:8} {1:10}'.format(point[2], point[0]),
+                dateutil.parser.parse(point[1].replace('T', ' ')).ctime()
+            )
     elif request.status_code != requests.codes.ok:
         return request.raise_for_status()
     else:
         return 'Program failed to execute'
+
 
 # ==============================================================================
 # Entry Point
