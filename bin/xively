@@ -32,6 +32,8 @@ parser.add_argument('--duration', default='12hours',
                     help='Default: 6hours')
 parser.add_argument('--interval', default=30,
                     metavar='rep', help='Default: 30')
+parser.add_argument('--channel', default=None, metavar='stream-id',
+                    help='Specify a datastream')
 args = parser.parse_args()
 
 # ==============================================================================
@@ -42,7 +44,8 @@ def connect(limit, interval, duration, filetype):
     headers = {"X-ApiKey": API_KEY,
                "Host": "api.xively.com",
                "Content-Encoding": "utf-8,gzip"}
-    params = {"duration": duration,
+    params = {"datastreams": args.channel,
+              "duration": duration,
               "interval": interval,
               "limit": limit}
     url = "/".join([str(base), str(FEED_ID)])
