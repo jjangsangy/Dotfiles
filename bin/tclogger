@@ -66,7 +66,7 @@ def connect():
     """Composes a request to Xively API endpoint and returns a response object"""
     base = 'https://api.xively.com/v2/feeds'
     url  = '{base}/{feed}.{ext}'.format(
-        base=base, feed=FEED, ext=args.filetype
+            base=base, feed=FEED, ext=args.filetype
     )
     headers = {
         "X-ApiKey": API_KEY,
@@ -115,7 +115,7 @@ def main():
                    date = 'Date',
                    time = 'Time',
             temperature = 'Temp F',
-                 device = 'Device'
+                 device = 'Device',
         ))
         # Values
         for point in points:
