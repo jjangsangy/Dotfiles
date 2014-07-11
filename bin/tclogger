@@ -112,12 +112,15 @@ def main():
     if request.ok:
         # Handle and format response object
         points = (data.split(',') for data in request.text.split('\n'))
-        print('{0:8} {1:10}'.format('Temp F', 'Device'), 'DateTime')
+        print('{date:10} {time:9} {device:9} {temperature:10}'.format(
+            date='Date', time='Time', temperature='Temp F', device='Device'))
         for point in points:
             print(
-                dateutil.parser.parse(point[1].replace('T', ' ')).ctime(),
-                '{0:8} {1:10}'.format(point[2], point[0])
-            )
+                dateutil.parser.parse(point[1].replace('T', ' ')).ctime()[0:-4],
+                '{device:9} {temperature:0= 6.2f}'.format(
+                    device=point[0], temperature=float(point[2])
+                 )
+             )
     elif request.status_code != requests.codes.ok:
         return request.raise_for_status()
     else:

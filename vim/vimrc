@@ -249,7 +249,7 @@ augroup END
 " - Gui Options {{{
 " ==========================================================
 if (&t_Co == 256 || has ('gui_running'))
-    set guifont=Ubuntu\ Mono:h16
+    set guifont=Ubuntu\ Mono:h18
     call togglebg#map("<F5>")
     colorscheme solarized
 
