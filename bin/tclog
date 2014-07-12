@@ -80,7 +80,6 @@ def connect():
     }
     return requests.get(url, headers=headers, params=params)
 
-
 # Function Scaffold
 # TODO: Move formatting and parsing logit out of main
 def to_csv(resp):
@@ -102,13 +101,17 @@ def to_xml(resp):
     """Handle parsing XML"""
     pass
 
-
 # TODO: Add Support for JSON and XML
 # TODO: Better Datetime handling for passing to plotting and analytics methods
 # Warning: Currently only supports handling csv formatted output
 def main():
     request = connect()
-    if request.ok and request.text != "":
+
+    # CSV Parser and Formatting
+    if request.ok and request.text == "":
+        sys.stderr.write("No data exists at the range you specified\n")
+        sys.exit(1)
+    if request.ok:
         points = (data.split(',') for data in request.text.split('\n'))
         # Header
         print('{date:10} {time:9} {device:9} {temperature:10}'.format(
@@ -124,11 +127,19 @@ def main():
                          device = point[0],
                     temperature = float(point[2])
         ))
+    elif request.status_code == 403:
+        sys.stderr.write(
+            """
+            You have specified a range that exceeded the maximum allowable values
+            Please modify the `--duration` and --interval
+            \n"""
+        )
+        sys.exit(1)
     elif request.status_code != requests.codes.ok:
         return request.raise_for_status()
     else:
-        return 'Program failed to execute'
-
+        sys.stderr.write("Program failed to execute\n")
+        sys.exit(1)
 
 # ==============================================================================
 # Entry Point
