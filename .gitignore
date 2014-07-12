@@ -19,7 +19,7 @@
 *.rar
 *.tar
 *.zip
-JAVfind
+jav
 douload
 ren
 # }}}
@@ -41,5 +41,3 @@ Icon*
 Calient
 env
 # }}}
-
-bin/jacurl.sh

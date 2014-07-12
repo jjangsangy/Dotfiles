@@ -101,6 +101,10 @@ noremap <C-a> <esc>0
 vnoremap <Leader>s :sort<CR>
 
 " }}}
+" {{{ Pesky Whitespace
+nnoremap <Leader>white :%s/\s\+$//<CR>
+
+" }}}
 " }}}
 " - Windows Management {{{
 " ==========================================================
