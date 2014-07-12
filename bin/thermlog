@@ -108,7 +108,7 @@ def to_xml(resp):
 # Warning: Currently only supports handling csv formatted output
 def main():
     request = connect()
-    if request.ok:
+    if request.ok and request.text != "":
         points = (data.split(',') for data in request.text.split('\n'))
         # Header
         print('{date:10} {time:9} {device:9} {temperature:10}'.format(
