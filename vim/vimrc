@@ -260,7 +260,7 @@ if (&t_Co == 256 || has ('gui_running'))
     if strftime("%H") >= 5 && strftime("%H") <= 20
         set background=light
     else
-        set background=light
+        set background=dark
     endif
 
     if has("gui_macvim")
