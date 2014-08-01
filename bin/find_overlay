@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Global Argument Parameter
+readonly ARGS=("$@")
+
+main() {
+    # Unpack dies and index ID
+    # Translate Spaces into commas for parsing
+    local dies=($(tr ' ' ',' < "${ARGS[@]}"))
+
+    for die in "${dies[@]//,/ }"; do
+        # Die Length is Exactly 12 Characters
+        if [ ${#die} -le 12 ]; then continue; fi
+
+        # Only Grab Last 12 Characters
+        local id="${die: -12:${#die}}"
+
+        # Print Header
+        printf "%s\n" "${id^^}"
+        printf "%s\n" "=============="
+
+        # Formatting
+        find . -type f -name "${id^^}"*.CSV \
+            | sed -E \
+                -e 's|\./|P:\\Telcordia\\|g' \
+                -e 's|\/|\\|g' \
+            | awk '\
+                BEGIN {FS="\\"};
+                    !/Test Validation/ {
+                        if ($3=="Thermoshock" || $3=="Baseline")
+                            print $0
+                };
+                END {printf("\n")}'
+    done
+}
+
+if [ "$0" = "$BASH_SOURCE" ] && [ -r "${ARGS[@]}" ]; then
+    main
+fi

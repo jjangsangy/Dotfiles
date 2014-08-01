@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 # -*- coding: utf-8 -*-
 
 
@@ -18,9 +17,11 @@ def make_directories(path):
     with open(path, 'rt') as directories:
         for dirs in directories:
             try:
-                os.makedirs(dirs.strip())
-                print('Making directories %s' % dirs.strip())
-            except:
+                if dirs.strip():
+                    directory_name = dirs.strip().replace(',', ' ').replace('\t', ' ')
+                    os.makedirs(directory_name, mode=0755)
+                    print('Making directories %s' % directory_name)
+            except OSError:
                 print('Directory %s already exists' % dirs.strip())
 
 def main():

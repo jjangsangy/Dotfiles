@@ -1,5 +1,6 @@
 alias myPATH="echo ${PATH} | tr ':' '\n' | sort"
 alias l="ls -l"
+alias dock="docker"
 
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"

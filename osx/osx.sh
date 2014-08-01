@@ -77,9 +77,6 @@ defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
 # Avoid creating .DS_Store files on network volumes
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
-# Empty Trash securely by default
-defaults write com.apple.finder EmptyTrashSecurely -bool true
-
 # Safari
 # ======
 

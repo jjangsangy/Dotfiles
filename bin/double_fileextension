@@ -1,0 +1,15 @@
+#!/bin/bash
+
+main() {
+    for file in *; do
+        if [[ "${file}" =~ [a-zA-Z]{3,4}.[a-zA-Z]{3,4}$ ]]; then
+            local new_file=$(awk -F. '{print $1 "." $3}' <<< "${file}")
+            printf "OLD_FILENAME: %s\nNEW_FILENAME: %s\n" "${file}" "${new_file}"
+        fi
+    done
+}
+
+
+if [ $0 = $BASH_SOURCE ]; then
+    main
+fi

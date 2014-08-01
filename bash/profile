@@ -92,12 +92,48 @@ function clean_ds() {
     find . -type f -name '.DS_Store' -exec rm '{}' \;
 }
 
+function homebrew() {
+    brew update && brew upgrade
+}
+
+# ==========================================================
+# Docker
+# ==========================================================
+if which docker &> /dev/null; then
+    export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2375
+
+    docked() {
+        # Returns Last Image ID
+        docker ps -l -q
+    }
+
+    docker_clean() {
+        # Cleanup
+        docker rm $(docker ps -a -q)
+    }
+
+    docker_rm() {
+        # Remove Untagged Images
+        local group=${1-'<none>'}
+        docker rmi $(awk '{if ($1=="'${group}'") print $3}' <(docker images))
+    }
+fi
+
 # ==========================================================
 # Ruby
 # ==========================================================
 if which rbenv &> /dev/null; then
     export RBENV_ROOT="/usr/local/var/rbenv"
     eval "$(rbenv init -)"
+fi
+
+# ==========================================================
+# Go
+# ==========================================================
+export PATH=$PATH:/usr/local/opt/go/libexec/bin
+if [ -d $HOME/Projects/go ]; then
+    export GOPATH=$HOME/Projects/go
+    export PATH=$PATH:$GOPATH/bin
 fi
 
 # ==========================================================

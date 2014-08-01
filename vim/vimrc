@@ -258,13 +258,13 @@ if (&t_Co == 256 || has ('gui_running'))
     colorscheme solarized
 
     if strftime("%H") >= 5 && strftime("%H") <= 20
-        set background=light
+        set background=dark
     else
         set background=dark
     endif
 
     if has("gui_macvim")
-        set guioptions-=rLmT        "remove scroll bars
+        set guioptions-=rLmT
         let g:BASH_GuiSnippetBrowser = 'gui'
     endif
 endif
