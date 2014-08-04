@@ -100,19 +100,29 @@ function homebrew() {
 # Docker
 # ==========================================================
 if which docker &> /dev/null; then
-    export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2375
+    alias d_ip="docker inspect --format '{{ .NetworkSettings.IPAddress }}'"
+
+    export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):$(boot2docker info | jq '.["DockerPort"]')
+
+    docker_run() {
+        docker run -it --rm ${1} /bin/bash -l
+    }
 
     docked() {
         # Returns Last Image ID
         docker ps -l -q
     }
 
-    docker_clean() {
-        # Cleanup
-        docker rm $(docker ps -a -q)
+    d_ls() {
+        docker images
     }
 
-    docker_rm() {
+    d_clean() {
+        # Cleanup Empty Containers
+        docker rm $(docker ps -a -q) 2>/dev/null
+    }
+
+    d_rm() {
         # Remove Untagged Images
         local group=${1-'<none>'}
         docker rmi $(awk '{if ($1=="'${group}'") print $3}' <(docker images))

@@ -1,19 +1,22 @@
-alias myPATH="echo ${PATH} | tr ':' '\n' | sort"
+# Commands
 alias l="ls -l"
-alias dock="docker"
 
+# Filesystem
+alias vimrc="vim ~/.vimrc"
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
-alias gc='git commit'
-alias gp='git push'
-alias vimrc='vim ~/.vimrc'
 
-alias sshPi="ssh sang@192.168.108.5"
+# Git
+alias gc="git commit"
+alias gp="git push"
+
+# SSH
 alias sshApps="ssh sang@sangapps.com"
 alias sshCloud="ssh sang@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
 alias sshSRV="ssh sang@srv.sangcloud.com"
 
+# Finder Operations
 alias Inventory="open /Volumes/Optical\ Comp/Inventory/MEMS"
 alias PinData="open /Volumes/PubStore/_Production\ Data/MEMs\ PROBE\ DATA/OSF"
 alias Autoprober="open /Volumes/Public/Calient/AutoProber"
@@ -23,14 +26,3 @@ alias FHTraveler="open /Volumes/Public/Calient/24\ OSF/Faceplate/Traveler"
 alias HAN="open /Volumes/PubStore/_SB\ Employees/HAN"
 alias PartialProbe="open /Volumes/Public/Calient/AutoProber/Data/Partial\ Probe"
 alias QData="open /Volumes/Public/Calient/AutoProber/Data/Q\ measurement"
-
-alias ipy='cd ~/Projects/IPythonNB/ && ipython notebook --profile=sang'
-alias nbserver='ipython notebook --profile=nbserver'
-
-# OS Specific
-if [[ $OSTYPE == "cygwin" ]]; then
-    function open() {
-        local FOLDER="$1"
-        cmd /c "explorer $(cygpath -w ${FOLDER:='.'})"
-    }
-fi
