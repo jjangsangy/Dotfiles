@@ -2,7 +2,6 @@ Bundle 'vim-scripts/restore_view.vim'
 Bundle 'Raimondi/delimitMate'
 Bundle 'vim-scripts/bash-support.vim'
 Bundle 'bling/vim-airline'
-Bundle 'Valloric/YouCompleteMe'
 Bundle 'chriskempson/vim-tomorrow-theme'
 Bundle 'ivanov/vim-ipython'
 Bundle 'Shougo/vimproc'
@@ -14,7 +13,17 @@ Bundle 'Rykka/riv.vim'
 Bundle 'javascript-libraries-syntax'
 Bundle 'mattn/emmet-vim'
 Bundle 'Glench/Vim-Jinja2-Syntax'
-Bundle 'vim-scripts/MatlabFilesEdition'
-Bundle 'fatih/vim-go'
 Bundle 'ekalinin/Dockerfile.vim'
 Bundle 'evanmiller/nginx-vim-syntax'
+
+if exepath("matlab")
+    Bundle 'vim-scripts/MatlabFilesEdition'
+endif
+
+if exists("$GOPATH")
+    Bundle 'fatih/vim-go'
+endif
+
+if v:version >= 740
+    Bundle 'valloric/YouCompleteMe'
+endif

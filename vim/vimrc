@@ -78,13 +78,6 @@ endif
 nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <silent> <leader>sv :w<CR>:source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
 
-" Save and Quit
-nnoremap <leader>ss :w<CR>
-nnoremap <leader>sq :wq<CR>
-nnoremap <leader>qq :q!<CR>
-nnoremap <leader>cc :close<CR>
-
-" }}}
 " Code folding with <Space> {{{
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
@@ -123,12 +116,6 @@ noremap <Right> <c-w><
 
 " }}}
 
-" Tab Management {{{
-" nnoremap <Up>   :tabnext<CR>
-" nnoremap <Down> :tabprevious<CR>
-nnoremap <C-n>  :tabnew<CR>
-
-" }}}
 " Buffer Management {{{
 nnoremap <Right> :bnext<CR>
 nnoremap <Left>  :bprevious<CR>
@@ -173,8 +160,23 @@ let g:ctrlp_max_files = 0
 let g:gitgutter_enabled = 0
 let g:used_javascript_libs = 'angularjs'
 let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
-let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 
+" YouCompleteMe Overrides {{{
+let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<S-Tab>', '<Up>']
+let g:ycm_key_invoke_completion = '<C-Space>'
+let g:ycm_key_detailed_diagnostics = '<leader>a'
+let g:ycm_global_ycm_extra_conf = '/Volumes/User/jjangsangy/.ycm_extra_conf.py'
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_add_preview_to_completeopt = 1
+
+
+" Homebrew Python Interpreter
+let homebrew_python = '/usr/local/Frameworks/Python.framework/Versions/2.7/bin/python'
+if executable(homebrew_python)
+    let g:ycm_path_to_python_interpreter = homebrew_python
+endif
+    " }}}
 " }}}
 " Line 80 gets a tag {{{
 highlight ColorColumn ctermbg=magenta
