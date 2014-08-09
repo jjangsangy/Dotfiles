@@ -4,23 +4,20 @@ set nocompatible
 syntax enable
 
 " }}}
-" Vundle {{{
-filetype on
-filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
 
-" }}}
 " - Default Mappings {{{
 let mapleader = ','
 inoremap jk <ESC>
 
 " }}}
-" - Install Vundle bundles {{{
+"
+" - Install Plug bundles {{{
 " ==========================================================
-if filereadable(expand("~/.vimrc.bundles"))
-    source ~/.vimrc.bundles
-    source ~/.vimrc.bundles.local
+if filereadable(expand("~/.vimrc.plug"))
+    call plug#begin('~/.vim/plugged')
+    source ~/.vimrc.plug
+    source ~/.vimrc.plug.local
+    call plug#end()
 endif
 
 filetype plugin indent on
@@ -170,7 +167,6 @@ let g:ycm_global_ycm_extra_conf = '/Volumes/User/jjangsangy/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_add_preview_to_completeopt = 1
 
-
 " Homebrew Python Interpreter
 let homebrew_python = '/usr/local/Frameworks/Python.framework/Versions/2.7/bin/python'
 if executable(homebrew_python)
@@ -197,12 +193,19 @@ if executable('ag')
 
   set grepprg=ag\ --nogroup\ --nocolor
 
-" }}}
-" Use ag in CtrlP for listing files {{{
+  " Use ag in CtrlP for listing files
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 
-" }}}
+" pt with unite
+if executable('pt')
+  nnoremap <silent> ,g :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+  let g:unite_source_grep_command = 'pt'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor'
+  let g:unite_source_grep_recursive_opt = ''
+  let g:unite_source_grep_encoding = 'utf-8'
+endif
+
 "     }}}
 " - Filetype Specific {{{
 " ==========================================================

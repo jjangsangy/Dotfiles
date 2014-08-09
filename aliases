@@ -1,12 +1,13 @@
 # Commands
-alias l="ls -l"
+alias l="ls -hrtl"
 
 # Filesystem
-alias vimrc="vim ~/.vimrc"
+alias vimrc="vim ~/.vimrc"                     # Open vimrc with vim
 alias Desktop="cd ~/Desktop"
 alias Downloads="cd ~/Downloads"
 
 # Git
+# (can be overridden by git config)
 alias gc="git commit"
 alias gp="git push"
 
@@ -17,6 +18,7 @@ alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
 alias sshSRV="ssh sang@srv.sangcloud.com"
 
 # Finder Operations
+# `open` command only available on Mac OS X Terminals
 alias Inventory="open /Volumes/Optical\ Comp/Inventory/MEMS"
 alias PinData="open /Volumes/PubStore/_Production\ Data/MEMs\ PROBE\ DATA/OSF"
 alias Autoprober="open /Volumes/Public/Calient/AutoProber"

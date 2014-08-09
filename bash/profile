@@ -141,8 +141,8 @@ fi
 # Go
 # ==========================================================
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
-if [ -d $HOME/Projects/go ]; then
-    export GOPATH=$HOME/Projects/go
+if [ -d $HOME/Go ]; then
+    export GOPATH=$HOME/Go
     export PATH=$PATH:$GOPATH/bin
 fi
 

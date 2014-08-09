@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-# Defaults to pip2 unless otherwise specified
+# Assumes Python 2 unless specified
 if [ "$1" = 3 ]; then
     V=3
+else
+    V=2
 fi
 
 function outdated() {
@@ -15,17 +17,17 @@ function outdated() {
 }
 
 main() {
-    echo "Unpacking outdated packages for Python ${V:-2}"
+    echo "Unpacking outdated packages for Python ${V}"
     declare -a list=( $(outdated) )
 
     # Loop through each package and install upgrade
     for ((i=0; i<${#list[@]}; i++)); do
-        printf "Installing Package: %-20s" "${list[i]}"
+        printf "Package: %-20s $(tput setaf 6)Installing$(tput sgr0)" "${list[i]}"
 
         # Checks for successful installation
         pip${V} install -U "${list[i]}" &>/dev/null \
-            && printf "$(tput setaf 2)%s$(tput sgr0)\n" "Success" \
-            || printf "$(tput setaf 1)%s$(tput sgr0)\n" "Fail"
+            && printf "\b\b\b\b\b\b\b\b\b\b$(tput setaf 2)%-11s$(tput sgr0)\n" "Success" \
+            || printf "\b\b\b\b\b\b\b\b\b\b$(tput setaf 1)%-11s$(tput sgr0)\n" "Fail"
     done
 }
 
