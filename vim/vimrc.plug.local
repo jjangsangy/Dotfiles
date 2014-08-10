@@ -1,0 +1,34 @@
+function! BuildYCM(info)
+  if a:info.status == 'installed' || a:info.force
+    !./install.sh --clang-completer
+  endif
+endfunction
+
+Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
+
+Plug 'vim-scripts/restore_view.vim'
+Plug 'Raimondi/delimitMate'
+Plug 'vim-scripts/bash-support.vim'
+Plug 'bling/vim-airline'
+Plug 'chriskempson/vim-tomorrow-theme'
+Plug 'ivanov/vim-ipython'
+Plug 'Shougo/vimproc'
+Plug 'Shougo/vimshell'
+Plug 'elzr/vim-json'
+Plug 'Shougo/unite.vim'
+Plug 'sudar/vim-arduino-syntax'
+Plug 'Rykka/riv.vim'
+Plug 'javascript-libraries-syntax'
+Plug 'mattn/emmet-vim'
+Plug 'Glench/Vim-Jinja2-Syntax'
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'evanmiller/nginx-vim-syntax'
+
+if exepath("matlab")
+    Plug 'vim-scripts/MatlabFilesEdition'
+endif
+
+if exists("$GOPATH")
+    Plug 'fatih/vim-go'
+endif
+
