@@ -143,7 +143,7 @@ fi
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
 if [ -d $HOME/Go ]; then
     export GOPATH=$HOME/Go
-    export PATH=$PATH:$GOPATH/bin
+    export GOBIN=$PATH:$GOPATH/bin
 fi
 
 # ==========================================================

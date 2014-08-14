@@ -12,8 +12,8 @@ alias gc="git commit"
 alias gp="git push"
 
 # SSH
-alias sshApps="ssh sang@sangapps.com"
-alias sshCloud="ssh sang@sangcloud.com"
+alias sshApps="ssh root@sangapps.com"
+alias sshCloud="ssh root@sangcloud.com"
 alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
 alias sshSRV="ssh sang@srv.sangcloud.com"
 

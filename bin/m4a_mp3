@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Convert m4a from itunes to universal mp3 format using `ffmpeg`
+
+readonly ARGS=("$@")
+
+function main() {
+    ffmpeg -i "${ARGS}" -codec:v copy -codec:a libmp3lame -q:a 2 "${ARGS%.m4a}.mp3"
+}
+
+if [ "$0" = "${BASH_SOURCE}" ]; then
+    main
+fi
