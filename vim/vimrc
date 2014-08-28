@@ -141,10 +141,13 @@ nnoremap <leader>f          :NERDTreeFind<CR>
 nnoremap <leader>t          :CtrlP<CR>
 nnoremap <leader>T          :CtrlPClearCache<CR>:CtrlP<CR>
 nnoremap <leader>]          :TagbarToggle<CR>
-nnoremap <leader><Space>    :call whitespace#strip_trailing()<CR>
 nnoremap <leader>g          :GitGutterToggle<CR>
 nnoremap <leader>c          <Plug>Kwbd
 
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
 " }}}
 " - Settings "{{{
 " ==========================================================
@@ -252,6 +255,13 @@ augroup Python
     autocmd!
     autocmd FileType python nnoremap <leader>z :!python %<CR>
 augroup END
+
+" Go Filetype Specific {{{
+augroup Go
+    autocmd!
+    autocmd FileType go nnoremap <leader>go :!go run %<CR>
+augroup END
+" }}}
 
 "    }}}
 " }}}

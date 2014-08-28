@@ -1,15 +1,70 @@
 #!/usr/bin/env bash
+# ==============================================================================
+usage() { cat <<- DOCUMENT
 
-# Assumes Python 2 unless specified
-if [ "$1" = 3 ]; then
-    V=3
+    usage: pip_upgrade [-h] [3]
+
+    AUTHOR:      Sang Han
+    CREATED:     08/23/2014
+    REVISION:    1.0
+
+    DESCRIPTION:
+        Upgrade all outdated python modules.
+
+    REQUIREMENTS:
+        pip
+
+    OPTIONS:
+        [-h help]
+            Prints this message
+
+    COMMENTS:
+        If all packages fail to install, pip might be configured to
+        install in a root directory and will require sudo.
+
+        But if need to use sudo, you're probaby doing it wrong in the first place.
+
+	DOCUMENT
+}
+
+# Command Line Args
+# ==============================================================================
+while getopts ":h" OPTION; do
+    case ${OPTION} in
+        h) usage
+           exit 0
+           ;;
+       \?) echo "Invalid option: -${OPTARG}" >&2
+           exit 1
+           ;;
+    esac
+done
+    shift $(($OPTIND-1))
+
+# Version Checking
+if (($#)) && (($1==3)); then
+    readonly version=3
 else
-    V=2
+    readonly version=2
 fi
 
-function outdated() {
-    # List out outdated python packages delimited by newline
-    pip${V} list --outdated \
+
+# Functions
+# ==============================================================================
+package_msg() {
+    # Replace the status of package installation message with the result
+    local status="$1" erase=$(sed 's/[A-z]/\\b/g' <<< "Installing")
+    if [ "$status" = Success ]; then
+        color=2
+    fi
+
+    printf "${erase}"
+    printf "$(tput setaf ${color:-1})%-11s$(tput sgr0)\n" "${status}"
+}
+
+outdated() {
+    # Unpack old modules and ignore external ones
+    pip${version} list --outdated \
         | sed \
             -e 's/(.*//g' \
             -e '/^Could/ d' \
@@ -17,20 +72,26 @@ function outdated() {
 }
 
 main() {
-    echo "Unpacking outdated packages for Python ${V}"
-    declare -a list=( $(outdated) )
+    # Pack outdated modules into a list
+    echo "Unpacking outdated packages for Python ${version:=2}"
+    local list=($(outdated))
 
-    # Loop through each package and install upgrade
-    for ((i=0; i<${#list[@]}; i++)); do
+    # Update Packages
+    for ((i=0; i<"${#list[@]}"; i++)); do
+        # Print out the package name
         printf "Package: %-20s $(tput setaf 6)Installing$(tput sgr0)" "${list[i]}"
 
-        # Checks for successful installation
-        pip${V} install -U "${list[i]}" &>/dev/null \
-            && printf "\b\b\b\b\b\b\b\b\b\b$(tput setaf 2)%-11s$(tput sgr0)\n" "Success" \
-            || printf "\b\b\b\b\b\b\b\b\b\b$(tput setaf 1)%-11s$(tput sgr0)\n" "Fail"
+        # Checks installation success
+        if pip${version} install --upgrade "${list[i]}" &>/dev/null; then
+            package_msg "Success"
+        else
+            package_msg "Fail"
+        fi
     done
 }
 
-if [ "$0" = "${BASH_SOURCE}" ]; then
+# Entry Point
+# ==============================================================================
+if [ $0 = $BASH_SOURCE ]; then
     main
 fi

@@ -1,5 +1,6 @@
 # Commands
 alias l="ls -hrtl"
+alias swift="xcrun swift"
 
 # Filesystem
 alias vimrc="vim ~/.vimrc"                     # Open vimrc with vim
@@ -10,6 +11,9 @@ alias Downloads="cd ~/Downloads"
 # (can be overridden by git config)
 alias gc="git commit"
 alias gp="git push"
+function gi() {
+    curl http://www.gitignore.io/api/\$@ ;
+}
 
 # SSH
 alias sshApps="ssh root@sangapps.com"

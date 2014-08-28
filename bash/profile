@@ -45,6 +45,7 @@ export EDITOR=vim
 export HISTIGNORE="ls:cd:echo:history:clear"
 export PROJECT_HOME="${HOME}/Projects"
 export PIP_RESPECT_VIRTUALENV=true
+export PYTHONDONTWRITEBYTECODE=1
 
 # ==========================================================
 # Depreciated Modules
@@ -76,8 +77,9 @@ fi
 # ==========================================================
 # Functions
 # ==========================================================
-# Remove .pyc bytecode
+function gi() { curl http://www.gitignore.io/api/$@ ;}
 function clean_pyc() {
+    # Py2k .pyc and Py3k __pycache__ bytecode
     for file in *; do
         if [[ -f "$file" ]] && [[ "$file" =~ pyc$ ]]; then
             rm "$file"
