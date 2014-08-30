@@ -1,82 +1,49 @@
 Dotfiles
-====================
+==========
+Config my stuff
 
-Personal configurations, programming tools and and things I use on a day
-to day basis.
+Installation
+============
 
-Directory structure is split mostly into these categories
+## From Github
 
-./root
--------
+You can clone the repository wherever you want. I usually keep it in my `$HOME/Dotfiles`
+
+```bash
+    # One line install
+    # Installer will warn you if it might overwrite stuff already in your home directory
+    $ git clone https://github.com/jjangsangy/Dotfiles.git $HOME/Dotfiles && cd $HOME/Dotfiles/ && ./link_files.sh
+```
+
+## `link_files.sh`
+
+* Will auto symlink default files from into your home directory prepended with a `dot`.
+
+* Run `-h` flag to usage info
+
+```bash
+usage: link_files.sh [-h help] [-t test] [-f file]
+
+    AUTHOR:      Sang Han
+    CREATED:     01/09/2014
+    REVISION:    1.4
+    ...
+    ...
+```
+
+* Specify your own config file using `[-f file]` flag
+* Defaults to using `link.conf` as default configuration file.
+
+``` bash
+    $ ./link_files.sh -f vim/vim.conf
+```
+
+Directory
+==================
 * Aliases and path configurations and not OS specific.
 * General automated build and linker scripts.
 
-### `link_files.sh`
-
-* Will automatically create a symbolic link between Dotfiles
-  into users home directory.
-* Script will link all files specified by a configuration file.
-  Defaults to using `link.conf` as default configuration file.
-* Specify your own config file using [-f file] flag
-
-``` bash
-
-    # Use config file for vim files
-
-    $ ./link_files.sh -f vim/vim.conf
-
-```
-
-* Use the `[-t]` flag at any time to run unit tests and print out
-  variable scope color coded. Very useful in debugging scenarios.
-
-``` bash
-    # Run Unit tests.
-    # Existing files are blue and non-existing files are red
-
-    $ ./link_files.sh -t
-
-           $TEST = 1
-        $VERBOSE = 0
-       $PROGNAME = link_files.sh
-        $PROGDIR = /Users/jjangsangy/Dotfiles
-    $CONFIG_FILE = link.conf
-
-    $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/aliases
-    $LINK_DEST        file exists at /Users/jjangsangy/.aliases
-
-    $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/path
-    $LINK_DEST        file exists at /Users/jjangsangy/.path
-
-    ....
-
-```
-
-* Or run with `[-v]` flag for verbose mode
-
-``` bash
-
-    $ ./link_files.sh -v -f vim/vim.conf
-
-           $TEST = 0
-        $VERBOSE = 1
-       $PROGNAME = link_files.sh
-        $PROGDIR = /Users/jjangsangy/Dotfiles
-    $CONFIG_FILE = vim/vim.conf
-
-        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/aliases
-        $LINK_DEST        file exists at /Users/jjangsangy/.aliases
-
-File /Users/jjangsangy/.aliases already exists, would you like to delete it?    [Yy]/[Nn]:
-        $LINK_SOURCE      file exists at /Users/jjangsangy/Dotfiles/path
-        $LINK_DEST        file exists at /Users/jjangsangy/.path
-
-```
-
-
-
-
-Vim
+`./vim`
 ------
 * Works on 7.4, 7.3 Terminal and GUI vim
 * Configurations, bundles and setup scripts.
@@ -99,20 +66,26 @@ Run `BundleInstal` for Vundle or `PlugInstall` to install vim packages.
 > that do reference the System Python. 
 
 
-bin
+`./bin`
 ----
 * Executible scripts and programs
 
 
-bash
-----
+
+`./bash`
+--------
 Programs and configurations for enviornments using the Bourne Again
 shell. Most files are POSIX compliant and should operate correctly
 in most cases, albeit some exceptions occur between compatability
 between BSD machines. Some of those exceptions below.
 
-## OSX
+`./python`
+-----------
+* Anacondas `.condarc` configuration files
+* `ipython notebook` configs and custom `css/js`
 
+`./osx`
+--------
 * MacOSX enviornments not having GNU Coreutils will need to install it
   with homebrew.
 
@@ -127,13 +100,13 @@ between BSD machines. Some of those exceptions below.
 
 ``` bash
     # Symbolically links `gls` to `ls`
-
     $ ln -s "$(brew --prefix)/bin/gls" "$(brew --prefix)/bin/ls"
     $ ln -s "$(brew --prefix)/bin/gdircolors" "$(brew --prefix)/bin/dircolors"
 ```
 
-### Debian or Ubuntu
 
-* Debian based machines default to Dash and thus source `.bashrc`
-  .bash_profile for login shells and not `.profile`
+### NOTE: Debian/Ubuntu
+> Ubuntu and Debian have different `.rc` naming conventions than OS X.
+> 
+> Use `.bash_profile` or `.bashrc` for `login shells` instead of `.profile`
 
