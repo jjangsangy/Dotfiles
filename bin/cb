@@ -5,5 +5,4 @@ if input
     IO.popen('pbcopy', 'w').print(input)
 else
     print `pbpaste`
-
 end

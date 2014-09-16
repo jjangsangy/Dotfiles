@@ -77,7 +77,6 @@ fi
 # ==========================================================
 # Functions
 # ==========================================================
-function gi() { curl http://www.gitignore.io/api/$@ ;}
 function clean_pyc() {
     # Py2k .pyc and Py3k __pycache__ bytecode
     for file in *; do
