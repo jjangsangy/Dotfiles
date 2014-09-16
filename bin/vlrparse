@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+
+import pandas
+from os.path import abspath, isdir, normpath, dirname
+from os.path import join as joinpath
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy
+import re
+import os
+import sys
+import multiprocessing
+from datetime import datetime
+from datetime import timedelta
+
+mpl.rcParams['lines.linewidth']   = 0.5
+mpl.rcParams['lines.antialiased'] = True
+mpl.rcParams['axes.grid']         = True
+mpl.rcParams['legend.fancybox']   = True
+
+class VLRLog(object):
+    def __init__(
+        self,
+        filepath,
+        token = {'time': 'Start:', 'pid': 'machineID:', 'units': 'msec','sensors': 'AMN1LoadSensor'}
+    ):
+        self.filepath = filepath
+        self.token = token
+        self._order, self._linematch, self.first_row = self._scan()
+        self.time = self._split(self._linematch[(self._order.index('time'))])
+        self.pid = self._split(self._linematch[(self._order.index('pid'))])
+        self.sensors = self._linematch[(self._order.index('sensors'))]
+        self.units = self._linematch[(self._order.index('units'))]
+        self.df = self.set_dataframe()
+
+    def __repr__(self):
+        return 'WaferID: {wafer}\nProcess: {recipie}'.format(
+            wafer=self.pid['waferId'],
+            recipie=self.pid['Recipe'],
+        )
+
+    def __str__(self):
+        return self.pid['waferId']
+
+    def _scan(self):
+        """Scans a log file using a sentinel value."""
+        valid, linematch, stack = list(), list(), list(self.token.values())
+        delim, first_row  = re.compile(r'\s+,|\s+\t|\t'), 0
+        with open(self.filepath, 'rt') as logfile:
+            for lineno, line in enumerate(logfile):
+                if stack == [] and not first_row == 0:
+                    break
+                if line.startswith('HistoricalData'):
+                    first_row = lineno + 3
+                if any([line.startswith(subset) for subset in self.token.values()]):
+                    valid += [stack.pop(stack.index(key)) for key in stack if line.startswith(key)]
+                    linematch.append(delim.split(line.strip()))
+            match_order = list(map(lambda x: [k for k, v in self.token.items() if x==v][0], valid))
+            return match_order, linematch, first_row
+
+    def _split(self, fields):
+        """Create key, value pairs from lines pulled from file."""
+        logmap = dict()
+        for field in fields:
+            key, value = field.split(': ', maxsplit=1)
+            logmap[key.strip()] = value.strip()
+        return logmap
+
+    def datetime(self, setpoint):
+        datefmt = '(%B %d, %Y %I:%M:%S %p)'
+        return datetime.strptime(self.time[setpoint], datefmt)
+
+    def set_dataframe(self):
+        df = pandas.read_table(
+            self.filepath,
+            header=None,
+            skiprows=self.first_row,
+            engine='python',
+            index_col=0,
+            sep='\s+,|\s+\t|\t',
+            usecols=[0]+list(range(1, 36, 2)),
+            na_values=['---'],
+            skip_footer=1,
+        )
+        h1 = numpy.array(self.sensors)
+        h2 = numpy.array([unit for unit in self.units if unit!='msec'])
+        df.index = df.index/1000
+        df.index.name = 'Time'
+        df.columns = pandas.MultiIndex.from_arrays([h1, h2], names=['sensor', 'unit'])
+        return df
+
+    def single_plot(self, sensor=None, save_as=False):
+        delim = re.compile(r',\s|\s+|,|:')
+        start, end = delim.split(self.time['Start'].strip('()')), delim.split(self.time['End'].strip('()'))
+        day = ' '.join(start[0:3])
+        timeframe = '{start} {s_ampm} - {end} {e_ampm}'.format(
+            start=':'.join(start[-4:-2]),
+            s_ampm=start[-1],
+            end=':'.join(end[-4:-2]),
+            e_ampm=end[-1],
+        )
+        for chart in self.df:
+            if chart[0] == 'CurrentStepPointer':
+                continue
+            if sensor is not None and sensor != chart[0]:
+                continue
+            # Plot
+            fig = plt.figure(figsize=(15, 8))
+            ax = fig.add_subplot(111)
+            self.df[chart].plot(ax=ax, grid=True, legend=True, label=self.pid['Recipe'], fontsize=14)
+            plt.title('{chart}\n{name} {day}'.format(day=day, chart=chart[0], name=self.pid['waferId']), fontsize=14, fontweight='bold')
+            plt.xlabel('Time (sec)\n{timeframe}'.format(timeframe=timeframe, fontsize=14))
+            plt.ylabel(chart[1], fontsize=14)
+            if chart[1] == 'percent':
+                plt.ylim(0,100)
+            # Save File
+            if save_as in ('jpg', 'png', 'pdf', 'ps', 'eps', 'svg'):
+                base = abspath(dirname(self.filepath))
+                uid = '_'.join(['-'.join(self.filepath.split('.')[-3].rsplit('-', maxsplit=1)[::-1])]+[self.pid['waferId']])
+                figdir = joinpath(base,uid)
+                if not isdir(figdir):
+                    os.mkdir(figdir)
+                fullpath = '{base}{fs}{name}.{ext}'.format(base=joinpath(figdir), fs=os.sep, name='_'.join([uid,chart[0]]), ext=save_as)
+                if os.path.isfile(fullpath):
+                    print('File Exists: {0}.{1}'.format(uid, save_as))
+                    continue
+                print('Writing: {0}.{1}'.format(uid, save_as))
+                plt.savefig(fullpath, dpi=250)
+                plt.close(fig)
+                continue
+            plt.close(fig)
+        return plt.close('all')
+
+def builder(log):
+    try:
+        bld = VLRLog(log)
+        return bld.single_plot(save_as='png')
+    except:
+        pass
+
+
+
+def main(directory):
+    pool = multiprocessing.Pool(8)
+    bldlogs = [abspath(joinpath(directory, data)) for data in os.listdir(directory) if data.endswith('log')]
+    pool.map(builder, bldlogs)
+    return
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1]))
