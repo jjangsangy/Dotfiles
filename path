@@ -19,6 +19,10 @@ if [ "$(which brew &> /dev/null)" ]; then
     export PATH="/usr/local/bin:${PATH}"
 fi
 
+if [ -d "/Applications/Julia-0.3.1.app/Contents/Resources/julia/bin" ]; then
+    export PATH=$PATH
+fi
+
 # ==========================================================
 # Anaconda Python Distribution
 # ==========================================================
