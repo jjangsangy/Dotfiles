@@ -45,8 +45,7 @@ Directory
 
 `./vim`
 ------
-* Works on 7.4, 7.3 Terminal and GUI vim
-* Configurations, bundles and setup scripts.
+* OS X and [Debian](https://gist.github.com/jjangsangy/add95bda53c9228905ef) Configurations
 * [Vundle](https://github.com/gmarik/Vundle.vim.git) or [Plug](https://github.com/junegunn/vim-plug.git) for managing plugins. Plug is fast but requires `Vim +Ruby`.
 * [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) autocompletion library.
 
