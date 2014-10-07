@@ -13,12 +13,12 @@ inoremap jk <ESC>
 "
 " - Install Plug bundles {{{
 " ==========================================================
+call plug#begin('~/.vim/plugged')
 if filereadable(expand("~/.vimrc.plug"))
-    call plug#begin('~/.vim/plugged')
     source ~/.vimrc.plug
     source ~/.vimrc.plug.local
-    call plug#end()
 endif
+call plug#end()
 
 filetype plugin indent on
 
@@ -147,10 +147,6 @@ nnoremap <leader>]          :TagbarToggle<CR>
 nnoremap <leader>g          :GitGutterToggle<CR>
 nnoremap <leader>c          <Plug>Kwbd
 
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
 " }}}
 " - Settings "{{{
 " ==========================================================
@@ -285,8 +281,9 @@ augroup END
 " }}}
 " - Gui Options {{{
 " ==========================================================
+
 if (&t_Co == 256 || has ('gui_running'))
-    set guifont=Ubuntu\ Mono:h16
+    set guifont=Ubuntu\ Mono\ 14
     call togglebg#map("<F5>")
     colorscheme solarized
 
@@ -300,6 +297,10 @@ if (&t_Co == 256 || has ('gui_running'))
         set guioptions-=rLmT
         let g:BASH_GuiSnippetBrowser = 'gui'
     endif
+
+elseif $COLORTERM == 'gnome-terminal'
+    set t_Co=256
+    colorscheme Tomorrow-Night
 endif
 
 " }}}
