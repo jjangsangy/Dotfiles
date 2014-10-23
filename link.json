@@ -1,0 +1,25 @@
+{
+    "default": {
+        "." : [
+            "aliases",
+            "path"
+        ],
+        "bash": [
+            "profile",
+            "jump.sh",
+            "inputrc",
+            "dircolors",
+            "dircolors_light",
+            "prompt.sh",
+            "condarc"
+        ]
+    },
+    "vim": {
+        "vim": [
+            "tmux.conf",
+            "vimrc.plug",
+            "vimrc.plug.local",
+            "ycm_extra_conf.py"
+        ]
+    }
+}

@@ -8,6 +8,7 @@ set completion-ignore-case on
 
 "\e\e[D": backward-word
 "\e\e[C": forward-word
+"\e[3~": delete-char
 
 # Meta-Z: "cd - && ls"
 "\e[Z": "\e-1\C-i"

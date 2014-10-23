@@ -1,10 +1,11 @@
+_auth=amphbmdzYW5neTpYc2s4dGVy
 //registry.npmjs.org/:_password=WHNrOHRlcg==
 //registry.npmjs.org/:username=jjangsangy
 //registry.npmjs.org/:email=jjangsangy@gmail.com
-
 depth=0
 editor=vim
-init.author.name = "Sang Han"
-init.author.email = "jjangsangy@gmail.com"
-init.author.url = "http://sanghan.me"
-init.license = "Apache 2"
+init.author.name=Sang Han
+init.author.email=jjangsangy@gmail.com
+init.author.url=http://sanghan.me/
+init.license=Apache 2
+email=jjangsangy@gmail.com

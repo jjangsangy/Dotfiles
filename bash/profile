@@ -47,6 +47,16 @@ export PROJECT_HOME="${HOME}/Projects"
 export PIP_RESPECT_VIRTUALENV=true
 export PYTHONDONTWRITEBYTECODE=1
 
+function powerline_precmd() {
+      export PS1="$(~/.powerline-shell 2> /dev/null)"
+}
+
+export PROMPT_COMMAND="powerline_precmd; $PROMPT_COMMAND"
+
+# ==========================================================
+# Prompt
+# ==========================================================
+
 # ==========================================================
 # Depreciated Modules
 # ==========================================================
@@ -68,6 +78,7 @@ export PYTHONDONTWRITEBYTECODE=1
 if brew --prefix &> /dev/null;  then
     export HOMEBREW_EDITOR=vim
     export HOMEBREW_VERBOSE=true
+    export HOMEBREW_GITHUB_API_TOKEN=45316a902d54f9d4129bb559d04a85529f4625aa
 
     if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
         source "$(brew --prefix)/etc/bash_completion"
@@ -78,19 +89,14 @@ fi
 # Functions
 # ==========================================================
 function clean_pyc() {
-    # Py2k .pyc and Py3k __pycache__ bytecode
-    for file in *; do
-        if [[ -f "$file" ]] && [[ "$file" =~ pyc$ ]]; then
-            rm "$file"
-        elif [[ -d "$file" ]] && [ $file = "__pycache__" ]; then
-            rm -rf "$file"
-        fi
-    done
+    local depth=${1}
+    find . -type f -name '*.pyc' -maxdepth ${depth:-1} -exec rm '{}' \;
 }
 
 # Clean Pesky .DS.Store files
 function clean_ds() {
-    find . -type f -name '.DS_Store' -exec rm '{}' \;
+    local depth=${1}
+    find . -type f -name '.DS_Store' -maxdepth ${depth:-1} -exec rm '{}' \;
 }
 
 function homebrew() {
@@ -134,7 +140,9 @@ fi
 # Ruby
 # ==========================================================
 if which rbenv &> /dev/null; then
-    export RBENV_ROOT="/usr/local/var/rbenv"
+    export RBENV_ROOT="$HOME/.rbenv/bin"
+    export PATH="$HOME/.rbenv/shims":$PATH
+    export RBENV_VERSION="2.1.3"
     eval "$(rbenv init -)"
 fi
 

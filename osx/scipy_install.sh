@@ -1,6 +1,6 @@
 # set up some taps and update brew
-brew tap homebrew/science # a lot of cool formulae for scientific tools
-brew tap samueljohn/python # numpy, scipy
+brew tap homebrew/science
+brew tap homebrew/homebrew-python
 brew update && brew upgrade
 
 # install a brewed python
@@ -20,8 +20,8 @@ brew install qt pyqt
 pip install virtualenv nose
 
 # install numpy and scipy
-brew install numpy --with-openblas
-brew install scipy --with-openblas
+brew install numpy --with-openblas --with-python3
+brew install scipy --with-openblas --with-python3
 
 # test the scipy install
 brew test scipy
@@ -33,7 +33,7 @@ pip install pandas nltk matplotlib sympy q
 
 # ipython and notebook support
 brew install zmq
-pip install ipython[zmq,qtconsole,notebook,test]
+pip install ipython[all]
 
 # html stuff (parsing)
 pip install html5lib cssselect pyquery lxml BeautifulSoup
