@@ -15,9 +15,28 @@ __release__ = 'test'
 import os
 import json
 import sys
+import string
 
-from itertools import chain
-from argparse import ArgumentParser, FileType
+from argparse import (
+    ArgumentParser,
+    FileType
+)
+
+from os.path import (
+    expanduser,
+    dirname,
+    abspath,
+    relpath,
+    normpath,
+    exists,
+    isdir,
+    isfile,
+    samefile,
+)
+
+HOME    = expanduser('~')
+PROGDIR = dirname(abspath(__file__))
+GREEN, RED, RESET = '\033[32m', '\033[31m', '\033[0m'
 
 def printout(config):
     """
@@ -25,17 +44,20 @@ def printout(config):
     the methods set out in the configuration file.
     """
     for key, method in config.iteritems():
-        print('[{key}]'.format(key=key))
+        keys = '[{key}]'.format(key=key)
+        print(keys)
+
         for directory, items in method.iteritems():
-            print(
-                '\t{path}'.format(path='\n\t'.join(items))
-            )
+            output = '\t{path}'.format(path='\n\t'.join(items))
+            print(output)
+
     return sys.exit(0)
 
 def command_line():
 
     # Pre Process Configuration File
     pre_parser = ArgumentParser(add_help=False)
+
     pre_parser.add_argument(
         '--config',
         metavar='file',
@@ -75,17 +97,48 @@ def command_line():
 
     return config[args.method]
 
+def path_gen(mapping):
+    for directory, files in mapping.iteritems():
+        for f in files:
+            f_path = os.sep.join([directory, f])
+            yield relpath(normpath(f_path), start=PROGDIR)
+
+def validator(filepath):
+    dotted = ''.join([HOME, os.sep, '.', filepath.split(os.sep)[-1]])
+    fullpath = abspath(filepath)
+    GREEN, RED, RESET = '\032[32m', '\033[31m', '\033[0m'
+
+    if not exists(filepath):
+        message = string.Template('Missing:\n    - $RED$fullpath$RESET')
+        print(message.substitute(vars()))
+        return False
+
+    if exists(dotted):
+        message = string.Template("Collision:\n    - $dotted")
+        print(message.substitute(vars()))
+        return False
+
+    if exists(filepath) and exists(dotted):
+        if os.path.samefile(filepath, dotted):
+            message = string.Template('Alredy Linked:\n    - $dotted')
+            print(message.substitute(vars()))
+            return False
+
+    return dotted
 
 def main():
     dotfiles = command_line()
-    locations = (
-        map(lambda f: os.sep.join([directory, f]), files)
-            for directory, files in dotfiles.iteritems()
-    )
-    for i in chain.from_iterable(locations):
-        print(os.path.abspath(i))
-
+    paths = path_gen(dotfiles)
+    for path in paths:
+        valid = validator(path)
+        if valid:
+            os.symlink(abspath(path), valid)
+            linked = string.Template('Linked:\n    - $path, $valid')
+            sys.stdout.write(GREEN)
+            print(linked.substitute(vars()))
+            sys.stdout.write(RESET)
     return
+
 
 if __name__ == '__main__':
     sys.exit(main())
