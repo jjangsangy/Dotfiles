@@ -32,11 +32,22 @@ from os.path import (
     isdir,
     isfile,
     samefile,
+    expandvars,
 )
 
-HOME    = expanduser('~')
+HOME    = expandvars('$HOME')
 PROGDIR = dirname(abspath(__file__))
 GREEN, RED, RESET = '\033[32m', '\033[31m', '\033[0m'
+
+def color_printer(message, color):
+    green, RED, RESET = '\033[32m', '\033[31m', '\033[0m'
+    cout = dict(('green', '\033[32m'), '('red', '\033[31m'))
+    if not 'color' in expandvars('$TERM') or 'bash' in expandvars('$TERM'):
+        return message
+    sys.stdout.write()
+
+
+
 
 def printout(config):
     """

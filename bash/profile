@@ -79,6 +79,7 @@ if brew --prefix &> /dev/null;  then
     export HOMEBREW_EDITOR=vim
     export HOMEBREW_VERBOSE=true
     export HOMEBREW_GITHUB_API_TOKEN=45316a902d54f9d4129bb559d04a85529f4625aa
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
     if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
         source "$(brew --prefix)/etc/bash_completion"
@@ -110,7 +111,8 @@ if which docker &> /dev/null; then
     alias d_ip="docker inspect --format '{{ .NetworkSettings.IPAddress }}'"
 
     export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):$(boot2docker info | jq '.["DockerPort"]')
-
+    export DOCKER_CERT_PATH=/Users/jjangsangy/.boot2docker/certs/boot2docker-vm
+    export DOCKER_TLS_VERIFY=1
     docker_run() {
         docker run -it --rm ${1} /bin/bash -l
     }
@@ -149,7 +151,7 @@ fi
 # ==========================================================
 # Go
 # ==========================================================
-export PATH=$PATH:/usr/local/opt/go/libexec/bin
+export PATH=$PATH:/usr/local/opt/go/libexec/bin:$HOME/Go/bin
 if [ -d $HOME/Go ]; then
     export GOPATH=$HOME/Go
     export GOBIN=$PATH:$GOPATH/bin

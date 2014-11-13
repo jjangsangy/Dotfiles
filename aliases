@@ -11,6 +11,8 @@ alias Downloads="cd ~/Downloads"
 # (can be overridden by git config)
 alias gc="git commit"
 alias gp="git push"
+alias git='hub'
+
 function gi() {
     curl http://www.gitignore.io/api/\$@ ;
 }

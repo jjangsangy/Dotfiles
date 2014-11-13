@@ -88,7 +88,7 @@ noremap <C-a> <esc>0
 
 " }}}
 "{{{ Sort with <Leader>s
-vnoremap <Leader>s :sort<CR>
+vnoremap <Leader>s :!sort<CR>
 
 " }}}
 " {{{ Remove trailing whitespace on <leader>S
