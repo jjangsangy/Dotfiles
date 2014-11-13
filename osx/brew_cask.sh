@@ -15,25 +15,23 @@ usage () { cat <<- DOCUMENT
 
     USAGE:
 
-        brew_cask.sh [-i] [-h] cask_set
+        brew_cask.sh [-i] [-h] [-l] \$cask_set
 
     CASK SETS:
 
 	DOCUMENT
 
-    # Printout Available Sets
-    for set in ${cask_sets[@]}; do
-        printf "        %s\n" "$set"
-    done
-    printf "\n"
+    printout "\t- " "${cask_set[@]}"
 
     return 0
 }
 
+unset HOMEBREW_VERBOSE
+
 # ===============================================================================
 # Headers
 # ===============================================================================
-readonly cask_sets=(
+readonly cask_set=(
     'adobe'
     'fonts'
     'general'
@@ -41,24 +39,98 @@ readonly cask_sets=(
     'osx_quicklook'
 )
 
-# ===============================================================================
-# Option Parser
-# ===============================================================================
-while getopts ":ih" OPTION; do
-    case ${OPTION} in
-        h) usage
-           exit 0
-           ;;
-        i) install_cask
-           exit 0
-           ;;
-       \?) echo "Invalid option: -${OPTARG}" >&2
-           exit 1
-           ;;
-    esac
-done
-    shift $(($OPTIND-1))
+function packages() {
 
+    # Define sets of packages here and in the header region
+    # to add it to the list of available sets
+    local -a general=(
+        'adobe-reader'
+        'dropbox'
+        'evernote'
+        'firefox'
+        'google-chrome'
+        'google-drive'
+        'spectacle'
+        'the-unarchiver'
+        'transmission'
+        'vlc'
+    )
+    local -a fonts=(
+        'font-anonymous-pro'
+        'font-cutive'
+        'font-cutive-mono'
+        'font-dejavu-sans'
+        'font-droid-serif'
+        'font-droid-sans'
+        'font-droid-sans-mono'
+        'font-fira-sans'
+        'font-inconsolata-dz'
+        'font-novamono'
+        'font-oxygen'
+        'font-oxygen-mono'
+        'font-source-code-pro'
+        'font-ubuntu'
+    )
+    local -a programming=(
+        'alfred'
+        'airmail'
+        'dash'
+        'base'
+        'github'
+        'boot2docker'
+        'imageoptim'
+        'iterm2'
+        'macvim'
+        'sequel-pro'
+        'vagrant'
+        'virtualbox'
+        'handbrake'
+        'haroopad'
+    )
+    local -a adobe=(
+        'adobe-creative-cloud'
+        'adobe-photoshop-lightroom'
+    )
+    local -a osx_quicklook=(
+        'betterzipql'
+        'qlcolorcode'
+        'qlmarkdown'
+        'qlprettypatch'
+        'qlstephen'
+        'quicklook-csv'
+        'quicklook-json'
+        'suspicious-package'
+        'webp-quicklook'
+    )
+
+    # Printout
+    for set in ${cask_set[@]}; do
+    {
+        # Indirect Reference
+        declare -a pkg=$set"[@]"
+
+        printf "[ %s ]\n" "$set"
+        printout "- " "${!pkg}"
+    }
+    done
+
+}
+
+# ===========================================================================
+# Printout Package Lists
+# ===========================================================================
+function printout() {
+    local fmt="$1" && shift && local array=($@)
+
+    for block in "${array[@]}"; do
+    {
+        printf "%b%s\n" "$fmt" "$block"
+    }
+    done
+    printf "\n"
+
+    return 0
+}
 
 # ===========================================================================
 # Brew Cask Installer
@@ -81,30 +153,15 @@ function install_cask() {
     brew cask alfred link
 }
 
-# ===========================================================================
-# Printout Package Lists
-# ===========================================================================
-function print_packages() {
 
-    local packages=()
-    local apps=($@)
+function check_cask()
+{
+    # Ensure Cask is Installed
+    local msg="brew cask not installed, installing"
 
-    for app in ${apps[@]}; do
-    {
-        # Indirection and Array Expansion
-        packages=( $(eval echo \${"$app"[@]}) )
-
-        # Loop Through Packages
-        printf "[ %s ]\n" "$app"
-
-        for package in ${packages[@]}; do
-        {
-            printf "%s%s\n" "- " "$package"
-        }
-        done
-        printf "\n"
-    }
-    done
+    if type -P brew cask > /dev/null; then
+        echo $msg && install_cask
+    fi
 
     return 0
 }
@@ -112,25 +169,19 @@ function print_packages() {
 # ===========================================================================
 # Package Installer
 # ===========================================================================
-function install() {
+function install()
+{
+    local -a apps=($@) packages=()
+    declare -i i=0
 
-    local packages=()
-    local apps=($@)
-
-    # Install
-    for app in ${apps[@]}; do
+    while [ ${apps[i]} ]; do
     {
-        packages=( $(eval echo \${"$app"[@]}) )
-        for package in ${packages[@]}; do
-        {
-            echo "Installing $package"
-            if brew cask install $package 2>/dev/null; then
-                printf "Success\n\n"
-            else
-                printf "Fail\n\n"
-            fi
-        }
-        done
+        printf "Installing %25.25s:\n" "${apps[i]}"
+        if brew cask install ${apps[i++]} 2>/dev/null; then
+            printf "Success\n\n"
+        else
+            printf "Fail\n\n"
+        fi
     }
     done
 
@@ -141,80 +192,19 @@ function install() {
 # ===========================================================================
 # Main
 # ===========================================================================
-function main() {
-
-    local selection=($@)
-
-    # Define sets of packages here and in the header
-    # Region in order to add it to the list of available sets
-    local general=(
-        'adobe-reader'
-        'dropbox'
-        'evernote'
-        'firefox'
-        'google-chrome'
-        'google-drive'
-        'spectacle'
-        'the-unarchiver'
-        'transmission'
-        'vlc'
-    )
-    local fonts=(
-        'font-anonymous-pro'
-        'font-cutive'
-        'font-cutive-mono'
-        'font-dejavu-sans'
-        'font-droid-serif'
-        'font-droid-sans'
-        'font-droid-sans-mono'
-        'font-fira-sans'
-        'font-inconsolata-dz'
-        'font-novamono'
-        'font-oxygen'
-        'font-oxygen-mono'
-        'font-source-code-pro'
-        'font-ubuntu'
-    )
-    local programming=(
-        'alfred'
-        'airmail'
-        'dash'
-        'base'
-        'github'
-        'boot2docker'
-        'imageoptim'
-        'iterm2'
-        'macvim'
-        'sequel-pro'
-        'vagrant'
-        'virtualbox'
-        'handbrake'
-        'haroopad'
-    )
-    local adobe=(
-        'adobe-creative-cloud'
-        'adobe-photoshop-lightroom'
-    )
-    local osx_quicklook=(
-        'betterzipql'
-        'qlcolorcode'
-        'qlmarkdown'
-        'qlprettypatch'
-        'qlstephen'
-        'quicklook-csv'
-        'quicklook-json'
-        'suspicious-package'
-        'webp-quicklook'
-    )
+function main()
+{
+    eval $(declare -f packages | grep "local -a")
+    declare -a pkg selection=($@)
 
     # Install all valid sets that are defined
-    for apps in ${selection[@]}; do
+    for apps in "${selection[@]}"; do
     {
-        for set in ${cask_sets[@]}; do
+        # Input Validation
+        for set in "${cask_set[@]}"; do
         {
-            # Input Validation
             if [ "$apps" = "$set" ]; then
-                install "$apps"
+                pkg="$apps"[@] && install ${!pkg}
             fi
         }
         done
@@ -225,8 +215,29 @@ function main() {
 }
 
 # ===============================================================================
+# Option Parser
+# ===============================================================================
+while getopts ":lih" OPTION; do
+    case ${OPTION} in
+        h) usage
+           exit 0
+           ;;
+        i) install_cask
+           exit 0
+           ;;
+        l) packages
+           exit 0
+           ;;
+       \?) echo "Invalid option: -${OPTARG}" >&2
+           exit 1
+           ;;
+    esac
+done
+    shift $((OPTIND-1))
+
+# ===============================================================================
 # Entry Point
 # ===============================================================================
 if [ "$0" = "${BASH_SOURCE}" ]; then
-    main "$@"
+    check_cask && main "$@"
 fi
