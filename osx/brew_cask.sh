@@ -124,7 +124,11 @@ function install() {
         for package in ${packages[@]}; do
         {
             echo "Installing $package"
-            brew cask install $package 2> /dev/null
+            if brew cask install $package 2>/dev/null; then
+                printf "Success\n\n"
+            else
+                printf "Fail\n\n"
+            fi
         }
         done
     }
