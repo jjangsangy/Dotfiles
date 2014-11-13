@@ -115,7 +115,7 @@ function install() {
         for package in ${packages[@]}; do
         {
             echo "Installing $package"
-            brew cask install $package 2&> /dev/null
+            brew cask install $package 2> /dev/null
         }
         done
     }
