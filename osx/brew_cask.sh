@@ -30,11 +30,20 @@ usage () { cat <<- DOCUMENT
     return 0
 }
 
+# ===============================================================================
+# Headers
+# ===============================================================================
+readonly cask_sets=(
+    'adobe'
+    'fonts'
+    'general'
+    'programming'
+    'osx_quicklook'
+)
 
 # ===============================================================================
 # Option Parser
 # ===============================================================================
-readonly cask_sets=('adobe' 'fonts' 'general' 'programming' 'osx_quicklook')
 while getopts ":ih" OPTION; do
     case ${OPTION} in
         h) usage
@@ -132,6 +141,8 @@ function main() {
 
     local selection=($@)
 
+    # Define sets of packages here and in the header
+    # Region in order to add it to the list of available sets
     local general=(
         'adobe-reader'
         'dropbox'
