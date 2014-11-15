@@ -24,6 +24,20 @@ usage () { cat <<- DOCUMENT
         [-l]: List out all packages sets and enclosing applications and exit
         [-a]: Install everything
 
+    EXAMPLE USAGE:
+
+        # Installs font packages
+        ./brew_cask.sh fonts
+
+       # List out defined packages
+       ./brew_cask.sh -l
+
+       # Install brew-cask
+       ./brew_cask.sh -i
+
+       # Doesn't allow installing undefined package sets
+       ./brew_cask.sh not-a-package
+
     CASK SETS:
 
 	DOCUMENT
