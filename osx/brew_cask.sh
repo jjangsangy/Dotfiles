@@ -104,7 +104,7 @@ function packages() {
     )
 
     # Printout
-    for set in ${cask_set[@]}; do
+    for set in "${cask_set[@]}"; do
     {
         # Indirect Reference
         declare -a pkg=$set"[@]"
@@ -160,7 +160,7 @@ function check_cask()
     local msg="brew cask not installed, installing"
 
     if type -P brew cask > /dev/null; then
-        echo $msg && install_cask
+        echo "$msg" && install_cask
     fi
 
     return 0
@@ -171,8 +171,7 @@ function check_cask()
 # ===========================================================================
 function install()
 {
-    local -a apps=($@) packages=()
-    declare -i i=0
+    local -a apps=($@) && declare -i i=0
 
     while [ ${apps[i]} ]; do
     {
@@ -194,7 +193,7 @@ function install()
 # ===========================================================================
 function main()
 {
-    eval $(declare -f packages | grep "local -a")
+    eval "$(declare -f packages | grep "local -a")"
     declare -a pkg selection=($@)
 
     # Install all valid sets that are defined
@@ -204,7 +203,7 @@ function main()
         for set in "${cask_set[@]}"; do
         {
             if [ "$apps" = "$set" ]; then
-                pkg="$apps"[@] && install ${!pkg}
+                pkg=${apps}'[@]' && install "${!pkg}"
             fi
         }
         done
@@ -217,7 +216,7 @@ function main()
 # ===============================================================================
 # Option Parser
 # ===============================================================================
-while getopts ":lih" OPTION; do
+while getopts ":liha" OPTION; do
     case ${OPTION} in
         h) usage
            exit 0
@@ -226,6 +225,9 @@ while getopts ":lih" OPTION; do
            exit 0
            ;;
         l) packages
+           exit 0
+           ;;
+        a) main "${cask_set[@]}"
            exit 0
            ;;
        \?) echo "Invalid option: -${OPTARG}" >&2
