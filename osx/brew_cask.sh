@@ -60,7 +60,8 @@ readonly cask_set=(
     'osx_quicklook'
 )
 
-function packages() {
+function packages()
+{
 
     # Define sets of packages here and in the header region
     # to add it to the list of available sets
@@ -140,7 +141,8 @@ function packages() {
 # ===========================================================================
 # Printout Package Lists
 # ===========================================================================
-function printout() {
+function printout()
+{
     local fmt="$1" && shift && local array=($@)
 
     for block in "${array[@]}"; do
@@ -156,7 +158,8 @@ function printout() {
 # ===========================================================================
 # Brew Cask Installer
 # ===========================================================================
-function install_cask() {
+function install_cask()
+{
 
     # Get the Latest Version
     brew update
@@ -252,6 +255,7 @@ while getopts ":liha" OPTION; do
            exit 0
            ;;
        \?) echo "Invalid option: -${OPTARG}" >&2
+           usage
            exit 1
            ;;
     esac
