@@ -15,7 +15,14 @@ usage () { cat <<- DOCUMENT
 
     USAGE:
 
-        brew_cask.sh [-i] [-h] [-l] \$cask_set
+        brew_cask.sh [-i] [-h] [-l] [-a] \$cask_set
+
+    OPTIONAL ARGUMENTS:
+
+        [-h]: Prints out this help message and exit
+        [-i]: Installs brew cask and exit
+        [-l]: List out all packages sets and enclosing applications and exit
+        [-a]: Install everything
 
     CASK SETS:
 
