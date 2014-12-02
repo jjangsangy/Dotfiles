@@ -26,21 +26,21 @@ fi
 # ==========================================================
 # Anaconda Python Distribution
 # ==========================================================
-if [ -d "${HOME}/anaconda" ]; then
-    export PATH="${PATH}:${HOME}/anaconda/bin"
-    export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
+# if [ -d "${HOME}/anaconda" ]; then
+#     export PATH="${PATH}:${HOME}/anaconda/bin"
+#     export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
 
-    # Utility Function for activating Conda Virtual Env
-    function condaenv() {
-        if [ ${1} = "deactivate" ]; then
-            shift 1
-            source "${HOME}/anaconda/bin/deactivate"
-            source "${HOME}/.profile"
-            return
-        else
-            source activate "$@"
-            return
-        fi
-    }
+#     # Utility Function for activating Conda Virtual Env
+#     function condaenv() {
+#         if [ ${1} = "deactivate" ]; then
+#             shift 1
+#             source "${HOME}/anaconda/bin/deactivate"
+#             source "${HOME}/.profile"
+#             return
+#         else
+#             source activate "$@"
+#             return
+#         fi
+#     }
 
-fi
+# fi
