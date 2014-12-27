@@ -1,36 +1,29 @@
 # Commands
-alias l="ls -hrtl"
-alias swift="xcrun swift"
+alias l='ls -hrtl'
+alias swift='xcrun swift'
 
 # Filesystem
-alias vimrc="vim ~/.vimrc"                     # Open vimrc with vim
-alias Desktop="cd ~/Desktop"
-alias Downloads="cd ~/Downloads"
-
-# Git
-# (can be overridden by git config)
-alias gc="git commit"
-alias gp="git push"
-alias git='hub'
-
-function gi() {
-    curl http://www.gitignore.io/api/\$@ ;
-}
+alias vimrc='vim ~/.vimrc'                     # Open vimrc with vim
+alias Desktop='cd ~/Desktop'
+alias Downloads='cd ~/Downloads'
 
 # SSH
-alias sshApps="ssh root@sangapps.com"
-alias sshCloud="ssh root@sangcloud.com"
-alias sshProxy="ssh -D 9999 -N root@sangcloud.com"
-alias sshSRV="ssh sang@srv.sangcloud.com"
+alias sshApps='ssh root@sangapps.com'
+alias sshCloud='ssh root@sangcloud.com'
+alias sshProxy='ssh -D 9999 -N root@sangcloud.com'
+alias sshSRV='ssh sang@srv.sangcloud.com'
 
 # Finder Operations
 # `open` command only available on Mac OS X Terminals
-alias Inventory="open /Volumes/Optical\ Comp/Inventory/MEMS"
-alias PinData="open /Volumes/PubStore/_Production\ Data/MEMs\ PROBE\ DATA/OSF"
-alias Autoprober="open /Volumes/Public/Calient/AutoProber"
-alias VLR1Log="open /Volumes/Optical\ Comp/Fab\ Folder/Tools/VLR1/VLR1\ Log.xls"
-alias VLR2Log="open /Volumes/Optical\ Comp/Fab\ Folder/Tools/VLR2/VLR2\ Tool\ Log.xls"
-alias FHTraveler="open /Volumes/Public/Calient/24\ OSF/Faceplate/Traveler"
-alias HAN="open /Volumes/PubStore/_SB\ Employees/HAN"
-alias PartialProbe="open /Volumes/Public/Calient/AutoProber/Data/Partial\ Probe"
-alias QData="open /Volumes/Public/Calient/AutoProber/Data/Q\ measurement"
+alias Inventory='open /Volumes/Optical Comp/Inventory/MEMS'
+alias PinData='open /Volumes/PubStore/_Production Data/MEMs PROBE DATA/OSF'
+alias Autoprober='open /Volumes/Public/Calient/AutoProber'
+alias VLR1Log='open /Volumes/Optical Comp/Fab Folder/Tools/VLR1/VLR1 Log.xls'
+alias VLR2Log='open /Volumes/Optical Comp/Fab Folder/Tools/VLR2/VLR2 Tool Log.xls'
+alias FHTraveler='open /Volumes/Public/Calient/24 OSF/Faceplate/Traveler'
+alias HAN='open /Volumes/PubStore/_SB Employees/HAN'
+alias PartialProbe='open /Volumes/Public/Calient/AutoProber/Data/Partial Probe'
+alias QData='open /Volumes/Public/Calient/AutoProber/Data/Q measurement'
+
+alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-metadata'
+alias homebrew='brew update && brew upgrade && brew cleanup'

@@ -73,6 +73,11 @@ export PROMPT_COMMAND="powerline_precmd; $PROMPT_COMMAND"
 
 
 # ==========================================================
+# Git
+# ==========================================================
+eval "$(hub alias -s)"
+
+# ==========================================================
 # Homebrew
 # ==========================================================
 if brew --prefix &> /dev/null;  then
@@ -80,6 +85,7 @@ if brew --prefix &> /dev/null;  then
     export HOMEBREW_VERBOSE=true
     export HOMEBREW_GITHUB_API_TOKEN=45316a902d54f9d4129bb559d04a85529f4625aa
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    export PATH="${PATH}:/usr/local/sbin"
 
     if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
         source "$(brew --prefix)/etc/bash_completion"
@@ -100,10 +106,6 @@ function clean_ds() {
     find . -type f -name '.DS_Store' -maxdepth ${depth:-1} -exec rm '{}' \;
 }
 
-function homebrew() {
-    brew update && brew upgrade
-}
-
 # ==========================================================
 # Docker
 # ==========================================================
@@ -114,7 +116,7 @@ if which docker &> /dev/null; then
     export DOCKER_CERT_PATH=/Users/jjangsangy/.boot2docker/certs/boot2docker-vm
     export DOCKER_TLS_VERIFY=1
     docker_run() {
-        docker run -it --rm ${1} /bin/bash -l
+        docker run -it --rm "${1}" /bin/bash -l
     }
 
     docked() {
@@ -128,7 +130,7 @@ if which docker &> /dev/null; then
 
     d_clean() {
         # Cleanup Empty Containers
-        docker rm $(docker ps -a -q) 2>/dev/null
+        docker rm "$(docker ps -a -q)" 2>/dev/null
     }
 
     d_rm() {
@@ -142,9 +144,8 @@ fi
 # Ruby
 # ==========================================================
 if which rbenv &> /dev/null; then
-    export RBENV_ROOT="$HOME/.rbenv/bin"
-    export PATH="$HOME/.rbenv/shims":$PATH
-    export RBENV_VERSION="2.1.3"
+    export RBENV_ROOT="/usr/local/var/rbenv"
+    export PATH="${RBENV_ROOT}/shims":$PATH
     eval "$(rbenv init -)"
 fi
 

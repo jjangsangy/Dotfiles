@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+BookInfo
+"""
+from __future__ import print_function
+
+import json
+import requests
+import sys
+
+from functools import wraps
+from collections import namedtuple
+
+try:
+    from urllib.request import urlopen, Request, quote
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib2 import urlopen, Request, quote
+    from urllib import urlencode
+
+class GoogleBookAPIClient:
+
+    def __init__(self, title):
+        self.title = title
+
+    @property
+    def url(self):
+        """
+        Encodes urlencoded of book.
+        """
+        base = r'https://www.googleapis.com/books/v1/volumes'
+        params = urlencode({'q': r'"{title}"'.format(title=self.title)})
+
+        return '?'.join([base, params])
+
+    @contextmanager
+    def connect(self):
+        """"
+        Context manager for HTTP Connection state and ensures proper handling
+        of network sockets.
+        Exception is raised at the yield statement.
+        """
+        try:
+            headers = {'User-Agent': 'Python'}
+            request = urlopen(Request(self.url, headers=headers))
+            yield request
+        finally:
+            request.close()
+
+    def reader(self):
+        """
+        Reads raw text from the connection stream.
+        Ensures proper exception handling.
+        """
+        with self.connect() as request:
+            if request.msg != 'OK':
+                raise IOError
+            request_stream = request.read().decode('utf-8')
+        return request_stream
+
+class Book:
+
+    _header = ('title', 'authors', 'imageLinks', 'categories', 'description')
+
+    def __init__(self, title, header=_header):
+        self.title = title
+        self.header = header
+        self.interface = GoogleBookAPIClient(title)
+
+    def __repr__(self):
+        return self.title
+
+    def json(self):
+        raw_text = self.interface.reader()
+        return json.loads(raw_text)
+
+
+def decorate(func):
+    header = ('title', 'authors', 'imageLinks', 'categories', 'description')
+    Book = namedtuple('Book', header)
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        req = func(*args, **kwargs)
+
+        if not req.ok:
+            raise req.raise_for_status()
+
+        response = req.json().get('items')[0].get('volumeInfo', None)
+        book = Book(*[response[content] for content in header])
+
+        return book
+
+    return wrapper
+
+@decorate
+def book_info(name, author=None):
+    base = r'https://www.googleapis.com/books/v1/volumes'
+    query = {'q': r'"{name}"'.format(name=name)}
+    return requests.get(base, params=query)
+
+def main(title):
+    print('Hello')
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
