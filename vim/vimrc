@@ -86,7 +86,6 @@ noremap <C-m> zm
 " Emacs style mappings {{{
 noremap <C-e> <esc>$
 noremap <C-a> <esc>0
-
 " }}}
 "
 "{{{ Sort with <Leader>s
@@ -100,11 +99,13 @@ nnoremap <leader>S :%s/\s\+$//<cr>:let @/=''<CR>
 " }}}
 "
 " {{{ Nohlsearch with enter
-:nnoremap <CR> :nohlsearch<cr>
+nnoremap <CR> :nohlsearch<cr>
+
 " }}}
 
 " Leave with <leader>q
-nnoremap <leader>q :q<CR>
+nnoremap <leader>q :q<CR
+
 " }}}
 " - Windows Management {{{
 " ==========================================================
@@ -115,18 +116,10 @@ noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 
 " }}}
-" {{{ Easy resize windows with arrow keys
-noremap <Up> <c-w>+
-noremap <Down> <c-w>-
-noremap <Left> <c-w>>
-noremap <Right> <c-w><
-
-" }}}
 
 " Buffer Management {{{
 nnoremap <Right> :bnext<CR>
 nnoremap <Left>  :bprevious<CR>
-
 " }}}
 "     }}}
 " - Plugins {{{
