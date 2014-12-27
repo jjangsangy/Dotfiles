@@ -1,113 +1,110 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 BookInfo
+
+A book search utility so you spend less time searching and more time reading.
 """
+
 from __future__ import print_function
 
+import functools
 import json
-import requests
 import sys
 
-from functools import wraps
-from collections import namedtuple
-from contextlib import contextmanager
+from urllib.request import urlopen, Request
+from urllib.parse import urlencode
+from urllib.error import HTTPError
 
 try:
-    from urllib.request import urlopen, Request, quote
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib2 import urlopen, Request, quote
-    from urllib import urlencode
+    from pygments import highlight
+    from pygments.lexers.web import JsonLexer
+    from pygments.formatters import Terminal256Formatter
+except: # No color for you
+    pass
 
-class GoogleBookAPIClient:
+def push_url(func):
 
-    def __init__(self, title):
-        self.title = title
-
-    @property
-    def url(self):
-        """
-        Encodes urlencoded of book.
-        """
-        base = r'https://www.googleapis.com/books/v1/volumes'
-        params = urlencode({'q': r'"{title}"'.format(title=self.title)})
-
-        return '?'.join([base, params])
-
-    @contextmanager
-    def connect(self):
-        """"
-        Context manager for HTTP Connection state and ensures proper handling
-        of network sockets.
-        Exception is raised at the yield statement.
-        """
-        try:
-            headers = {'User-Agent': 'Python'}
-            request = urlopen(Request(self.url, headers=headers))
-            yield request
-        finally:
-            request.close()
-
-    def reader(self):
-        """
-        Reads raw text from the connection stream.
-        Ensures proper exception handling.
-        """
-        with self.connect() as request:
-            if request.msg != 'OK':
-                raise IOError
-            request_stream = request.read().decode('utf-8')
-        return request_stream
-
-class Book:
-
-    _header = ('title', 'authors', 'imageLinks', 'categories', 'description')
-
-    def __init__(self, title, header=_header):
-        self.title = title
-        self.header = header
-        self.interface = GoogleBookAPIClient(title)
-
-    def __repr__(self):
-        return self.title
-
-    def json(self):
-        raw_text = self.interface.reader()
-        return json.loads(raw_text)
-
-
-def decorate(func):
-    header = ('title', 'authors', 'imageLinks', 'categories', 'description')
-    Book = namedtuple('Book', header)
-
-    @wraps(func)
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        req = func(*args, **kwargs)
 
-        if not req.ok:
-            raise req.raise_for_status()
+        headers = {
+            'User-Agent': 'BookInfo v0.0.1',
+            'Content-Type': 'application/json; charset=utf-8'
+        }
+        req_url = func(*args, **kwargs)
+        request = urlopen(Request(req_url, headers=headers))
 
-        response = req.json().get('items')[0].get('volumeInfo', None)
-        book = Book(*[response[content] for content in header])
+        if request.code != 200:
+            raise HTTPError
 
-        return book
+        response = json.loads(request.read().decode('utf-8'))
+
+        return response.get('items')
+
 
     return wrapper
 
-@decorate
-def book_info(name, author=None):
+
+@push_url
+def book_request(title, author=None, start_index=0, max_results=10, language_code='', fields=()):
     base = r'https://www.googleapis.com/books/v1/volumes'
-    query = {'q': r'"{name}"'.format(name=name)}
-    return requests.get(base, params=query)
+    query = r''
+    query = '"{0}"'.format(':'.join(['intitle', title]))
+
+    if author:
+        authors = '"{0}"'.format(':'.join(['inauthor', author]))
+        query = '+'.join([query, authors]).strip('+')
+
+    # Encode Parameters
+    params = urlencode({
+                   'q': query,
+          'startIndex': start_index,
+          'maxResults': max_results,
+        'langRestrict': language_code,
+    })
+
+    # Optimizes amount of data requested
+    fieldstring = 'fields={prefix}({fields})'.format(
+        prefix='/'.join(['items', 'volumeInfo']),
+        fields=','.join(('authors', 'title', 'industryIdentifiers') + fields),
+    )
+
+    return '&'.join(['?'.join([base, params]), fieldstring])
+
 
 def main(title):
-    bookinfo = book_info(' '.join(title))
-    fields = bookinfo._fields
-    book = bookinfo._asdict()
-    for field in fields:
-        print(field, book[field], end='\n\n', sep=': ')
+    ansi  = {
+        'underline': '\033[4m',
+        'bold': '\033[1m',
+        'end': '\033[0m',
+    }
+    fields = 'title', 'authors', 'imageLinks', 'categories', 'description'
+    books  = book_request(' '.join(title), fields=fields)
+
+    for book in books:
+        info = book.get('volumeInfo')
+        print('{ansi[bold]}{ansi[underline]}{info[title]}{ansi[end]}'.format(
+              ansi=ansi,info=info)
+        )
+
+        jsontree = json.dumps(
+            info,
+            indent=2,
+            sort_keys=True,
+            separators=(', ', ': '),
+        )
+
+        try: jsontree = highlight(
+                jsontree,
+                JsonLexer(),
+                Terminal256Formatter(style='autumn'))
+        except: pass
+
+        print(jsontree, end='\n\n')
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+
+    main(sys.argv[1:])
