@@ -11,6 +11,7 @@ import sys
 
 from functools import wraps
 from collections import namedtuple
+from contextlib import contextmanager
 
 try:
     from urllib.request import urlopen, Request, quote
@@ -101,7 +102,12 @@ def book_info(name, author=None):
     return requests.get(base, params=query)
 
 def main(title):
-    print('Hello')
+    bookinfo = book_info(' '.join(title))
+    fields = bookinfo._fields
+    book = bookinfo._asdict()
+    for field in fields:
+        print(field, book[field], end='\n\n', sep=': ')
+
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
