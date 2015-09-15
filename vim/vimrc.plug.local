@@ -23,12 +23,3 @@ Plug 'mattn/emmet-vim'
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'ekalinin/Dockerfile.vim'
 Plug 'evanmiller/nginx-vim-syntax'
-
-if exepath("matlab")
-    Plug 'vim-scripts/MatlabFilesEdition'
-endif
-
-if exists("$GOPATH")
-    Plug 'fatih/vim-go'
-endif
-
