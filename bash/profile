@@ -12,18 +12,44 @@ if [[ "$OSTYPE" =~ "cygwin" ]]; then
 fi
 
 # ==========================================================
-# DIRCOLORS
+# ENVAR
 # ==========================================================
-# AUTHOR: Sang Han
-# DEPENDS: GNU coreutils
-# For Mac OS X coreutils must be installed first either manually
-# or with a package manager.
+export GREP_OPTIONS='--color=auto'
+export PATH=/usr/local/bin:${HOME}/bin:$HOME/.cabal/bin:$HOME/.rvm/bin:$PATH
+export EDITOR=vim
+export HISTIGNORE="ls:cd:echo:history:clear"
+export PROJECT_HOME="${HOME}/Projects"
+export PIP_RESPECT_VIRTUALENV=true
+export PYTHONDONTWRITEBYTECODE=1
+
+# ==========================================================
+# Powerline Prompt
+# ==========================================================
+if [ -x ${HOME}/.powerline-shell ]; then
+    function powerline_precmd() {
+          export PS1="$(~/.powerline-shell 2> /dev/null)"
+    }
+    export PROMPT_COMMAND="powerline_precmd; $PROMPT_COMMAND"
+fi
+
+# ==========================================================
+# Coreutils Dircolors
+# ==========================================================
+#
+# Caveat:
+# =======
+# To get OS X dircolors to work in the same manner
+# install and link gnucoreutils using homebrew as follows.
+#
+# brew install coreutils
+#
+# ln -s "$(brew --prefix)/bin/gls" "$(brew --prefix)/bin/ls"
+# ln -s "$(brew --prefix)/bin/gdircolors" "$(brew --prefix)/bin/dircolors"
+#
 alias 'ls=ls --color=auto'
+
+# Display proper directory colors based on bgcolor
 eval_dircolors() {
-    # USAGE: By default, this function checks and evaluates .dircolors
-    #        in users $HOME directory.
-    #        Takes 1 argument which will be expanded to .dircolor_${STYLE}
-    #        for evaluating specific dircolor styles
     [[  -n $1 ]] && local STYLE=$1
 
     if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
@@ -36,46 +62,13 @@ eval_dircolors
 [[ "$COLORFGBG" == "11;15" ]] && eval_dircolors light
 [[ "$COLORFGBG" == "12;8" ]] && eval_dircolors dark
 
-# ==========================================================
-# ENVAR
-# ==========================================================
-export GREP_OPTIONS='--color=auto'
-export PATH=/usr/local/bin:${HOME}/bin:$HOME/.cabal/bin:$HOME/.rvm/bin:$PATH
-export EDITOR=vim
-export HISTIGNORE="ls:cd:echo:history:clear"
-export PROJECT_HOME="${HOME}/Projects"
-export PIP_RESPECT_VIRTUALENV=true
-export PYTHONDONTWRITEBYTECODE=1
-
-function powerline_precmd() {
-      export PS1="$(~/.powerline-shell 2> /dev/null)"
-}
-
-export PROMPT_COMMAND="powerline_precmd; $PROMPT_COMMAND"
 
 # ==========================================================
-# Prompt
+# Git Hub
 # ==========================================================
-
-# ==========================================================
-# Depreciated Modules
-# ==========================================================
-# export WORKON_HOME=$HOME/.virtualenvs
-# export PIP_VIRTUALENV_BASE=$WORKON_HOME
-# source "${HOME}/.powerline.sh"
-# source activate py27
-
-# source /usr/local/bin/virtualenvwrapper.sh
-# source "${HOME}/.virtualenvs/py3k/bin/activate"
-
-# eval "$(pyenv init -)"
-# export PYENV_VERSION="py34"
-
-
-# ==========================================================
-# Git
-# ==========================================================
-eval "$(hub alias -s)"
+if type hub &>/dev/null; then
+    eval "$(hub alias -s)"
+fi
 
 # ==========================================================
 # Homebrew
@@ -93,7 +86,7 @@ if brew --prefix &> /dev/null;  then
 fi
 
 # ==========================================================
-# Functions
+# Cleanup Functions
 # ==========================================================
 function clean_pyc() {
     local depth=${1}
@@ -110,17 +103,15 @@ function clean_ds() {
 # Docker
 # ==========================================================
 if which docker &> /dev/null; then
-    alias d_ip="docker inspect --format '{{ .NetworkSettings.IPAddress }}'"
+    # Collection of Commands for managing Docker Containers
 
-    export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):$(boot2docker info | jq '.["DockerPort"]')
-    export DOCKER_CERT_PATH=/Users/jjangsangy/.boot2docker/certs/boot2docker-vm
-    export DOCKER_TLS_VERIFY=1
+    # Run an interactive tty and bind to it
     docker_run() {
         docker run -it --rm "${1}" /bin/bash -l
     }
 
+    # Returns Last Image ID
     docked() {
-        # Returns Last Image ID
         docker ps -l -q
     }
 
@@ -128,13 +119,13 @@ if which docker &> /dev/null; then
         docker images
     }
 
+    # Clean up Containers
     d_clean() {
-        # Cleanup Empty Containers
         docker rm "$(docker ps -a -q)" 2>/dev/null
     }
 
+    # Remove Untagged Containers
     d_rm() {
-        # Remove Untagged Images
         local group=${1-'<none>'}
         docker rmi $(awk '{if ($1=="'${group}'") print $3}' <(docker images))
     }
@@ -214,3 +205,7 @@ elif type compctl &>/dev/null; then
   }
   compctl -K _npm_completion npm
 fi
+
+
+export NVM_DIR="/Users/jjangsangy/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm

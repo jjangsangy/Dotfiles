@@ -292,7 +292,7 @@ if (&t_Co == 256 || has ('gui_running'))
     call togglebg#map("<F5>")
     colorscheme solarized
 
-    if strftime("%H") >= 5 && strftime("%H") <= 20
+    if strftime("%H") >= 8 && strftime("%H") <= 20
         set background=dark
     else
         set background=dark
