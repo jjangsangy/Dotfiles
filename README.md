@@ -7,36 +7,22 @@ Installation
 
 ## From Github
 
-You can clone the repository wherever you want. I usually keep it in my `$HOME/Dotfiles`
-
 ```bash
-    # One line install
-    # Installer will warn you if it might overwrite stuff already in your home directory
-    $ git clone https://github.com/jjangsangy/Dotfiles.git $HOME/Dotfiles && cd $HOME/Dotfiles/ && ./link_files.sh
+    $ git clone https://github.com/jjangsangy/Dotfiles.git
 ```
 
-## `link_files.sh`
+## Initial Configuration: Symlink Script
+
+## `link.sh`
 
 * Will auto symlink default files from into your home directory prepended with a `dot`.
 
-* Run `-h` flag to usage info
-
-```bash
-usage: link_files.sh [-h help] [-t test] [-f file]
-
-    AUTHOR:      Sang Han
-    CREATED:     01/09/2014
-    REVISION:    1.4
-    ...
-    ...
-```
-
-* Specify your own config file using `[-f file]` flag
-* Defaults to using `link.conf` as default configuration file.
-
 ``` bash
-    $ ./link_files.sh -f vim/vim.conf
+    # Specify configuration file with -c
+    $ ./link.sh -c vim/vim.conf
 ```
+
+
 
 Directory
 ==================
