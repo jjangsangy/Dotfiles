@@ -8,11 +8,10 @@
 #====
 
 # Configure github
-git config --global user.name jjangsangy
-git config --global user.email jjangsangy@gmail.com
-git config --global core.editor vim
-git config --global push.default matching
-git remote set-url origin https://github.com/jjangsangy/Dotfiles.git
+git config --global user.name "Sang Han"
+git config --global user.email "jjangsangy@gmail.com"
+git config --global core.editor "vim"
+git config --global push.default "matching"
 
 # Ask for the administrator privilages upfront
 sudo -v
