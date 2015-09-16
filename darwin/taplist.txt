@@ -1,0 +1,7 @@
+caskroom/cask
+caskroom/fonts
+homebrew/completions
+homebrew/python
+homebrew/science
+homebrew/services
+neovim/neovim

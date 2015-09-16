@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 # Credit goes to for osx configurations!
 # https://github.com/paulmillr/dotfiles/blob/master/etc/osx.sh
