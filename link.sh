@@ -24,7 +24,7 @@ usage() { cat <<- DOCUMENT
         -h [help]
             Outputs usage directions
         -t [test]
-            A dry run, doesn't actually make changes to the filesystem
+            A dry run, does not actually make changes to the filesystem
         -v [verbose]
             Prints out all test output to screen
         -c [config]
