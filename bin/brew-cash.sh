@@ -67,7 +67,10 @@ function packages()
     # to add it to the list of available sets
     local -a general=(
         'adobe-reader'
+        'dropbox'
+        'evernote'
         'firefox'
+        'google-chrome'
         'google-drive'
         'spectacle'
         'the-unarchiver'
