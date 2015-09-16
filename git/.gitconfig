@@ -1,0 +1,13 @@
+[push]
+	default = matching
+[user]
+	email = jjangsangy@gmail.com
+	name = Sang Han
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[alias]
+	l = "!. ~/.git_log.sh && pretty_git_log"
+[core]
+	editor = vim

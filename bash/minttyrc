@@ -1,8 +1,0 @@
-BoldAsFont=no
-Font=Inconsolata-dz
-FontHeight=14
-Locale=en_US
-Charset=UTF-8
-RightClickAction=paste
-Rows=35
-Term=xterm-256color

@@ -1,0 +1,2 @@
+[alias]
+    l = "!. ~/.git_log && pretty_git_log"
