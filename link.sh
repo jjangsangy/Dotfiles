@@ -159,11 +159,13 @@ main() {
     # Parent directory name is stripped
     for FILE in "${FILELIST[@]}"; do
     {
-        if [ -e "${PROGDIR}/${FILE}" ]; then
-        {
-            local LINK_SOURCE="${PROGDIR}/${FILE}"
-            local LINK_DEST="${HOME}/.${FILE##*/}"
+        local LINK_SOURCE="${PROGDIR}/${FILE}"
+        local LINK_DEST="${HOME}/.${FILE##*/}"
 
+        test -d "${LINK_SOURCE}" && LINK_SOURCE="${LINK_SOURCE}"'/'
+
+        if [ -e ${LINK_SOURCE} ]; then
+        {
             # print out source and destination only
             if ((TEST==1)); then
                 test_source && test_dest
