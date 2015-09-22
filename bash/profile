@@ -207,11 +207,10 @@ elif type compctl &>/dev/null; then
 fi
 
 
-export NVM_DIR="/Users/jjangsangy/.nvm"
+export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
-# The next line updates PATH for the Google Cloud SDK.
-source '/Users/jjangsangy/Projects/google-cloud-sdk/path.bash.inc'
-
-# The next line enables shell command completion for gcloud.
-source '/Users/jjangsangy/Projects/google-cloud-sdk/completion.bash.inc'
+if [ -d $HOME/google-cloud-sdk ]; then
+    source '$HOME/google-cloud-sdk/path.bash.inc'
+    source '$HOME/google-cloud-sdk/completion.bash.inc'
+fi
