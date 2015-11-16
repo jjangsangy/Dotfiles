@@ -19,28 +19,9 @@ if [ "$(which brew &> /dev/null)" ]; then
     export PATH="/usr/local/bin:${PATH}"
 fi
 
-if [ -d "/Applications/Julia-0.3.1.app/Contents/Resources/julia/bin" ]; then
-    export PATH=$PATH
-fi
-
 # ==========================================================
 # Anaconda Python Distribution
 # ==========================================================
-# if [ -d "${HOME}/anaconda" ]; then
-#     export PATH="${PATH}:${HOME}/anaconda/bin"
-#     export CONDA_ENVS_PATH="${HOME}/anaconda/envs"
-
-#     # Utility Function for activating Conda Virtual Env
-#     function condaenv() {
-#         if [ ${1} = "deactivate" ]; then
-#             shift 1
-#             source "${HOME}/anaconda/bin/deactivate"
-#             source "${HOME}/.profile"
-#             return
-#         else
-#             source activate "$@"
-#             return
-#         fi
-#     }
-
-# fi
+if [ -d ${HOME}/conda ]; then
+    export PATH=$PATH:${HOME}/conda/bin
+fi
