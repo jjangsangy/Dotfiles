@@ -40,4 +40,7 @@ Thumbs.db
 Icon*
 Calient
 env
+python/ipython/profile_default/db/**
+python/ipython/profile_default/startup/**
+python/matplotlib/*.cache
 # }}}
