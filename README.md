@@ -2,6 +2,8 @@ Dotfiles
 ==========
 Config my stuff
 
+![Image][Image]
+
 Installation
 ============
 
@@ -92,6 +94,8 @@ between BSD machines. Some of those exceptions below.
 
 ### NOTE: Debian/Ubuntu
 > Ubuntu and Debian have different `.rc` naming conventions than OS X.
-> 
+>
 > Use `.bash_profile` or `.bashrc` for `login shells` instead of `.profile`
 
+
+[Image]: static/image.png
