@@ -4,13 +4,11 @@ set nocompatible
 syntax enable
 
 " }}}
-
 " - Default Mappings {{{
 let mapleader = ','
 inoremap jk <ESC>
 
 " }}}
-"
 " - Install Plug bundles {{{
 " ==========================================================
 call plug#begin('~/.vim/plugged')
@@ -276,9 +274,19 @@ augroup Python
 augroup END
 
 " Go Filetype Specific {{{
-augroup Go
+augroup filetype_go
     autocmd!
-    autocmd FileType go nnoremap <leader>go :!go run %<CR>
+    autocmd FileType go nmap <leader>r <Plug>(go-run)
+    autocmd FileType go nmap <leader>b <Plug>(go-build)
+    autocmd FileType go nmap <leader>t <Plug>(go-test)
+    autocmd FileType go nmap <leader>c <Plug>(go-coverage)
+
+    autocmd FileType go nmap <Leader>gd <Plug>(go-doc)
+    autocmd FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+
+    let g:go_fmt_command = "goimports"
+
+    autocmd FileType go set noet ci pi sts=0 sw=4 ts=4
 augroup END
 " }}}
 
@@ -293,7 +301,7 @@ if (&t_Co == 256 || has ('gui_running'))
     colorscheme solarized
 
     if strftime("%H") >= 8 && strftime("%H") <= 20
-        set background=light
+        set background=dark
     else
         set background=dark
     endif
