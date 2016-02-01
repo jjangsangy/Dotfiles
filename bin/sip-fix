@@ -1,0 +1,11 @@
+
+function fix_sip() {
+    if [ "$(ls -l /usr/local/ | awk '{ if ($9 == "bin") print $3 }')" = "root" ]; then
+        echo "Changing Permissions for /usr/local/bin"
+        sudo chown -R $(whoami):admin /usr/local/bin
+    fi
+}
+
+if [ "${BASH_SOURCE}" = "$0" ]; then
+    fix_sip
+fi

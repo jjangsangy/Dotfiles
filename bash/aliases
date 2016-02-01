@@ -1,3 +1,4 @@
 alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-metadata'
 alias homebrew='brew update && brew upgrade && brew cleanup'
 alias l='ls -l'
+alias socks='ssh -D 9999 -f -C -q -N'
