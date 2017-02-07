@@ -1,7 +1,7 @@
 # SOURCED FILES
 # ==========================================================
 
-for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh','aws_creds'}; do
+for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh','aws_creds','secrets'}; do
     [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
 done
 
@@ -76,7 +76,6 @@ fi
 if brew --prefix &> /dev/null;  then
     export HOMEBREW_EDITOR=vim
     export HOMEBREW_VERBOSE=true
-    export HOMEBREW_GITHUB_API_TOKEN=45316a902d54f9d4129bb559d04a85529f4625aa
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
     export PATH="${PATH}:/usr/local/sbin"
 
@@ -105,29 +104,16 @@ function clean_ds() {
 if which docker &> /dev/null; then
     # Collection of Commands for managing Docker Containers
 
-    # Run an interactive tty and bind to it
-    docker_run() {
-        docker run -it --rm "${1}" /bin/bash -l
-    }
-
-    # Returns Last Image ID
-    docked() {
-        docker ps -l -q
-    }
-
-    d_ls() {
-        docker images
-    }
-
     # Clean up Containers
-    d_clean() {
-        docker rm "$(docker ps -a -q)" 2>/dev/null
+    function d_clean()
+    {
+        docker ps -a -q | xargs docker rm
     }
 
     # Remove Untagged Containers
-    d_rm() {
-        local group=${1-'<none>'}
-        docker rmi $(awk '{if ($1=="'${group}'") print $3}' <(docker images))
+    function d_rm()
+    {
+        docker images -f dangling=true -q | xargs docker rmi ${1:-''}
     }
 fi
 
@@ -146,7 +132,7 @@ fi
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$HOME/Go/bin
 if [ -d $HOME/Go ]; then
     export GOPATH=$HOME/Go
-    export GOBIN=$PATH:$GOPATH/bin
+    export GOBIN=$GOPATH/bin
 fi
 
 # ==========================================================
@@ -206,17 +192,9 @@ elif type compctl &>/dev/null; then
   compctl -K _npm_completion npm
 fi
 
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
-if [ -d $HOME/google-cloud-sdk ]; then
-    source "$HOME/google-cloud-sdk/path.bash.inc"
-    source "$HOME/google-cloud-sdk/completion.bash.inc"
+if [ -d "$HOME/Projects/google-cloud-sdk" ]; then
+    source '/Users/jjangsangy/Projects/google-cloud-sdk/path.bash.inc'
+    source '/Users/jjangsangy/Projects/google-cloud-sdk/completion.bash.inc'
 fi
 
-# The next line updates PATH for the Google Cloud SDK.
-source '/Users/sanghan/google-cloud-sdk/path.bash.inc'
-
-# The next line enables shell command completion for gcloud.
-source '/Users/sanghan/google-cloud-sdk/completion.bash.inc'
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"

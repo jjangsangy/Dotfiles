@@ -2,3 +2,22 @@ alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-me
 alias homebrew='brew update && brew upgrade && brew cleanup'
 alias l='ls -l'
 alias socks='ssh -D 9999 -f -C -q -N'
+alias movevideos="find -E . -type f -depth 2 -regex '.*\.(avi|mp4|wmv|mpeg|mpg|mkv)' -print -exec mv '{}' '.' \; && rmdir * &>/dev/null"
+
+function mpv-sort() {
+    local ARGS=($@)
+    find "${ARGS[@]:-'.'}" \
+        -d 1 \
+        -type f \( -name "*avi" -o -name "*mp4" -o -name "*wmv" -o -name "*mkv" \) \
+        -exec du -hma '{}' \; \
+    | sort -rn \
+    | cut -d $'\t' -f 2 \
+    | sed 's/\(.*\)/"\1"/g' | xargs mpv
+}
+
+function f() {
+    local ARGS=($@)
+    for i in "${ARGS[@]}"; do
+        find . -type f -name ${i}'*'
+    done
+}

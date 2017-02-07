@@ -273,6 +273,12 @@ augroup Python
     autocmd FileType python nnoremap <leader>z :!python %<CR>
 augroup END
 
+" Typescript Filetype Specific {{{
+augroup Typescript
+    autocmd!
+    autocmd FileType typescript :set makeprg=tsc
+augroup END
+
 " Go Filetype Specific {{{
 augroup filetype_go
     autocmd!

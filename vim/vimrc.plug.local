@@ -1,6 +1,6 @@
 function! BuildYCM(info)
   if a:info.status == 'installed' || a:info.force
-    !./install.sh --clang-completer
+    !./install.py --clang-completer
   endif
 endfunction
 
@@ -9,7 +9,8 @@ Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
 Plug 'vim-scripts/restore_view.vim'
 Plug 'Raimondi/delimitMate'
 Plug 'vim-scripts/bash-support.vim'
-Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'chriskempson/vim-tomorrow-theme'
 Plug 'ivanov/vim-ipython'
 Plug 'Shougo/vimproc'
@@ -26,4 +27,5 @@ Plug 'evanmiller/nginx-vim-syntax'
 Plug 'xu-cheng/brew.vim'
 Plug 'fatih/vim-go'
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-
+Plug 'leafgarland/typescript-vim'
+Plug 'clausreinke/typescript-tools.vim', { 'do': 'npm install' }
