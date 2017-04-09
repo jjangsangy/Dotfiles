@@ -198,3 +198,7 @@ if [ -d "$HOME/Projects/google-cloud-sdk" ]; then
 fi
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+if [ -d "${HOME}/.yarn" ]; then
+    export PATH="$HOME/.yarn/bin:$PATH"
+fi
