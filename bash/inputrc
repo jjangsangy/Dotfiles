@@ -7,19 +7,16 @@ $if Bash
 	# Completion is Case insensitive
 	set completion-ignore-case on
 
-	# Enable 8bit input
-	set meta-flag on
+	# Use Unicode & do NOT use the "8bit hack" to input/output non-ASCII characters
+	# See http://code.google.com/p/iterm2/wiki/Keybindings
 	set input-meta on
+	set output-meta on
 	set convert-meta off
 
-	# List possible completions instead of ringing bell
-	set show-all-if-ambiguous on
-
-	# Double Tab Shows All Completion
-	set show-all-if-unmodified off
-
-	# Cycle through ambiguous completions instead of list
-	"\C-i": menu-complete
+	# When pressing up or down arrows,
+	# show only history entries that match what was already typed
+	"\e[A":history-search-backward
+	"\e[B":history-search-forward
 
 	# Word movement for urxvt-term
 	"\e[1;5D": backward-word
