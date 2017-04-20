@@ -1,14 +1,34 @@
-# inputrc set up for use with iterm2
-set editing-mode emacs
+$include /etc/inputrc
 
-set convert-meta on
-set completion-ignore-case on
+$if Bash
+	# Editing Mode
+	set editing-mode emacs
 
-"\C-x\C-r": re-read-init-file
+	# Completion is Case insensitive
+	set completion-ignore-case on
 
-"\e\e[D": backward-word
-"\e\e[C": forward-word
-"\e[3~": delete-char
+	# Enable 8bit input
+	set meta-flag on
+	set input-meta on
+	set convert-meta off
 
-# Meta-Z: "cd - && ls"
-"\e[Z": "\e-1\C-i"
+	# List possible completions instead of ringing bell
+	set show-all-if-ambiguous on
+
+	# Double Tab Shows All Completion
+	set show-all-if-unmodified off
+
+	# Cycle through ambiguous completions instead of list
+	"\C-i": menu-complete
+
+	# Word movement for urxvt-term
+	"\e[1;5D": backward-word
+	"\e[1;3D": backward-word
+	"\e[1;5C": forward-word
+	"\e[1;3C": forward-word
+
+	# Backspace Kill
+	"\C-h": backward-kill-word
+
+	"\C-x\C-r": re-read-init-file
+$endif
