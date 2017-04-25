@@ -1,31 +1,76 @@
 $include /etc/inputrc
 
+set editing-mode emacs-meta
+
+# Completion
+set completion-ignore-case on
+set completion-map-case on
+set completion-query-items -1
+set page-completions off
+set completion-query-items 1000
+set print-completions-horizontally on
+
+# Completed dir names have a slash appended
+set mark-directories on
+
+# Completed names which are symlinks to dirs have a slash appended
+set mark-symlinked-directories on
+
+# List ls -F for completion
+set visible-stats on
+
+# Cycle through ambiguous completions instead of list
+"\C-i": menu-complete
+# List possible completions instead of ringing bell
+set show-all-if-ambiguous on
+
+# Use Unicode & do NOT use the "8bit hack" to input/output non-ASCII characters
+# See http://code.google.com/p/iterm2/wiki/Keybindings
+set input-meta on
+set output-meta on
+set convert-meta off
+
+# Add a binding to refresh the line, which is unbound
+"\C-xr": redraw-current-line
+
 $if Bash
-	# Editing Mode
-	set editing-mode emacs
 
-	# Completion is Case insensitive
-	set completion-ignore-case on
+	$if mode=emacs
+		# allow the use of the Home/End keys
+		"\e[1~": beginning-of-line
+		"\e[4~": end-of-line
 
-	# Use Unicode & do NOT use the "8bit hack" to input/output non-ASCII characters
-	# See http://code.google.com/p/iterm2/wiki/Keybindings
-	set input-meta on
-	set output-meta on
-	set convert-meta off
+		# mappings for "page up" and "page down" to step to the beginning/end
+		# of the history
+		"\e[5~": beginning-of-history
+		"\e[6~": end-of-history
 
-	# When pressing up or down arrows,
-	# show only history entries that match what was already typed
-	"\e[A":history-search-backward
-	"\e[B":history-search-forward
+		# When pressing up or down arrows,
+		# show only history entries that match what was already typed
+		"\e[A": history-search-backward
+		"\e[B": history-search-forward
 
-	# Word movement for urxvt-term
-	"\e[1;5D": backward-word
-	"\e[1;3D": backward-word
-	"\e[1;5C": forward-word
-	"\e[1;3C": forward-word
+		# alternate mappings for "page up" and "page down" to search the history
+		"\e[5~": history-search-backward
+		"\e[6~": history-search-forward
 
-	# Backspace Kill
-	"\C-h": backward-kill-word
+		# Word movement for urxvt-term
+		"\e[1;5D": backward-word
+		"\e[1;3D": backward-word
+		"\e[1;3C": forward-word
+		"\e[1;5C": forward-word
+		"\e\e[C": forward-word
+		"\e\e[D": backward-word
 
-	"\C-x\C-r": re-read-init-file
+		# Backspace Kill
+		"\C-h": backward-kill-word
+	$endif
+
+	$if term=rxvt
+		"\ea": beginning-of-line
+		"\ee": end-of-line
+
+		"\e\M-z": 'cd !$ ^Mls^M'
+	$endif
+
 $endif
