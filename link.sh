@@ -149,7 +149,7 @@ done
 # ===============================================================================
 main() {
     # Grab Config File
-    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/link.conf"}") )
+    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/bash/bash.conf"}") )
 
     if ((TEST==1 || VERBOSE==1)); then
         test_variables TEST PROGNAME PROGDIR FILELIST CONFIG_FILE FORCE

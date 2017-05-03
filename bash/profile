@@ -1,21 +1,14 @@
 # SOURCED FILES
 # ==========================================================
 
-for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh','aws_creds','secrets'}; do
+for file in ${HOME}/\.{'path','aliases','bash_compltion','secrets'}; do
     [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
 done
-
-if [[ "$OSTYPE" =~ "cygwin" ]]; then
-    for file in ${HOME}/\.{'.minttyrc','dark_cyg','light_cyg',}; do
-        [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
-    done
-fi
 
 # ==========================================================
 # ENVAR
 # ==========================================================
-export GREP_OPTIONS='--color=auto'
-export PATH=/usr/local/bin:${HOME}/bin:$HOME/.cabal/bin:$HOME/.rvm/bin:$PATH
+ 
 export EDITOR=vim
 export HISTIGNORE="ls:cd:echo:history:clear"
 export PROJECT_HOME="${HOME}/Projects"
@@ -46,14 +39,13 @@ fi
 # ln -s "$(brew --prefix)/bin/gls" "$(brew --prefix)/bin/ls"
 # ln -s "$(brew --prefix)/bin/gdircolors" "$(brew --prefix)/bin/dircolors"
 #
-alias 'ls=ls --color=auto'
-
 # Display proper directory colors based on bgcolor
-eval_dircolors() {
-    [[  -n $1 ]] && local STYLE=$1
 
-    if [[ -r $HOME/.dircolors${STYLE/#/_} ]]; then
-        eval "$(dircolors $HOME/.dircolors${STYLE/#/_})"
+function eval_dircolors() {
+    [ -n $1 ] && local STYLE=$1
+
+    if [ -r ${HOME}/.dircolors${STYLE/#/_} ]; then
+        eval "$(dircolors ${HOME}/.dircolors${STYLE/#/_})"
     fi
 }
 
@@ -62,27 +54,6 @@ eval_dircolors
 [[ "$COLORFGBG" == "11;15" ]] && eval_dircolors light
 [[ "$COLORFGBG" == "12;8" ]] && eval_dircolors dark
 
-
-# ==========================================================
-# Git Hub
-# ==========================================================
-if type hub &>/dev/null; then
-    eval "$(hub alias -s)"
-fi
-
-# ==========================================================
-# Homebrew
-# ==========================================================
-if brew --prefix &> /dev/null;  then
-    export HOMEBREW_EDITOR=vim
-    export HOMEBREW_VERBOSE=true
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    export PATH="${PATH}:/usr/local/sbin"
-
-    if [ -f "$(brew --prefix)/etc/bash_completion" ]; then
-        source "$(brew --prefix)/etc/bash_completion"
-    fi
-fi
 
 # ==========================================================
 # Cleanup Functions
@@ -98,107 +69,4 @@ function clean_ds() {
     find . -type f -name '.DS_Store' -maxdepth ${depth:-1} -exec rm '{}' \;
 }
 
-# ==========================================================
-# Docker
-# ==========================================================
-if which docker &> /dev/null; then
-    # Collection of Commands for managing Docker Containers
 
-    # Clean up Containers
-    function d_clean()
-    {
-        docker ps -a -q | xargs docker rm
-    }
-
-    # Remove Untagged Containers
-    function d_rm()
-    {
-        docker images -f dangling=true -q | xargs docker rmi ${1:-''}
-    }
-fi
-
-# ==========================================================
-# Ruby
-# ==========================================================
-if which rbenv &> /dev/null; then
-    export RBENV_ROOT="/usr/local/var/rbenv"
-    export PATH="${RBENV_ROOT}/shims":$PATH
-    eval "$(rbenv init -)"
-fi
-
-# ==========================================================
-# Go
-# ==========================================================
-export PATH=$PATH:/usr/local/opt/go/libexec/bin:$HOME/Go/bin
-if [ -d $HOME/Go ]; then
-    export GOPATH=$HOME/Go
-    export GOBIN=$GOPATH/bin
-fi
-
-# ==========================================================
-# Completions
-# ==========================================================
-_pip_completion()
-{
-    COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
-                   COMP_CWORD=$COMP_CWORD \
-                   PIP_AUTO_COMPLETE=1 $1 ) )
-}
-complete -o default -F _pip_completion pip
-
-# NPM Completion
-COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
-COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
-export COMP_WORDBREAKS
-
-if type complete &>/dev/null; then
-  _npm_completion () {
-    local si="$IFS"
-    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
-                           COMP_LINE="$COMP_LINE" \
-                           COMP_POINT="$COMP_POINT" \
-                           npm completion -- "${COMP_WORDS[@]}" \
-                           2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  complete -F _npm_completion npm
-elif type compdef &>/dev/null; then
-  _npm_completion() {
-    si=$IFS
-    compadd -- $(COMP_CWORD=$((CURRENT-1)) \
-                 COMP_LINE=$BUFFER \
-                 COMP_POINT=0 \
-                 npm completion -- "${words[@]}" \
-                 2>/dev/null)
-    IFS=$si
-  }
-  compdef _npm_completion npm
-elif type compctl &>/dev/null; then
-  _npm_completion () {
-    local cword line point words si
-    read -Ac words
-    read -cn cword
-    let cword-=1
-    read -l line
-    read -ln point
-    si="$IFS"
-    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
-                       COMP_LINE="$line" \
-                       COMP_POINT="$point" \
-                       npm completion -- "${words[@]}" \
-                       2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  compctl -K _npm_completion npm
-fi
-
-if [ -d "$HOME/Projects/google-cloud-sdk" ]; then
-    source '/Users/jjangsangy/Projects/google-cloud-sdk/path.bash.inc'
-    source '/Users/jjangsangy/Projects/google-cloud-sdk/completion.bash.inc'
-fi
-
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
-
-if [ -d "${HOME}/.yarn" ]; then
-    export PATH="$HOME/.yarn/bin:$PATH"
-fi
