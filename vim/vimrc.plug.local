@@ -19,7 +19,6 @@ Plug 'elzr/vim-json'
 Plug 'Shougo/unite.vim'
 Plug 'sudar/vim-arduino-syntax'
 Plug 'Rykka/riv.vim'
-Plug 'javascript-libraries-syntax'
 Plug 'mattn/emmet-vim'
 Plug 'Glench/Vim-Jinja2-Syntax'
 Plug 'ekalinin/Dockerfile.vim'
@@ -27,5 +26,3 @@ Plug 'evanmiller/nginx-vim-syntax'
 Plug 'xu-cheng/brew.vim'
 Plug 'fatih/vim-go'
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-Plug 'leafgarland/typescript-vim'
-Plug 'clausreinke/typescript-tools.vim', { 'do': 'npm install' }
