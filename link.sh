@@ -2,7 +2,7 @@
 # ==============================================================================
 usage() { cat <<- DOCUMENT
 
-    Usage: $PROGNAME [-h] [-t] [-c link.conf]
+    Usage: $PROGNAME [-h] [-t] [-c bash.conf]
 
     AUTHOR:      Sang Han
     CREATED:     01/09/2014
@@ -18,7 +18,7 @@ usage() { cat <<- DOCUMENT
     HOME DIRECTORY: $HOME
 
     REQUIREMENTS:
-        - link.conf (Config File)
+        - .conf (Config File)
 
     OPTIONS:
         -h [help]
@@ -149,7 +149,7 @@ done
 # ===============================================================================
 main() {
     # Grab Config File
-    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/link.conf"}") )
+    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/bash/bash.conf"}") )
 
     if ((TEST==1 || VERBOSE==1)); then
         test_variables TEST PROGNAME PROGDIR FILELIST CONFIG_FILE FORCE

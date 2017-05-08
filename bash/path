@@ -1,18 +1,23 @@
 # ==========================================================
 # Script Bin Folder
 # ==========================================================
-for directory in ${HOME}/{'bin','Go/bin'}; do
-    [ -d "${directory}" ] && export PATH=${directory}:${PATH}
+for directory in ${HOME}/{'','Desktop','conda','Go'}; do
+    if [ -d "${directory}/bin" ]; then
+        export PATH=${directory}/bin:${PATH}
+    fi
 done
 
 # ==========================================================
-# Anaconda Python Distribution
+# Homebrew Package Manager
 # ==========================================================
-if [ -d ${HOME}/conda ]; then
-    export PATH=$PATH:${HOME}/conda/bin
+if [ "$(which brew &> /dev/null)" ]; then
+    export PATH="/usr/local/bin:${PATH}"
 fi
 
-if [ -d ${HOME}/Go ]; then
-    export GOPATH=${HOME}/Go
-    export GOBIN=${GOPATH}/bin
+# ==========================================================
+# Homebrew Package Manager
+# ==========================================================
+if [ -d "${HOME}/Go" ]; then
+    export GOPATH="${HOME}/Go"
+    export GOBIN="${GOPATH}/bin"
 fi
