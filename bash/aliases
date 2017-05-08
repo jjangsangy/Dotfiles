@@ -4,6 +4,8 @@ alias l='ls -l'
 alias socks='ssh -D 9999 -f -C -q -N'
 alias movevideos="find -E . -type f -depth 2 -regex '.*\.(avi|mp4|wmv|mpeg|mpg|mkv)' -print -exec mv '{}' '.' \; && rmdir * &>/dev/null"
 
+alias apt-search='sudo apt-cache search'
+
 function mpv-sort() {
     local ARGS=($@)
     find "${ARGS[@]:-'.'}" \

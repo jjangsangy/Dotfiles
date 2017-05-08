@@ -1,21 +1,13 @@
 # SOURCED FILES
 # ==========================================================
 
-for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh','aws_creds','secrets'}; do
+for file in ${HOME}/\.{'path','aliases','prompt.sh','jump.sh','secrets'}; do
     [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
 done
-
-if [[ "$OSTYPE" =~ "cygwin" ]]; then
-    for file in ${HOME}/\.{'.minttyrc','dark_cyg','light_cyg',}; do
-        [ -r "${file}" ] && [ -f "${file}" ] && source "${file}"
-    done
-fi
 
 # ==========================================================
 # ENVAR
 # ==========================================================
-export GREP_OPTIONS='--color=auto'
-export PATH=/usr/local/bin:${HOME}/bin:$HOME/.cabal/bin:$HOME/.rvm/bin:$PATH
 export EDITOR=vim
 export HISTIGNORE="ls:cd:echo:history:clear"
 export PROJECT_HOME="${HOME}/Projects"
@@ -25,9 +17,9 @@ export PYTHONDONTWRITEBYTECODE=1
 # ==========================================================
 # Powerline Prompt
 # ==========================================================
-if [ -x ${HOME}/.powerline-shell ]; then
+if [ -n "$(which powerline-shell-go)" ]; then
     function powerline_precmd() {
-          export PS1="$(~/.powerline-shell 2> /dev/null)"
+          export PS1="$(powerline-shell-go 2> /dev/null)"
     }
     export PROMPT_COMMAND="powerline_precmd; $PROMPT_COMMAND"
 fi

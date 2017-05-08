@@ -1,27 +1,18 @@
 # ==========================================================
-# Matlab
-# ==========================================================
-if [ -f "/Applications/MATLAB_R2012a.app/bin/matlab" ]; then
-    export PATH=${PATH}:/Applications/MATLAB_R2012a.app/bin
-fi
-
-# ==========================================================
 # Script Bin Folder
 # ==========================================================
-for directory in ${HOME}/{'bin','Calient','Desktop/bin'}; do
+for directory in ${HOME}/{'bin','Go/bin'}; do
     [ -d "${directory}" ] && export PATH=${directory}:${PATH}
 done
-
-# ==========================================================
-# Homebrew Package Manager
-# ==========================================================
-if [ "$(which brew &> /dev/null)" ]; then
-    export PATH="/usr/local/bin:${PATH}"
-fi
 
 # ==========================================================
 # Anaconda Python Distribution
 # ==========================================================
 if [ -d ${HOME}/conda ]; then
     export PATH=$PATH:${HOME}/conda/bin
+fi
+
+if [ -d ${HOME}/Go ]; then
+    export GOPATH=${HOME}/Go
+    export GOBIN=${GOPATH}/bin
 fi
