@@ -1,11 +1,14 @@
 alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-metadata'
 alias homebrew='brew update && brew upgrade && brew cleanup'
 alias l='ls -l'
+alias ls='command ls --color=auto'
+alias grep='command grep --color=auto'
 alias socks='ssh -D 9999 -f -C -q -N'
-alias movevideos="find -E . -type f -depth 2 -regex '.*\.(avi|mp4|wmv|mpeg|mpg|mkv)' -print -exec mv '{}' '.' \; && rmdir * &>/dev/null"
-alias 'ls=ls --color=auto'
-alias 'grep=grep --color=auto'
 
+if [ -n $(which atom-beta) ]; then
+    alias atom='atom-beta'
+    alias apm='apm-beta'
+fi
 
 alias apt-search='sudo apt-cache search'
 
@@ -18,11 +21,4 @@ function mpv-sort() {
     | sort -rn \
     | cut -d $'\t' -f 2 \
     | sed 's/\(.*\)/"\1"/g' | xargs mpv
-}
-
-function f() {
-    local ARGS=($@)
-    for i in "${ARGS[@]}"; do
-        find . -type f -name ${i}'*'
-    done
 }
