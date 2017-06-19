@@ -36,7 +36,7 @@ for directory in ${HOME}/{'','Desktop','anaconda','Go'}; do
 done
 
 # ==========================================================
-# Homebrew Package Manager
+# Add user bin
 # ==========================================================
 if [ "which -s brew" ]; then
     extend_path 'PATH''/usr/local/sbin'

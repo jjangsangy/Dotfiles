@@ -1,20 +1,22 @@
-alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-metadata'
+alias grep='command grep --color=auto'
 alias homebrew='brew update && brew upgrade && brew cleanup'
-alias l='ls -l'
-alias socks='ssh -D 9999 -f -C -q -N'
-alias movevideos="find -E . -type f -depth 2 -regex '.*\.(avi|mp4|wmv|mpeg|mpg|mkv)' -print -exec mv '{}' '.' \; && rmdir * &>/dev/null"
-alias atom='atom-beta'
-alias apm='apm-beta'
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
-alias vim='nvim'
 alias jupyterhub='jupyterhub -f ~/.jupyter/jupyterhub_config.py'
-
-
+alias l='ls -l'
+alias ls='command ls --color=auto'
+alias movevideos="find -E . -type f -depth 2 -regex '.*\.(avi|mp4|wmv|mpeg|mpg|mkv)' -print -exec mv '{}' '.' \; && rmdir * &>/dev/null"
+alias socks='ssh -D 9999 -f -C -q -N'
+alias vim='nvim'
+alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-metadata'
 alias apt-search='sudo apt-cache search'
 
+if [ -n $(which atom-beta) ]; then
+    alias atom='atom-beta'
+    alias apm='apm-beta'
+fi
+
+
 function mpv-sort() {
-    local ARGS=($@)
+    local ARGS=( $@ )
     find "${ARGS[@]:-'.'}" \
         -d 1 \
         -type f \( -name "*avi" -o -name "*mp4" -o -name "*wmv" -o -name "*mkv" \) \
@@ -22,11 +24,4 @@ function mpv-sort() {
     | sort -rn \
     | cut -d $'\t' -f 2 \
     | sed 's/\(.*\)/"\1"/g' | xargs mpv
-}
-
-function f() {
-    local ARGS=($@)
-    for i in "${ARGS[@]}"; do
-        find . -type f -name ${i}'*'
-    done
 }
