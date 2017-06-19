@@ -1,0 +1,26 @@
+# ==========================================================
+# ENVAR
+# ==========================================================
+export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgconfig"
+export CPU_COUNT=$(python -c 'import multiprocessing; print(multiprocessing.cpu_count())')
+export CLICOLOR=1
+export EDITOR=vim
+export HISTIGNORE="ls:cd:echo:history:clear"
+export PROMPT_DIRTRIM=3
+export PROJECT_HOME="${HOME}/Projects"
+export PYTHONDONTWRITEBYTECODE=1
+export HISTCONTROL=ignoredups
+export SHELLCHECK_OPTS="--exclude=SC2059,SC2034,SC2155"
+export FIGNORE="colonize ~/.fignore"
+export GLOBIGNORE='.DS_Store:*.o:*.pyc'
+
+export HOMEBREW_VERBOSE=1
+export HOMEBREW_MAKE_JOBS=$(( CPU_COUNT - 1))
+export HOMEBREW_CASK_OPTS='--verbose --require-sha'
+
+export JUPYTER_DATA_DIR="/usr/local/share/jupyter/data"
+export JUPYTER_RUNTIME_DIR="/usr/local/share/jupyter/runtime"
+export CONFIGPROXY_AUTH_TOKEN="$(openssl rand -hex 64)"
+
+
+# vi: ft=sh

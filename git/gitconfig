@@ -1,13 +1,38 @@
-[push]
-	default = matching
-[user]
-	email = jjangsangy@gmail.com
-	name = Sang Han
-[filter "lfs"]
-	clean = git-lfs clean %f
-	smudge = git-lfs smudge %f
-	required = true
-[alias]
-	l = "!. ~/.git_log.sh && pretty_git_log"
+# vi: ft=gitconfig
+
 [core]
 	editor = vim
+	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+	excludesfile = ~/.gitignore
+	compression = 9
+	autocrlf = input
+	safecrlf = true
+
+[push]
+	default = matching
+
+[web]
+	browser = google-chrome
+
+[color]
+	ui = auto
+
+[hub]
+	protocol = git
+
+[i18n]
+	commitencoding = utf-8
+
+[include]
+	path = ~/.gitconfig.local
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = Sang Han
+	email = jjangsangy@gmail.com
+[rebase]
+	autosquash = true

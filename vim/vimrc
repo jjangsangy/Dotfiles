@@ -1,27 +1,22 @@
-" - Sang Han's Vimrc  {{{
-" ==========================================================
-set nocompatible
-syntax enable
-
-" }}}
-" - Default Mappings {{{
-let mapleader = ','
-inoremap jk <ESC>
-
-" }}}
-" - Install Plug bundles {{{
+" Vimrc  {{{
 " ==========================================================
 call plug#begin('~/.vim/plugged')
-if filereadable(expand("~/.vimrc.plug"))
-    source ~/.vimrc.plug
-    source ~/.vimrc.plug.local
-endif
+    if filereadable(expand("~/.vimrc.plug"))
+        source ~/.vimrc.plug
+    endif
+    if filereadable(expand("~/.vimrc.plug.local"))
+        source ~/.vimrc.plug.local
+    endif
 call plug#end()
+" }}}
+" - MapLeader {{{
+let mapleader = ','
 
-filetype plugin indent on
+inoremap jk <Esc>
+vnoremap jk <Esc>
 
 " }}}
-" - Basic Settings {{{
+" - Set Config {{{
 " ==========================================================
 set nowrap
 set splitright
@@ -31,7 +26,6 @@ set autoread
 set backspace=2
 set backupcopy=yes
 set clipboard=unnamed
-set directory-=.
 set encoding=utf-8
 set expandtab
 set ignorecase
@@ -56,6 +50,7 @@ set nobackup
 set nowritebackup
 set noswapfile
 set hlsearch
+set directory-=.
 
 " Enable basic mouse behavior such as resizing buffers. {{{
 set mouse=a
@@ -65,8 +60,24 @@ endif
 
 " }}}
     " }}}
-" - Shortcuts {{{
+" {{{ Open in Marked 2
+nnoremap <leader>m :silent !open -a Marked\ 2.app '%:p'<cr>
+" }}}
+" - Windows Management {{{
 " ==========================================================
+" <Ctrl>+hjkl for moving between splits {{{
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+
+" }}}
+
+" Buffer Management {{{
+nnoremap <Right> :bnext<CR>
+nnoremap <Left>  :bprevious<CR>
+" }}}
+"     }}}
 "  Source and Edit VIMRC{{{
 " Edit :           <leader>ev
 " Source :         <leader>sv
@@ -105,21 +116,6 @@ nnoremap <CR> :nohlsearch<cr>
 nnoremap <leader>q :q<CR
 
 " }}}
-" - Windows Management {{{
-" ==========================================================
-" <Ctrl>+hjkl for moving between splits {{{
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-
-" }}}
-
-" Buffer Management {{{
-nnoremap <Right> :bnext<CR>
-nnoremap <Left>  :bprevious<CR>
-" }}}
-"     }}}
 " - Plugins {{{
 " ==========================================================
 " Access with mapleader which is set to comma.
@@ -199,7 +195,7 @@ vnoremap > >gv
 
 " }}}
     " }}}
-" - Silver Searcher {{{
+" - Search {{{
 " ==========================================================
 " use ag if exists {{{
 if executable('ag')
@@ -221,64 +217,65 @@ if executable('pt')
 endif
 
 "     }}}
+" }}}
 " - Filetype Specific {{{
 " ==========================================================
-" Miscelaneous Filetypes {{{
-autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
-autocmd BufRead,BufNewFile *.md set filetype=markdown
-autocmd BufRead,BufNewFile README set filetype=markdown
+
 " Jump to last cursor position unless it's invalid or an event handler
 autocmd BufReadPost *
   \ if line("'\"") > 1 && line("'\"") <= line("$") |
   \   exe "normal! g`\"" |
   \ endif
 
-" }}}
-"  Filetype Specific {{{
+autocmd BufRead,BufNewFile *inputrc set noexpandtab sw=4
+
+augroup filetype_yaml
+    autocmd!
+    autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
+augroup END
+
+augroup filetype_md
+    autocmd!
+    autocmd BufRead,BufNewFile *.md set filetype=markdown
+    autocmd BufRead,BufNewFile README set filetype=markdown
+augroup END
+
 augroup filetype_vim
     autocmd!
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
 
-"    }}}
-" Shell Filetype Specific {{{
-augroup shell
+augroup filetype_shell
     autocmd!
-    autocmd BufRead,BufNewFile *path set filetype=sh
-    autocmd BufRead,BufNewFile *aliases set filetype=sh
-    autocmd BufRead,BufNewFile *profile set filetype=sh
+    autocmd BufRead,BufNewFile *path    set ft=sh noexpandtab
+    autocmd BufRead,BufNewFile *aliases set ft=sh noexpandtab
+    autocmd BufRead,BufNewFile *profile set ft=sh noexpandtab
+    autocmd BufRead,BufNewFile bash*    set ft=sh noexpandtab
+    autocmd BufRead,BufNewFile *.sh     set ft=sh noexpandtab
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
-"    }}}
-" Git Filetype Specific {{{
 augroup filetype_git
     autocmd!
     autocmd BufRead, .gitconfig setlocal noexpandtab
     autocmd BufRead, config setlocal noexpandtab
 augroup END
 
-" }}}
-" HTML Filetype Specific{{{
 augroup filetype_html
     autocmd!
     autocmd FileType html setlocal shiftwidth=2 softtabstop=2
 augroup END
 
-" }}}
-" Python Filetype Specific {{{
 augroup Python
     autocmd!
     autocmd FileType python nnoremap <leader>z :!python %<CR>
 augroup END
 
-" Typescript Filetype Specific {{{
 augroup Typescript
     autocmd!
     autocmd FileType typescript :set makeprg=tsc
 augroup END
 
-" Go Filetype Specific {{{
 augroup filetype_go
     autocmd!
     autocmd FileType go nmap <leader>r <Plug>(go-run)
@@ -294,26 +291,16 @@ augroup filetype_go
     autocmd FileType go set noet ci pi sts=0 sw=4 ts=4
 augroup END
 " }}}
-
-"    }}}
-" }}}
 " - Gui Options {{{
 " ==========================================================
-
 if (&t_Co == 256 || has ('gui_running'))
     set guifont=Ubuntu\ Mono\ 14
-    call togglebg#map("<F5>")
-    colorscheme solarized
+    let g:solarized_term_italics=1
 
     if strftime("%H") >= 8 && strftime("%H") <= 20
-        set background=dark
+        colorscheme solarized8_dark
     else
-        set background=dark
-    endif
-
-    if has("gui_macvim")
-        set guioptions-=rLmT
-        let g:BASH_GuiSnippetBrowser = 'gui'
+        colorscheme solarized8_dark
     endif
 
 elseif $COLORTERM == 'gnome-terminal'
@@ -339,7 +326,6 @@ if filereadable(expand("~/.vimrc.local"))
     source ~/.vimrc.local
 endif
 " }}}
-"
 " {{{ Multipurpose Tab Key
 " ==========================================================
 " Indent if we're at the beginning of a line. Else, do completion.
@@ -353,5 +339,4 @@ function! InsertTabWrapper()
 endfunction
 inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 inoremap <s-tab> <c-n>
-
 " }}}

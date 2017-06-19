@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-usage() { cat <<- DOCUMENT
+function usage() { cat <<- DOCUMENT
 
-    Usage: $PROGNAME [-h] [-t] [-c bash.conf]
+    Usage: $PROGNAME [-h] [-t] [-c link.conf]
 
     AUTHOR:      Sang Han
     CREATED:     01/09/2014
@@ -53,7 +53,7 @@ readonly PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ==============================================================================
 # Tests
 # ==============================================================================
-test_variables() {
+function test_variables() {
     declare -a variables=(${*})
     for var in "${variables[@]}"; do
         printf "%30s = %s\n" \
@@ -62,7 +62,7 @@ test_variables() {
     done
 }
 
-test_source() {
+function test_source() {
     if [ -f "$LINK_SOURCE" ]; then
         printf "$(tput setaf 4)\
             \$LINK_SOURCE\
@@ -78,7 +78,7 @@ test_source() {
     fi
 }
 
-test_dest() {
+function test_dest() {
     if [ -f "$LINK_DEST" ]; then
         printf "$(tput setaf 4)\
             \$LINK_DEST\
@@ -147,9 +147,9 @@ done
 # ===============================================================================
 # Main
 # ===============================================================================
-main() {
+function main() {
     # Grab Config File
-    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/bash/bash.conf"}") )
+    FILELIST=( $(cat "${CONFIG_FILE:-"${PROGDIR}/link.conf"}") )
 
     if ((TEST==1 || VERBOSE==1)); then
         test_variables TEST PROGNAME PROGDIR FILELIST CONFIG_FILE FORCE

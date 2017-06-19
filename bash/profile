@@ -1,103 +1,78 @@
-# SOURCED FILES
-# ==========================================================
-for f in ${HOME}/\.{'path','aliases','bash_completion','secrets','aws_config'}; do
-    [ -r "${f}" ] && source "${f}"
-done
 
-# ==========================================================
-# ENVAR
-# ==========================================================
-export EDITOR=vim
-export HISTIGNORE="ls:cd:echo:history:clear"
-export PROJECT_HOME="${HOME}/Projects"
-export PYTHONDONTWRITEBYTECODE=1
-export HISTCONTROL=ignoredups
-export HOMEBREW_VERBOSE=1
-export HOMEBREW_MAKE_JOBS=4
+# Dotfile Functions
+map () {
+    local MAPFUNC="$1"
+    shift
+    for x in "$@" ;
+        do $MAPFUNC "$x";
+    done
+}
 
-# ==========================================================
-# Powerline Prompt
-# ==========================================================
-if [ -n "$(which powerline-shell-go)" ]; then
-    function powerline_precmd() {
-          export PS1="$(powerline-shell-go 2> /dev/null)"
-    }
-    declare -fx powerline_precmd
-    export PROMPT_COMMAND="powerline_precmd"
+filter_path () {
+    realpath -esq "$@"
+}
+
+pathremove () {
+    local IFS=':'
+    local NEWPATH
+    local DIR
+    local PATHVARIABLE=${2:-PATH}
+    for DIR in ${!PATHVARIABLE} ; do
+        if [ "$DIR" != "$1" ] ; then
+            NEWPATH=${NEWPATH:+$NEWPATH:}$DIR
+        fi
+    done
+    export "$PATHVARIABLE"="$NEWPATH"
+}
+
+pathprepend () {
+    pathremove $1 $2
+    local PATHVARIABLE=${2:-PATH}
+    export $PATHVARIABLE="$1${!PATHVARIABLE:+:${!PATHVARIABLE}}"
+}
+
+pathappend () {
+    pathremove $1 $2
+    local PATHVARIABLE=${2:-PATH}
+    export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
+}
+
+colonise() {
+    tr "\012" ":" < "$1"
+}
+
+declare -fx colonize map filter_path path{remove,prepend,append}
+
+# Filesystem Mappings
+declare -a BINAPPEND=(
+    /usr/local/opt/{qt,go,coreutils}/{bin,libexec/{gnubin,bin}}
+    ~/{'',Desktop,anaconda,Go}/bin
+    ~/.iterm2
+)
+
+declare -a BINPREPEND=(
+    /usr/local/{,s}bin
+)
+
+declare -a SOURCEMAP=(
+    ~/.{path,bash_env,prompt,aliases,bash_completion,bash_functions,bash_login,secrets}
+    ~/.{nvm/nvm.sh}
+    /usr/local/{etc,share}/{bash_completion,bash-completion/bash_completion}
+    /etc/bash_completion
+)
+
+[ "$TERM_PROGRAM" = 'iTerm.app' ] && SOURCEMAP+=( $HOME/.iterm2_shell_integration.$SHELL )
+
+# Go
+if [ -d "${HOME}/Go" ]; then
+    export GOPATH="${HOME}/Go"
+    export GOBIN="${GOPATH}/bin"
 fi
 
-# ==========================================================
-# Coreutils Dircolors
-# ==========================================================
-#
-# Caveat:
-# =======
-# To get OS X dircolors to work in the same manner
-# install and link gnucoreutils using homebrew as follows.
-#
-# brew install coreutils
-#
-# ln -s "$(brew --prefix)/bin/gls" "$(brew --prefix)/bin/ls"
-# ln -s "$(brew --prefix)/bin/gdircolors" "$(brew --prefix)/bin/dircolors"
-#
-# Display proper directory colors based on bgcolor
-
-function eval_dircolors() {
-    [ -n $1 ] && local STYLE=$1
-
-    if [ -r ${HOME}/.dircolors${STYLE/#/_} ]; then
-        eval "$(dircolors ${HOME}/.dircolors${STYLE/#/_})"
-    fi
-}
-
-eval_dircolors
-
-[[ "$COLORFGBG" == "11;15" ]] && eval_dircolors light
-[[ "$COLORFGBG" == "12;8" ]] && eval_dircolors dark
+# Source Files
+map pathappend $(filter_path ${BINAPPEND[@]})
+map pathprepend $(filter_path ${BINPREPEND[@]})
+map source $(filter_path ${SOURCEMAP[@]})
 
 
-# ==========================================================
-# Cleanup Functions
-# ==========================================================
-function clean_pyc() {
-    local depth=${1}
-    find . -type f -name '*.pyc' -maxdepth ${depth:-1} -exec rm '{}' \;
-}
-
-# Clean Pesky .DS.Store files
-function clean_ds() {
-    local depth=${1}
-    find . -type f -name '.DS_Store' -maxdepth ${depth:-1} -exec rm '{}' \;
-}
-
-function extract() {
-     if [ -z "$1" ]; then
-        # display usage if no parameters given
-        echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
-     else
-        if [ -f $1 ] ; then
-            # NAME=${1%.*}
-            # mkdir $NAME && cd $NAME
-            case $1 in
-              *.tar.bz2)   tar xvjf ../$1    ;;
-              *.tar.gz)    tar xvzf ../$1    ;;
-              *.tar.xz)    tar xvJf ../$1    ;;
-              *.lzma)      unlzma ../$1      ;;
-              *.bz2)       bunzip2 ../$1     ;;
-              *.rar)       unrar x -ad ../$1 ;;
-              *.gz)        gunzip ../$1      ;;
-              *.tar)       tar xvf ../$1     ;;
-              *.tbz2)      tar xvjf ../$1    ;;
-              *.tgz)       tar xvzf ../$1    ;;
-              *.zip)       unzip ../$1       ;;
-              *.Z)         uncompress ../$1  ;;
-              *.7z)        7z x ../$1        ;;
-              *.xz)        unxz ../$1        ;;
-              *.exe)       cabextract ../$1  ;;
-              *)           echo "extract: '$1' - unknown archive method" ;;
-            esac
-        else
-            echo "$1 - file does not exist"
-        fi
-    fi
-}
+# vi: ft=sh

@@ -1,3 +1,4 @@
+# vi: ft=sh
 $include /etc/inputrc
 
 set editing-mode emacs-meta
@@ -39,6 +40,7 @@ $if Bash
 		# allow the use of the Home/End keys
 		"\e[1~": beginning-of-line
 		"\e[4~": end-of-line
+		"\ez": 'cd ..\015ls\015'
 
 		# mappings for "page up" and "page down" to step to the beginning/end
 		# of the history
@@ -49,6 +51,7 @@ $if Bash
 		# show only history entries that match what was already typed
 		"\e[A": history-search-backward
 		"\e[B": history-search-forward
+		"\e[Z": "\e-1\C-i"
 
 		# alternate mappings for "page up" and "page down" to search the history
 		"\e[5~": history-search-backward

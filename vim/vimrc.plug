@@ -1,18 +1,16 @@
 " Default Plugins
-Plug 'gmarik/vundle'
 Plug 'airblade/vim-gitgutter'
 Plug 'altercation/vim-colors-solarized'
+Plug 'lifepillar/vim-solarized8'
 Plug 'austintaylor/vim-indentobject'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'juvenn/mustache.vim'
 Plug 'kien/ctrlp.vim'
-Plug 'leafgarland/typescript-vim'
 Plug 'majutsushi/tagbar'
-Plug 'mileszs/ack.vim'
 Plug 'msanders/snipmate.vim'
 Plug 'nathanaelkane/vim-indent-guides'
 Plug 'nono/vim-handlebars'
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'scrooloose/syntastic'
 Plug 'slim-template/vim-slim'
 Plug 'tpope/vim-bundler'
@@ -31,3 +29,5 @@ Plug 'vim-scripts/Align'
 Plug 'vim-scripts/greplace.vim'
 Plug 'vim-scripts/kwbdi.vim'
 Plug 'vim-scripts/matchit.zip'
+
+" vi: ft=vim

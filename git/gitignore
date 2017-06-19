@@ -31,7 +31,6 @@
 
 # OS generated files/folders {{{
 node_modules/
-.ipynb_checkpoints/
 .DS_Store
 .DS_Store?
 ._*

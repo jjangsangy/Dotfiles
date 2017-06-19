@@ -35,7 +35,7 @@
 
 # Insatllation instructions:
 # This file goes in the /etc directory, and must be world readable.
-# You can copy this file to .dir_colors in your $HOME directory to override
+# You can copy this file to .dircolors in your $HOME directory to override
 # the system defaults.
 
 # COLOR needs one of these arguments: 'tty' colorizes output to ttys, but not

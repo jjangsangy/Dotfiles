@@ -1,19 +1,49 @@
+# vi: ft=sh
+
 alias grep='command grep --color=auto'
 alias homebrew='brew update && brew upgrade && brew cleanup'
-alias jupyterhub='jupyterhub -f ~/.jupyter/jupyterhub_config.py'
-alias l='ls -l'
-alias ls='command ls --color=auto'
-alias movevideos="find -E . -type f -depth 2 -regex '.*\.(avi|mp4|wmv|mpeg|mpg|mkv)' -print -exec mv '{}' '.' \; && rmdir * &>/dev/null"
-alias socks='ssh -D 9999 -f -C -q -N'
-alias vim='nvim'
-alias youtube-music='youtube-dl -x --audio-format m4a --embed-thumbnail --add-metadata'
-alias apt-search='sudo apt-cache search'
 
-if [ -n $(which atom-beta) ]; then
+alias l='command ls -lF --color=auto'
+alias ls='command ls -F --color=auto'
+
+alias pstree='command pstree -g 2 -w'
+
+
+# Display open sockets
+alias lsock='lsof -i -P'
+
+# Run remote SOCKS proxy daemon
+alias socks='ssh -D 9999 -f -C -q -N'
+
+# hidden network command line utilities
+alias networksetup='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/networksetup'
+alias systemsetup='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/systemsetup'
+alias ardkickstart='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart'
+alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport'
+
+# Chrome
+alias chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome/'
+alias chromecanary='/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
+
+# Virtualization
+alias vmrun='/Applications/VMware\ Fusion.app/Contents/Library/vmrun'
+
+alias google-chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+
+
+# Git Hub
+if hash hub 2>/dev/null; then
+    alias git='hub'
+fi
+
+# Atom
+if [ -n "$(which atom-beta)" ]; then
     alias atom='atom-beta'
     alias apm='apm-beta'
 fi
 
+# Virtualbox
+alias vbox='VBoxManage' && complete -o default -F _VBoxManage vbox
 
 function mpv-sort() {
     local ARGS=( $@ )
