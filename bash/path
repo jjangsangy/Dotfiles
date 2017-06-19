@@ -1,23 +1,66 @@
 # ==========================================================
+# Path Management
+# ==========================================================
+function _push() {
+    local cur_stack="${!1}"
+    local next_item="${2}"
+
+    cur_stack=${cur_stack/%:/}
+    cur_stack=${cur_stack/#:/}
+
+    export $1="${cur_stack}:${next_item}"
+}
+
+function extend_path() {
+    for item in ${@:2}; do
+        _push "$1" "$item"
+    done
+}
+
+function ensure_bin() {
+    local bin_dir="${1}/bin"
+    if [ -d "$bin_dir" ]; then
+        extend_path "PATH" "$bin_dir"
+    fi
+}
+
+function print_path() {
+    echo "${PATH//:/$'\n'}"
+}
+
+# ==========================================================
 # Script Bin Folder
 # ==========================================================
-for directory in ${HOME}/{'','Desktop','conda','Go'}; do
-    if [ -d "${directory}/bin" ]; then
-        export PATH=${directory}/bin:${PATH}
-    fi
+for directory in ${HOME}/{'','Desktop','anaconda','Go'}; do
+    ensure_bin "${directory/%\//}"
 done
 
 # ==========================================================
 # Homebrew Package Manager
 # ==========================================================
-if [ "$(which brew &> /dev/null)" ]; then
-    export PATH="/usr/local/bin:${PATH}"
+if [ "which -s brew" ]; then
+    extend_path 'PATH''/usr/local/sbin'
 fi
 
 # ==========================================================
-# Homebrew Package Manager
+# Golang
 # ==========================================================
 if [ -d "${HOME}/Go" ]; then
-    export GOPATH="${HOME}/Go"
-    export GOBIN="${GOPATH}/bin"
+    extend_path 'GOPATH' "${HOME}/Go"
+    extend_path 'GOBIN' "${GOPATH}/bin"
+    extend_path 'PATH' '/usr/local/opt/go/libexec/bin'
 fi
+
+# ==========================================================
+# Node Version Manager
+# ==========================================================
+export NVM_DIR="${HOME}/.nvm"
+if [ 'nvm' = 'command -v nvm' ]; then
+    [ -f ${NVM_DIR}/nvm.sh ] && source ${NVM_DIR}/nvm.sh
+fi
+
+export JUPYTER_DATA_DIR="/usr/local/share/jupyter/data"
+export JUPYTER_RUNTIME_DIR="/usr/local/share/jupyter/runtime"
+export CONFIGPROXY_AUTH_TOKEN="$(openssl rand -hex 64)"
+
+extend_path 'PKG_CONFIG_PATH' '/usr/local/opt/openssl/lib/pkgconfig' '/usr/local/lib/pkgconfig'
