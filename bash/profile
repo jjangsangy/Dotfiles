@@ -1,16 +1,18 @@
-
 # ==========================================================
 # Dotfile Functions
 # ==========================================================
+
 map () {
     local MAPFUNC="$1"
     shift
     for x in "$@" ; do $MAPFUNC "$x" ; done
 }
+declare -xf map
 
 filter_path () {
     realpath -esq "$@"
 }
+declare -xf filter_path
 
 pathremove () {
     local IFS=':'
@@ -24,29 +26,31 @@ pathremove () {
     done
     export "$PATHVARIABLE"="$NEWPATH"
 }
+declare -xf pathremove
 
 pathprepend () {
     pathremove $1 $2
     local PATHVARIABLE=${2:-PATH}
     export $PATHVARIABLE="$1${!PATHVARIABLE:+:${!PATHVARIABLE}}"
 }
+declare -xf pathprepend
 
 pathappend () {
     pathremove $1 $2
     local PATHVARIABLE=${2:-PATH}
     export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
 }
+declare -xf pathappend
 
 colonise () {
     tr "\012" ":" < "$1"
 }
-
-declare -fx colonize map filter_path path{remove,prepend,append}
+declare -xf colonise
 
 # Filesystem Mappings
 declare -a BINAPPEND=(
     /usr/local/opt/{qt,go,coreutils}/{bin,libexec/{gnubin,bin}}
-    ~/{'',Desktop,anaconda,Go}/bin
+    ~/{,Desktop,anaconda,Go}/bin
     ~/.iterm2
 )
 
@@ -59,9 +63,8 @@ declare -a SOURCEMAP=(
     /etc/bash_completion /usr/local/{etc,share}/{bash_completion,bash-completion/bash_completion}
     ~/.{path,prompt,aliases,secrets}
     ~/.bash_{completion,functions,env}
+    ~/.iterm2_shell_integration.bash
 )
-
-[ "$TERM_PROGRAM" = 'iTerm.app' ] && SOURCEMAP+=( $HOME/.iterm2_shell_integration.$SHELL )
 
 map pathappend  $(filter_path ${BINAPPEND[@]})
 map source      $(filter_path ${SOURCEMAP[@]})
