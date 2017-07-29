@@ -5,7 +5,9 @@
 map () {
     local MAPFUNC="$1"
     shift
-    for x in "$@" ; do $MAPFUNC "$x" ; done
+    for x in "$@" ; do
+        $MAPFUNC "$x"
+    done
 }
 declare -xf map
 
@@ -59,7 +61,6 @@ declare -a BINPREPEND=(
 )
 
 declare -a SOURCEMAP=(
-    ~/.nvm/nvm.sh
     /etc/bash_completion /usr/local/{etc,share}/{bash_completion,bash-completion/bash_completion}
     ~/.{path,prompt,aliases,secrets}
     ~/.bash_{completion,functions,env}
