@@ -3,6 +3,7 @@
 alias grep='command grep --color=auto'
 alias homebrew='brew update && brew upgrade && brew cleanup'
 
+alias ls='command ls'
 alias l='command ls -lF --color=auto'
 alias ls='command ls -F --color=auto'
 

@@ -1,15 +1,14 @@
 
 if hash powerline-shell-go 2>/dev/null;  then
     prompt_command () {
-        export PS1="$(powerline-shell-go)"
+        export PS1="$(command powerline-shell-go)"
     }
     export PROMPT_COMMAND=prompt_command
+    declare -xf prompt_command
 fi
 
-readonly HOME_DIRCOLOR="${HOME}/.dircolors"
-
 if [ -f "${HOME}/.dircolors" ] && hash dircolors 2>/dev/null 2>&1; then
-    eval $(dircolors "$HOME_DIRCOLOR")
+    eval $(dircolors "${HOME}/.dircolors")
 fi
 
 # vi: ft=sh

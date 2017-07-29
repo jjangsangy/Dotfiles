@@ -1,3 +1,11 @@
+
+# Bash Options
+
+shopt -s cmdhist
+shopt -s histappend
+
+eval $(keychain --eval --agents ssh --inherit local -q)
+
 # ==========================================================
 # ENVAR
 # ==========================================================
@@ -5,22 +13,54 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgc
 export CPU_COUNT=$(python -c 'import multiprocessing; print(multiprocessing.cpu_count())')
 export CLICOLOR=1
 export EDITOR=vim
-export HISTIGNORE="ls:cd:echo:history:clear"
+export PAGER=less
+
+export HISTIGNORE="&:cd:exit:history:jobs:true:false:ls:[bf]g *|[bf]g"
+export HISTCONTROL=ignoreboth
+export HISTTIMEFORMAT='%F %T '
+
+
 export PROMPT_DIRTRIM=3
+export PS2='>    '
 export PROJECT_HOME="${HOME}/Projects"
 export PYTHONDONTWRITEBYTECODE=1
-export HISTCONTROL=ignoredups
 export SHELLCHECK_OPTS="--exclude=SC2059,SC2034,SC2155"
 export FIGNORE="colonize ~/.fignore"
 export GLOBIGNORE='.DS_Store:*.o:*.pyc'
 
 export HOMEBREW_VERBOSE=1
 export HOMEBREW_MAKE_JOBS=$(( CPU_COUNT - 1))
-export HOMEBREW_CASK_OPTS='--verbose --require-sha'
 
 export JUPYTER_DATA_DIR="/usr/local/share/jupyter/data"
 export JUPYTER_RUNTIME_DIR="/usr/local/share/jupyter/runtime"
 export CONFIGPROXY_AUTH_TOKEN="$(openssl rand -hex 64)"
+
+
+# Node Version Manager
+if [ -d "$HOME/.nvm" ];  then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ]          && source "$NVM_DIR/nvm.sh";
+    [ -r "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+fi
+
+# Go
+if [ -d "${HOME}/Go" ]; then
+    export GOPATH="${HOME}/Go"
+    export GOBIN="${GOPATH}/bin"
+fi
+
+# Google Cloud SDK
+declare GOOGLE_CLOUD_SDK_DIR='/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/'
+
+if [ -d "$GOOGLE_CLOUD_SDK_DIR" ]; then
+    source "$GOOGLE_CLOUD_SDK_DIR/path.bash.inc"
+    source "$GOOGLE_CLOUD_SDK_DIR/completion.bash.inc"
+fi
+
+unset GOOGLE_CLOUD_SDK_DIR
+
+
+# Source Files
 
 
 # vi: ft=sh

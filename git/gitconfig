@@ -36,3 +36,5 @@
 	email = jjangsangy@gmail.com
 [rebase]
 	autosquash = true
+[credential]
+	helper = osxkeychain

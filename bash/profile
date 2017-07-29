@@ -1,11 +1,11 @@
 
+# ==========================================================
 # Dotfile Functions
+# ==========================================================
 map () {
     local MAPFUNC="$1"
     shift
-    for x in "$@" ;
-        do $MAPFUNC "$x";
-    done
+    for x in "$@" ; do $MAPFUNC "$x" ; done
 }
 
 filter_path () {
@@ -37,7 +37,7 @@ pathappend () {
     export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
 }
 
-colonise() {
+colonise () {
     tr "\012" ":" < "$1"
 }
 
@@ -51,28 +51,24 @@ declare -a BINAPPEND=(
 )
 
 declare -a BINPREPEND=(
-    /usr/local/{,s}bin
+    /usr/local/{s,}bin
 )
 
 declare -a SOURCEMAP=(
-    ~/.{path,bash_env,prompt,aliases,bash_completion,bash_functions,bash_login,secrets}
-    ~/.{nvm/nvm.sh}
-    /usr/local/{etc,share}/{bash_completion,bash-completion/bash_completion}
-    /etc/bash_completion
+    ~/.nvm/nvm.sh
+    /etc/bash_completion /usr/local/{etc,share}/{bash_completion,bash-completion/bash_completion}
+    ~/.{path,prompt,aliases,secrets}
+    ~/.bash_{completion,functions,env}
 )
 
 [ "$TERM_PROGRAM" = 'iTerm.app' ] && SOURCEMAP+=( $HOME/.iterm2_shell_integration.$SHELL )
 
-# Go
-if [ -d "${HOME}/Go" ]; then
-    export GOPATH="${HOME}/Go"
-    export GOBIN="${GOPATH}/bin"
-fi
-
-# Source Files
-map pathappend $(filter_path ${BINAPPEND[@]})
+map pathappend  $(filter_path ${BINAPPEND[@]})
+map source      $(filter_path ${SOURCEMAP[@]})
 map pathprepend $(filter_path ${BINPREPEND[@]})
-map source $(filter_path ${SOURCEMAP[@]})
 
+
+# Cleanup
+unset BINAPPEND BINPREPEND SOURCEMAP
 
 # vi: ft=sh

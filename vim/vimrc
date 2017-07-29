@@ -247,11 +247,11 @@ augroup END
 
 augroup filetype_shell
     autocmd!
-    autocmd BufRead,BufNewFile *path    set ft=sh noexpandtab
-    autocmd BufRead,BufNewFile *aliases set ft=sh noexpandtab
-    autocmd BufRead,BufNewFile *profile set ft=sh noexpandtab
-    autocmd BufRead,BufNewFile bash*    set ft=sh noexpandtab
-    autocmd BufRead,BufNewFile *.sh     set ft=sh noexpandtab
+    autocmd BufRead,BufNewFile *path    set ft=sh expandtab
+    autocmd BufRead,BufNewFile *aliases set ft=sh expandtab
+    autocmd BufRead,BufNewFile *profile set ft=sh expandtab
+    autocmd BufRead,BufNewFile bash*    set ft=sh expandtab
+    autocmd BufRead,BufNewFile *.sh     set ft=sh expandtab
     autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
 augroup END
 
