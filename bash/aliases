@@ -9,9 +9,10 @@ alias ls='command ls -F --color=auto'
 
 alias pstree='command pstree -g 2 -w'
 
+alias ps='command ps -jeaxlc'
 
 # Display open sockets
-alias lsock='lsof -i -P'
+alias lsock='command lsof -i -P'
 
 # Run remote SOCKS proxy daemon
 alias socks='ssh -D 9999 -f -C -q -N'
@@ -29,7 +30,6 @@ alias chromecanary='/Applications/Google Chrome Canary.app/Contents/MacOS/Google
 # Virtualization
 alias vmrun='/Applications/VMware\ Fusion.app/Contents/Library/vmrun'
 
-alias google-chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
 
 # Git Hub

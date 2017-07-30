@@ -67,7 +67,7 @@ elif type compctl &>/dev/null; then
 fi
 
 # AWS Completion
-if hash aws_completer 2>/dev/null; then
+if hash aws_completer &>/dev/null; then
     complete -C aws_completer aws
 fi
 

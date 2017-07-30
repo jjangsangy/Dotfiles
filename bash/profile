@@ -2,6 +2,7 @@
 # Dotfile Functions
 # ==========================================================
 
+
 map () {
     local MAPFUNC="$1"
     shift
