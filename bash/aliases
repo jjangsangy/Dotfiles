@@ -1,50 +1,53 @@
 # vi: ft=sh
 
-alias grep='command grep --color=auto'
-alias homebrew='brew update && brew upgrade && brew cleanup'
+# Alias that checks to make sure command exists
+function makealias() {
+    local ALIAS_NAME="${1%%=*}"
+    local ALIAS_COMMAND="${1##*=}"
+    alias "${1}"
+}
 
-alias ls='command ls'
-alias l='command ls -lF --color=auto'
-alias ls='command ls -F --color=auto'
+makealias grep='command grep --color=auto'
+makealias homebrew='brew update && brew upgrade && brew cleanup'
 
-alias pstree='command pstree -g 2 -w'
+makealias ls='command ls'
+makealias l='command ls -lF --color=auto'
+makealias ls='command ls -F --color=auto'
 
-alias ps='command ps -jeaxlc'
+makealias pstree='command pstree -g 2 -w'
+
+makealias 'ps=command ps -axr -o "user pid sig %cpu %mem addr comm"'
 
 # Display open sockets
-alias lsock='command lsof -i -P'
+makealias lsock='command lsof -i -P'
 
 # Run remote SOCKS proxy daemon
-alias socks='ssh -D 9999 -f -C -q -N'
+makealias socks='ssh -D 9999 -f -C -q -N'
 
 # hidden network command line utilities
-alias networksetup='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/networksetup'
-alias systemsetup='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/systemsetup'
-alias ardkickstart='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart'
-alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport'
+makealias ardkickstart='/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart'
+makealias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport'
 
 # Chrome
-alias chrome='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome/'
-alias chromecanary='/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary'
+makealias chrome='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome'
+makealias chromecanary='/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary'
 
 # Virtualization
-alias vmrun='/Applications/VMware\ Fusion.app/Contents/Library/vmrun'
-
-
+makealias vmrun='/Applications/VMware\ Fusion.app/Contents/Library/vmrun'
 
 # Git Hub
 if hash hub 2>/dev/null; then
-    alias git='hub'
+    makealias git='hub'
 fi
 
 # Atom
 if [ -n "$(which atom-beta)" ]; then
-    alias atom='atom-beta'
-    alias apm='apm-beta'
+    makealias atom='atom-beta'
+    makealias apm='apm-beta'
 fi
 
 # Virtualbox
-alias vbox='VBoxManage' && complete -o default -F _VBoxManage vbox
+makealias vbox='VBoxManage' && complete -o default -F _VBoxManage vbox
 
 function mpv-sort() {
     local ARGS=( $@ )
