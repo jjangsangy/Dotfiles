@@ -19,7 +19,6 @@ export HISTIGNORE="&:cd:exit:history:jobs:true:false:ls:[bf]g *|[bf]g"
 export HISTCONTROL=ignoreboth
 export HISTTIMEFORMAT='%F %T '
 
-
 export PROMPT_DIRTRIM=3
 export PS2='>    '
 export PROJECT_HOME="${HOME}/Projects"
@@ -29,11 +28,17 @@ export FIGNORE="colonize ~/.fignore"
 export GLOBIGNORE='.DS_Store:*.o:*.pyc'
 
 export HOMEBREW_VERBOSE=1
+export HOMEBREW_CURL_VERBOSE=1
+export HOMEBREW_EDITOR=$EDITOR
 export HOMEBREW_MAKE_JOBS=$(( CPU_COUNT - 1))
+export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 export JUPYTER_DATA_DIR="/usr/local/share/jupyter/data"
 export JUPYTER_RUNTIME_DIR="/usr/local/share/jupyter/runtime"
 export CONFIGPROXY_AUTH_TOKEN="$(openssl rand -hex 64)"
+
+export RBENV_VERSION=system
 
 
 # Node Version Manager

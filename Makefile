@@ -4,7 +4,8 @@ RM := rm -rf
 destdir := ~
 
 BASH_OBJECTS := aliases bash_completion bash_env bash_functions \
-                bash_logout dircolors fignore inputrc profile prompt
+                bash_logout dircolors dircolors_dark dircolors_light \
+                fignore inputrc profile prompt
 VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local
 GIT_OBJECTS  := git_log.sh gitconfig gitconfig.local gitignore
 

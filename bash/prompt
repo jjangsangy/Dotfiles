@@ -1,14 +1,35 @@
 
+# Powerline Shell
 if hash powerline-shell-go 2>/dev/null;  then
     prompt_command () {
         export PS1="$(command powerline-shell-go)"
     }
-    export PROMPT_COMMAND=prompt_command
-    declare -xf prompt_command
+else
+    prompt_command () {
+
+    # Set title: user@host:path
+    printf "\033]0;%s@%s:%s\007" "${USER}" "${HOSTNAME%%.*}" "${PWD/#$HOME/\~}"
+
+    # get basename of current git repo (or nothing)
+    __repo=$(basename $(git repo 2> /dev/null) 2> /dev/null)
+
+    if [ -n $__repo ]; then __repo="repo:${__repo}"; fi
+
+    __git_ps1 "[\u@\h \[\e[1;34m\]\w\[\e[0m\]${handle_virtualenv_prompt}" "]\n\\\$ " " git:%s ${__repo}"
+    }
 fi
 
+# Dircolors
+if [ $(( ${COLORFGBG#*;} < ${COLORFGBG%;*} )) = 1 ]; then BGCOLOR=dark; else BGCOLOR=light; fi
+
 if [ -f "${HOME}/.dircolors" ] && hash dircolors 2>/dev/null 2>&1; then
-    eval $(dircolors "${HOME}/.dircolors")
+    eval $(dircolors "${HOME}/.dircolors_${BGCOLOR:-dark}")
 fi
+
+export PROMPT_COMMAND=prompt_command
+
+declare -xf prompt_command
+
+unset BGCOLOR
 
 # vi: ft=sh
