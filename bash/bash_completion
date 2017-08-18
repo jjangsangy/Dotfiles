@@ -71,4 +71,8 @@ if hash aws_completer &>/dev/null; then
     complete -C aws_completer aws
 fi
 
+if hash pandoc &>/dev/null; then
+    eval "$(pandoc --bash-completion)"
+fi
+
 # vi: ft=sh

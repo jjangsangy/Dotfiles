@@ -1,4 +1,3 @@
-# vim: set filetype=sh
 
 clean_pyc() {
     local depth=${1}
@@ -9,6 +8,11 @@ clean_ds() {
     # Clean Pesky .DS.Store files
     local depth=${1}
     find . -type f -name '.DS_Store' -maxdepth "${depth:-1}" -exec rm '{}' \;
+}
+
+clean_docker() {
+    docker ps --all --quiet | xargs docker rm
+    docker images --filter danging=true --quiet | xargs docker rmi
 }
 
 extract() {
@@ -43,3 +47,5 @@ extract() {
     fi
 }
 
+
+# vi: ft=sh
