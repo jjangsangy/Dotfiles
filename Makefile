@@ -5,7 +5,7 @@ destdir := ~
 
 BASH_OBJECTS := aliases bash_completion bash_env bash_functions \
                 bash_logout curlrc dircolors dircolors_dark dircolors_light \
-                fignore inputrc profile prompt
+                fignore inputrc profile pip.conf prompt
 VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local
 GIT_OBJECTS  := git_log.sh gitconfig gitconfig.local gitignore
 

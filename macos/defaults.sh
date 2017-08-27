@@ -18,6 +18,7 @@ test -z 'git config --global --get user.email' && {
     git config --global user.email "${useremail}"
 }
 
+
 # Settings
 
 # Disable Notification Center and remove the menu bar icon
@@ -219,6 +220,9 @@ defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
 # Expand the following File Info panes:
 # “General”, “Open with”, and “Sharing & Permissions”
 defaults write com.apple.finder FXInfoPanesExpanded -dict General -bool true OpenWith -bool true Privileges -bool true
+
+# Allows Global Gatekeeper bypass option in security settings
+sudo spctl --master-disable
 
 # Reset Apps
 killall Dock

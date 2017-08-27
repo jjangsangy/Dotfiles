@@ -2,6 +2,14 @@
 # Dotfile Functions
 # ==========================================================
 
+shopt -s execfail
+
+err_report() {
+    echo "Error on line $(caller)" >&2
+}
+
+trap err_report ERR
+
 map () {
     local MAPFUNC="$1"
     shift
@@ -12,14 +20,12 @@ map () {
 declare -xf map
 
 filter_path () {
-    realpath -esq "$@"
+    realpath -esq "$@" || true
 }
 declare -xf filter_path
 
 pathremove () {
-    local IFS=':'
-    local NEWPATH
-    local DIR
+    local IFS=':' NEWPATH DIR
     local PATHVARIABLE=${2:-PATH}
     for DIR in ${!PATHVARIABLE} ; do
         if [ "$DIR" != "$1" ] ; then
@@ -28,6 +34,7 @@ pathremove () {
     done
     export "$PATHVARIABLE"="$NEWPATH"
 }
+
 declare -xf pathremove
 
 pathprepend () {
@@ -54,6 +61,8 @@ declare -a BINAPPEND=(
     /usr/local/opt/{qt,go,coreutils}/{bin,libexec/{gnubin,bin}}
     ~/{,Desktop,anaconda,Go}/bin
     ~/.iterm2
+    /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources
+    /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources
 )
 
 declare -a BINPREPEND=(

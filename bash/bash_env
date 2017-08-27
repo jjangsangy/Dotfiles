@@ -1,45 +1,48 @@
-
-# Bash Options
-
-shopt -s cmdhist
-shopt -s histappend
+# Bash Environment
+# ================
 
 eval $(keychain --eval --agents ssh --inherit local -q)
 
-# ==========================================================
-# ENVAR
-# ==========================================================
-export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgconfig"
-export CPU_COUNT=$(python -c 'import multiprocessing; print(multiprocessing.cpu_count())')
-export CLICOLOR=1
-export EDITOR=vim
-export PAGER=less
+# Shell Options
+shopt -s cmdhist
+shopt -s histappend
 
+# TODO: Sepeaate variables based on operating system and programming language
+export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgconfig"
+export CLICOLOR=1
+export EDITOR='vim'
+export PAGER='less'
+
+# Bash History
 export HISTIGNORE="&:cd:exit:history:jobs:true:false:ls:[bf]g *|[bf]g"
-export HISTCONTROL=ignoreboth
+export HISTCONTROL='ignoreboth'
 export HISTTIMEFORMAT='%F %T '
 
+# Bash Shell
 export PROMPT_DIRTRIM=3
 export PS2='>    '
 export PROJECT_HOME="${HOME}/Projects"
-export PYTHONDONTWRITEBYTECODE=1
 export SHELLCHECK_OPTS="--exclude=SC2059,SC2034,SC2155"
 export FIGNORE="colonize ~/.fignore"
 export GLOBIGNORE='.DS_Store:*.o:*.pyc'
 
-export HOMEBREW_VERBOSE=1
-export HOMEBREW_CURL_VERBOSE=1
+# Homebrew Configurations
+export HOMEBREW_VERBOSE=0
+export HOMEBREW_CURL_VERBOSE=0
 export HOMEBREW_EDITOR=$EDITOR
-export HOMEBREW_MAKE_JOBS=$(( CPU_COUNT - 1))
+export HOMEBREW_MAKE_JOBS=$(( $(sysctl -n hw.ncpu)-1 ))
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_AUTO_UPDATE=1
 
+# Scientific Python
+export PIP_CONFIG_FILE="$HOME/.pip.conf"
+export PYTHONDONTWRITEBYTECODE=1
 export JUPYTER_DATA_DIR="/usr/local/share/jupyter/data"
 export JUPYTER_RUNTIME_DIR="/usr/local/share/jupyter/runtime"
 export CONFIGPROXY_AUTH_TOKEN="$(openssl rand -hex 64)"
 
-export RBENV_VERSION=system
-
+# Ruby Environment
+export RBENV_VERSION="system"
 
 # Node Version Manager
 if [ -d "$HOME/.nvm" ];  then
@@ -48,13 +51,14 @@ if [ -d "$HOME/.nvm" ];  then
     [ -r "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 fi
 
-# Go
+# Golang Environment
 if [ -d "${HOME}/Go" ]; then
     export GOPATH="${HOME}/Go"
     export GOBIN="${GOPATH}/bin"
 fi
 
 # Google Cloud SDK
+# TODO: Do not try to assume that SDK will be located in Caskroom
 declare GOOGLE_CLOUD_SDK_DIR='/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/'
 
 if [ -d "$GOOGLE_CLOUD_SDK_DIR" ]; then
@@ -62,10 +66,9 @@ if [ -d "$GOOGLE_CLOUD_SDK_DIR" ]; then
     source "$GOOGLE_CLOUD_SDK_DIR/completion.bash.inc"
 fi
 
+# Cleanup
 unset GOOGLE_CLOUD_SDK_DIR
-
-
-# Source Files
+unset HOMEBREW_LOGS
 
 
 # vi: ft=sh
