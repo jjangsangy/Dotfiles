@@ -63,9 +63,6 @@ defaults write com.apple.dock mcx-expose-disabled -boolean true
 # Disable Login for Hidden User
 defaults write com.apple.loginwindow DisableConsoleAccess -bool true
 
-# Enable multitouch trackpad auto orientation sensing
-defaults write /Library/Preferences/com.apple.MultitouchSupport ForceAutoOrientation -bool true
-
 # Use plain text as default format in TextEdit
 defaults write com.apple.TextEdit RichText -int 0
 

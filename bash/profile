@@ -2,14 +2,6 @@
 # Dotfile Functions
 # ==========================================================
 
-shopt -s execfail
-
-err_report() {
-    echo "Error on line $(caller)" >&2
-}
-
-trap err_report ERR
-
 map () {
     local MAPFUNC="$1"
     shift

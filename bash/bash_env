@@ -7,6 +7,10 @@ eval $(keychain --eval --agents ssh --inherit local -q)
 shopt -s cmdhist
 shopt -s histappend
 
+function iterm2_print_user_vars() {
+    iterm2_set_user_var gitBranch $((git branch 2> /dev/null || echo '* origin') | grep \* | cut -c3-)
+}
+
 # TODO: Sepeaate variables based on operating system and programming language
 export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgconfig"
 export CLICOLOR=1
