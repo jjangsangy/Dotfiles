@@ -20,7 +20,8 @@ else
 fi
 
 # Dircolors
-if [ $(( ${COLORFGBG#*;} < ${COLORFGBG%;*} )) = 1 ]; then BGCOLOR=dark; else BGCOLOR=light; fi
+set COLOR=${COLORFGBG:-'12;8'}
+if [ $(( ${COLOR#*;} < ${COLOR%;*} )) = 1 ]; then BGCOLOR=dark; else BGCOLOR=light; fi
 
 if [ -f "${HOME}/.dircolors" ] && hash dircolors 2>/dev/null 2>&1; then
     eval $(dircolors "${HOME}/.dircolors_${BGCOLOR:-dark}")
@@ -30,6 +31,6 @@ export PROMPT_COMMAND=prompt_command
 
 declare -xf prompt_command
 
-unset BGCOLOR
+unset COLOR BGCOLOR
 
 # vi: ft=sh
