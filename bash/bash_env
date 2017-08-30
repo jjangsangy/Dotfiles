@@ -1,7 +1,7 @@
 # Bash Environment
 # ================
 
-eval $(keychain --eval --agents ssh --inherit local -q)
+# eval $(keychain --eval --agents ssh --inherit local -q)
 
 # Shell Options
 shopt -s cmdhist
@@ -16,6 +16,7 @@ export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgc
 export CLICOLOR=1
 export EDITOR='vim'
 export PAGER='less'
+export NCPUS=$(sysctl -n hw.ncpu 2>/dev/null || nproc)
 
 # Bash History
 export HISTIGNORE="&:cd:exit:history:jobs:true:false:ls:[bf]g *|[bf]g"
@@ -34,7 +35,7 @@ export GLOBIGNORE='.DS_Store:*.o:*.pyc'
 export HOMEBREW_VERBOSE=0
 export HOMEBREW_CURL_VERBOSE=0
 export HOMEBREW_EDITOR=$EDITOR
-export HOMEBREW_MAKE_JOBS=$(( $(sysctl -n hw.ncpu)-1 ))
+export HOMEBREW_MAKE_JOBS=$((NCPUS-1))
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_AUTO_UPDATE=1
 
