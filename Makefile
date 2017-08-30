@@ -1,10 +1,11 @@
 VPATH := bash:git:mpv:vim
-RM := rm -rf
+RM := @rm -fv --
+LINK := @ln -vns
 
 destdir := ~
 
 BASH_OBJECTS := aliases bash_completion bash_env bash_functions \
-                bash_logout curlrc dircolors dircolors_dark dircolors_light \
+                bash_logout dircolors dircolors_dark dircolors_light \
                 fignore inputrc profile pip.conf prompt
 VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local
 GIT_OBJECTS  := git_log.sh gitconfig gitconfig.local gitignore
@@ -17,25 +18,41 @@ OBJECTS := $(BASH_OBJECTS) $(VIM_OBJECTS) $(GIT_OBJECTS)
 TARGETS := $(BASH_TARGETS) $(VIM_TARGETS) $(GIT_TARGETS)
 
 all: bash vim git
+clean: clean_git clean_bash clean_vim
 
 bash: $(BASH_OBJECTS)
 $(BASH_OBJECTS): $(BASH_TARGETS)
 $(BASH_TARGETS):
-	ln -s $(realpath bash/$(patsubst .%,%,$(@F))) $@
+	$(LINK) $(realpath bash/$(patsubst .%,%,$(@F))) $@
 
 vim: $(VIM_TARGETS)
 $(VIM_OBJECTS): $(VIM_TARGETS)
 $(VIM_TARGETS):
-	ln -s $(realpath vim/$(patsubst .%,%,$(@F))) $@
+	$(LINK) $(realpath vim/$(patsubst .%,%,$(@F))) $@
 
 git: $(GIT_TARGETS)
 $(GIT_OBJECTS): $(GIT_TARGETS)
 $(GIT_TARGETS):
-	ln -s $(realpath git/$(patsubst .%,%,$(@F))) $@
+	$(LINK) $(realpath git/$(patsubst .%,%,$(@F))) $@
 
 
-clean:
-	$(RM) $(TARGETS)
+clean_bash:
+	@echo
+	@echo Bash Files
+	@echo ==========================
+	$(RM) $(addprefix $(destdir)/,$(notdir $(BASH_TARGETS)))
+
+clean_vim:
+	@echo
+	@echo Vim Files
+	@echo ==========================
+	$(RM) $(addprefix $(destdir)/,$(notdir $(VIM_TARGETS)))
+
+clean_git:
+	@echo
+	@echo Git Files
+	@echo ==========================
+	$(RM) $(addprefix $(destdir)/,$(notdir $(GIT_TARGETS)))
 
 
 help:
@@ -65,4 +82,4 @@ help:
 	@echo "		Outputs this message and quits"
 
 
-.PHONY: all bash vim git clean help
+.PHONY: all bash vim git clean clean_bash clean_vim clean_git help
