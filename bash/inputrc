@@ -1,12 +1,11 @@
-# vi: ft=sh
-$include /etc/inputrc
-
+# Global
 set editing-mode emacs-meta
+set colored-stats on
+set match-hidden-files off
 
 # Completion
 set completion-ignore-case on
 set completion-map-case on
-set completion-query-items -1
 set page-completions off
 set completion-query-items 1000
 set print-completions-horizontally on
@@ -22,6 +21,7 @@ set visible-stats on
 
 # Cycle through ambiguous completions instead of list
 "\C-i": menu-complete
+
 # List possible completions instead of ringing bell
 set show-all-if-ambiguous on
 
@@ -31,46 +31,50 @@ set input-meta on
 set output-meta on
 set convert-meta off
 
-# Add a binding to refresh the line, which is unbound
-"\C-xr": redraw-current-line
-
 $if Bash
 	$if mode=emacs
 		# allow the use of the Home/End keys
 		"\e[1~": beginning-of-line
 		"\e[4~": end-of-line
 		"\ez": 'cd ..\015ls\015'
-		# mappings for "page up" and "page down" to step to the beginning/end
-		# of the history
-		"\e[5~": beginning-of-history
-		"\e[6~": end-of-history
+
 		# When pressing up or down arrows,
 		# show only history entries that match what was already typed
 		"\e[A": history-search-backward
 		"\e[B": history-search-forward
 		"\e[Z": "\e-1\C-i"
+
 		# alternate mappings for "page up" and "page down" to search the history
 		"\e[5~": history-search-backward
 		"\e[6~": history-search-forward
+
 		# Word movement for urxvt-term
 		"\e[1;5D": backward-word
 		"\e[1;3D": backward-word
+		"\e\e[D": backward-word
 		"\e[1;3C": forward-word
 		"\e[1;5C": forward-word
 		"\e\e[C": forward-word
-		"\e\e[D": backward-word
+
 		# Add a binding to refresh the line, which is unbound
 		"\C-xr": redraw-current-line
+
 		# Backspace Kill
 		"\C-h": backward-kill-word
+
 		# Edit PATH
 		"\C-xp": "PATH=${PATH}\e\C-e\C-a\ef\C-f"
+
 		# Edit Variable on Line
 		"\C-xe": "\C-a\C-k$\C-y\M-\C-e\C-a\C-y="
 	$endif
+
 	$if term=rxvt
 		"\ea": beginning-of-line
 		"\ee": end-of-line
 		"\e\M-z": 'cd !$ ^Mls^M'
 	$endif
+
 $endif
+
+# vi: ft=readline

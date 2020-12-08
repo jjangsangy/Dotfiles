@@ -1,33 +1,33 @@
 " Default Plugins
-Plug 'airblade/vim-gitgutter'
-Plug 'altercation/vim-colors-solarized'
+
+" Color Schemes
 Plug 'lifepillar/vim-solarized8'
-Plug 'austintaylor/vim-indentobject'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'juvenn/mustache.vim'
-Plug 'kien/ctrlp.vim'
-Plug 'majutsushi/tagbar'
-Plug 'msanders/snipmate.vim'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'nono/vim-handlebars'
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-Plug 'scrooloose/syntastic'
-Plug 'slim-template/vim-slim'
-Plug 'tpope/vim-bundler'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-cucumber'
-Plug 'tpope/vim-endwise'
+Plug 'chriskempson/vim-tomorrow-theme'
+Plug 'ryanoasis/vim-devicons'
+
+" User Interface
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'psliwka/vim-smoothie'
+Plug 'lambdalisue/fern.vim'
+
+" Tools
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-pastie'
-Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-vividchalk'
-Plug 'eventualbuddha/vim-protobuf'
-Plug 'vim-ruby/vim-ruby'
-Plug 'vim-scripts/Align'
-Plug 'vim-scripts/greplace.vim'
-Plug 'vim-scripts/kwbdi.vim'
-Plug 'vim-scripts/matchit.zip'
+Plug 'junegunn/vim-slash'
+
+" Syntax
+Plug 'b4b4r07/vim-hcl', { 'for': 'hcl' }
+Plug 'davidhalter/jedi-vim', { 'for': 'python3' }
+Plug 'ekalinin/Dockerfile.vim', { 'for': 'dockerfile' }
+Plug 'elzr/vim-json', { 'for': 'json' }
+Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'rust-lang/rust.vim', { 'for': 'rust' }
+Plug 'towolf/vim-helm'
+Plug 'wgwoods/vim-systemd-syntax'
+Plug 'cespare/vim-toml'
+Plug 'amadeus/vim-xml'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'xu-cheng/brew.vim', { 'for': 'ruby' }
 
 " vi: ft=vim

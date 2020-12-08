@@ -1,0 +1,50 @@
+# Bash Aliases
+
+# Use os provided `ls`
+if [ "$(uname -s)" = "Darwin" ]; then
+    alias ls='command -p ls -FG'
+    alias l='ls -1'
+    alias ll='ls -lahT'
+    alias lf='ls -AsS1r'
+fi
+
+# Get rid of pesky network permissions
+alias app-enable='sudo xattr -r -d com.apple.quarantine'
+
+# Rsync Defaults
+alias rsync="command rsync --exclude '.DS_Store' --exclude '.Spotlight-V100' --exclude '.fseventsd'"
+
+# Display open sockets
+alias listsocks='command lsof -i -P'
+
+# Run remote SOCKS proxy daemon
+alias socks='ssh -D 9999 -f -C -q -N'
+
+# Set neovim as default
+if hash nvim 2>/dev/null; then
+    alias vim='nvim'
+fi
+
+# Hub is default git
+if hash hub 2>/dev/null; then
+    alias git='hub'
+fi
+
+# Colorize YAML
+if hash pygmentize 2>/dev/null; then
+    alias highlight='pygmentize -l yaml -f 16m -O style=solarized-dark'
+    alias lessy='highlight | less -R'
+fi
+
+# default pstree
+if hash pstree 2>/dev/null; then
+    alias pstree='command pstree -g 2 -w'
+fi
+
+# set aliases for kubectx
+if hash kubectx 2>/dev/null; then
+    alias kctx='kubectx'
+    alias kns='kubens'
+fi
+
+# vi: ft=sh

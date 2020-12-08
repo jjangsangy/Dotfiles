@@ -1,77 +1,67 @@
 # ==========================================================
 # Completions
 # ==========================================================
-
-# PIP Completion
-function _pip_completion () {
-    COMPREPLY=( $( COMP_WORDS="${COMP_WORDS[*]}" \
-                   COMP_CWORD=$COMP_CWORD \
-                   PIP_AUTO_COMPLETE=1 $1 ) )
-}
-complete -o default -F _pip_completion pip
-complete -o default -F _pip_completion pip2
-complete -o default -F _pip_completion pip3
-
-# NPM Completion
-if type complete &>/dev/null; then
-  _npm_completion () {
-    local words cword
-    if type _get_comp_words_by_ref &>/dev/null; then
-      _get_comp_words_by_ref -n = -n @ -n : -w words -i cword
-    else
-      cword="$COMP_CWORD"
-      words=("${COMP_WORDS[@]}")
-    fi
-
-    local si="$IFS"
-    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$cword" \
-                           COMP_LINE="$COMP_LINE" \
-                           COMP_POINT="$COMP_POINT" \
-                           npm completion -- "${words[@]}" \
-                           2>/dev/null)) || return $?
-    IFS="$si"
-    if type __ltrim_colon_completions &>/dev/null; then
-      __ltrim_colon_completions "${words[cword]}"
-    fi
-  }
-  complete -o default -F _npm_completion npm
-elif type compdef &>/dev/null; then
-  _npm_completion() {
-    local si=$IFS
-    compadd -- $(COMP_CWORD=$((CURRENT-1)) \
-                 COMP_LINE=$BUFFER \
-                 COMP_POINT=0 \
-                 npm completion -- "${words[@]}" \
-                 2>/dev/null)
-    IFS=$si
-  }
-  compdef _npm_completion npm
-elif type compctl &>/dev/null; then
-  _npm_completion () {
-    local cword line point words si
-    read -Ac words
-    read -cn cword
-    let cword-=1
-    read -l line
-    read -ln point
-    si="$IFS"
-    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
-                       COMP_LINE="$line" \
-                       COMP_POINT="$point" \
-                       npm completion -- "${words[@]}" \
-                       2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  compctl -K _npm_completion npm
-fi
-
-# AWS Completion
-if hash aws_completer &>/dev/null; then
-    complete -C aws_completer aws
-fi
-
+# Pandoc
 if hash pandoc &>/dev/null; then
     eval "$(pandoc --bash-completion)"
 fi
+
+# Helm
+if hash helm &>/dev/null; then
+    eval "$(helm completion bash)"
+fi
+
+# FZF
+if [ -d ~/.fzf ]; then
+    if [ -f ~/.fzf.bash ]; then
+        source ~/.fzf.bash
+    fi
+
+    if hash fd 2>/dev/null; then
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --exclude .git'
+    fi
+
+    export FZF_CTRL_T_COMMAND="${FZF_DEFAULT_COMMAND}"
+    export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+    export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
+    export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
+
+
+    _gen_fzf_default_opts() {
+        local color00='#002b36'
+        local color01='#073642'
+        local color02='#586e75'
+        local color03='#657b83'
+        local color04='#839496'
+        local color05='#93a1a1'
+        local color06='#eee8d5'
+        local color07='#fdf6e3'
+        local color08='#dc322f'
+        local color09='#cb4b16'
+        local color0A='#b58900'
+        local color0B='#859900'
+        local color0C='#2aa198'
+        local color0D='#268bd2'
+        local color0E='#6c71c4'
+        local color0F='#d33682'
+
+        export FZF_DEFAULT_OPTS="
+          --color=bg+:$color01,bg:$color00,spinner:$color0C,hl:$color0D
+          --color=fg:$color04,header:$color0D,info:$color0A,pointer:$color0C
+          --color=marker:$color0C,fg+:$color06,prompt:$color0A,hl+:$color0D
+        "
+    }
+
+    _gen_fzf_default_opts
+
+fi
+
+if hash aws-vault &>/dev/null; then
+    eval "$(aws-vault --completion-script-bash)"
+fi
+
+for completion in ~/.bash_completion.d/*.bash-completion; do
+    source "${completion}"
+done
 
 # vi: ft=sh

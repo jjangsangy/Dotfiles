@@ -1,123 +1,27 @@
-# ==========================================================
-# Dotfiles Main Setup Entrypoint
-# ==========================================================
+# Dotfiles Entrypoint
 
-
-# Bash Settings
-set -o braceexpand \
-       emacs \
+set -o emacs \
        errtrace \
        functrace \
        hashall \
-       histexpand \
+       histappend \
        history \
        interactive-comments \
        monitor \
        onecmd
 
-# ==========================================================
-# Utility Functions (NON-POSIX: Requies Bash 4+)
-# ==========================================================
+# keep command history
+shopt -s cmdhist
 
-map ()
-{
-    MAPFUNC="${1}"
-    shift
-    for x in "$@" ; do
-        $MAPFUNC "$x"
-    done
-}
+# dont autorun commands from history
+shopt -s histverify
 
-filter_path ()
-{
-    realpath -esq "$@" || true
-}
-
-pathremove () {
-    declare IFS=':' NEWPATH DIR
-    PATHVARIABLE=${2:-PATH}
-    for DIR in ${!PATHVARIABLE} ; do
-        if [ "$DIR" != "$1" ] ; then
-            NEWPATH=${NEWPATH:+$NEWPATH:}$DIR
-        fi
-    done
-    export "$PATHVARIABLE"="$NEWPATH"
-}
-
-pathprepend ()
-{
-    pathremove "$1" "$2"
-    PATHVARIABLE=${2:-PATH}
-    export $PATHVARIABLE="$1${!PATHVARIABLE:+:${!PATHVARIABLE}}"
-}
-
-pathappend ()
-{
-    pathremove "$1" "$2"
-    PATHVARIABLE=${2:-PATH}
-    export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
-}
-
-colonise ()
-{
-    tr "\012" ":" < "$1"
-}
-
-set +a
-
-# ==========================================================
-# Manage PATH Stack
-# ==========================================================
-# Note:
-#     The bourne shell manages the PATH for command resolution in FIFO order (first in first out).
-#     Stacks are usually a good abstract data structures to represent FIFO's.
-#     We use a deque, stacks are a subset of deques, in thie implementation for added expressive power.
-#     This means we can add to both ends of the stack.
-# Push:
-#     The ability to append (push) onto the stack is used for directories containing commands to be registered
-#     to users. Directories listed can utilize them from the shell
-# LPush:
-#     The ability to prepend (left push) onto the stack is important for cases where
-#     we have commands that we would like to supercede commands provided by the environment.
-#     In this example we dictate that user preference for commands installed in /usr/local
-
-declare -a BINAPPEND=(
-    /usr/local/opt/{qt,go,coreutils}/{bin,libexec/{gnubin,bin}}
-    ~/{,Desktop,anaconda,Go}/bin
-    ~/.iterm2
-    /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources
-    /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources
-)
-
-declare -a BINPREPEND=(
-    /usr/local/{s,}bin
-    /usr/local/opt/curl/bin
-)
-
-# ==========================================================
-# Source Import Files
-# ==========================================================
-# Note:
-#   We define a mapping of source files using an array.
-#   We layout a mapping of files in left to right order to sourced into the environment.
-
-declare -a SOURCEMAP=(
-    /etc/bash_completion /usr/local/{etc,share}/{bash_completion,bash-completion/bash_completion}
-    ~/.{path,prompt,aliases,secrets}
-    ~/.bash_{completion,functions,env}
-    ~/.iterm2_shell_integration.bash
-)
-
-# ==========================================================
-# Run User Main Setup
-# ==========================================================
-
-map pathappend  $(filter_path ${BINAPPEND[@]})
-map source      $(filter_path ${SOURCEMAP[@]})
-map pathprepend $(filter_path ${BINPREPEND[@]})
+# correct mispellings
+shopt -s cdspell
 
 
-# Cleanup
-unset BINAPPEND BINPREPEND SOURCEMAP
+if [ -r "${HOME}/.bash_sources" ] && [ ${BASH_VERSINFO} -ge 4 ]; then
+    source "${HOME}/.bash_sources"
+fi
 
 # vi: ft=sh

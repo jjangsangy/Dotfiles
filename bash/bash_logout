@@ -1,4 +1,0 @@
-
-ssh-agent -k
-
-# vi: ft=sh

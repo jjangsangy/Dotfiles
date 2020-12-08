@@ -1,15 +1,18 @@
 # vi: ft=gitconfig
 
 [core]
-	editor = vim
+	editor = nvim
 	whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
 	excludesfile = ~/.gitignore
 	compression = 9
 	autocrlf = input
-	safecrlf = true
+	safecrlf = false
 
 [push]
 	default = matching
+
+[commit]
+	gpgsign = true
 
 [web]
 	browser = google-chrome
@@ -31,10 +34,34 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[user]
-	name = Sang Han
-	email = jjangsangy@gmail.com
+
 [rebase]
 	autosquash = true
+
 [credential]
 	helper = osxkeychain
+
+[diff "sopsdiffer"]
+	textconv = sops -d
+
+[alias]
+	a = add --all
+	c = commit --all
+	d = diff
+	l = "log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short"
+	s = status
+	cl = clone --jobs=4 --recursive
+	br = branch
+	pl = pull
+	co = checkout
+	sub = submodule update --init --recursive
+	type = cat-file -t
+	dump = cat-file -p
+	hist = l
+	logs = "log --show-signature"
+	ignore = "!gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;}; gi"
+
+[includeIf "gitdir:~/Projects/unifyid/"]
+	path = ~/.gitconfig.unifyid
+[pull]
+	ff = only

@@ -1,28 +1,37 @@
 #!/usr/bin/env bash
 
+if ! [ "$(uname -r)" = "Darwin" ]; then
+    echo "Script will only run on MacOS" >&2
+    exit 1
+fi
+
 # Ask for the administrator privilages upfront
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# Create a directory for screenshots
+declare -r CLIP_DIR="${HOME}/Desktop/Screenshots"
+if ! [ -d "${CLIP_DIR}" ]; then
+    mkdir -p "${CLIP_DIR}"
+fi
 
 # Git Global Configuation
 # =============================================================================
 
-test -z 'git config --global --get user.name' && {
+test -z 'git config --get user.name' && {
     read -r -p "Enter full name and press [ENTER]: " username
     git config --global user.name "${username}"
 }
 
-test -z 'git config --global --get user.email' && {
+test -z 'git config --get user.email' && {
     read -r -p "Enter your email and press [ENTER]: " useremail
     git config --global user.email "${useremail}"
 }
 
-
 # Settings
-
+# =============================================================================
 # Disable Notification Center and remove the menu bar icon
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+launchctl unload -w "/System/Library/LaunchAgents/com.apple.notificationcenterui.plist" 2> /dev/null
 
 # Disable automatic capitalization
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
@@ -32,9 +41,6 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 
 # Disable smart dashes
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
-
-# Check for software updates daily, not just once per week
-defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
 # Disable hibernation (speeds up entering sleep mode)
 sudo pmset -a hibernatemode 0
@@ -53,7 +59,6 @@ defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int
 
 # Mac System Configuration
 # =============================================================================
-
 # Save to disk and not icloud
 defaults write -g NSDocumentSaveNewDocumentsToCloud -bool false
 
@@ -87,8 +92,8 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo Hos
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
 
-# Menu bar: hide the useless Time Machine and Volume icons
-defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" "/System/Library/CoreServices/Menu Extras/AirPort.menu" "/System/Library/CoreServices/Menu Extras/Battery.menu" "/System/Library/CoreServices/Menu Extras/Clock.menu"
+# Menu bar: hide menubar icons
+# defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" "/System/Library/CoreServices/Menu Extras/AirPort.menu" "/System/Library/CoreServices/Menu Extras/Battery.menu" "/System/Library/CoreServices/Menu Extras/Clock.menu"
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
@@ -96,25 +101,21 @@ defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
 # Prevent Time Machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
-# Disable local Time Machine backups
-hash tmutil &> /dev/null && sudo tmutil disablelocal
-
 # Mouse Keyboard and Trackpad Inputs
 # =============================================================================
-
-# Disable “natural” (Lion-style) scrolling
-defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
-
 # Trackpad: enable tap to click for this user and for the login screen
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
+# Speed up keyboard repeat rate (speeds up scrolling in vim)
+defaults write -g InitialKeyRepeat -int 10
+defaults write -g KeyRepeat -int 1
+
 # Screen
 # =============================================================================
-
-# Save screenshots to the downlaods.
-defaults write com.apple.screencapture location "$HOME/Downloads/"
+# Save screenshots to another directory
+defaults write com.apple.screencapture location "${CLIP_DIR}"
 
 # Disable disk image verification
 defaults write com.apple.frameworks.diskimages skip-verify -bool true
@@ -137,7 +138,6 @@ defaults write com.apple.dashboard mcx-disabled -bool true
 
 # Finder
 # =============================================================================
-
 # Disable Notification Center and remove the menu bar icon
 launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
 
@@ -178,7 +178,6 @@ defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 
 # Safari
 # =============================================================================
-
 # Set Safari’s home page to `about:blank` for faster loading
 defaults write com.apple.Safari HomePage -string "about:blank"
 
@@ -198,7 +197,6 @@ defaults write com.apple.Safari UniversalSearchEnabled -bool false
 
 # Misc
 # =============================================================================
-
 # Enable full keyboard access for all controls
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3

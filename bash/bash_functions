@@ -1,21 +1,43 @@
+# Bash Utility Functions
 
-clean_pyc() {
-    local depth=${1}
-    find . -type f -name '*.pyc' -maxdepth "${depth:-1}" -exec rm '{}' \;
+function shcmp {
+    local script_path="/usr/local/etc/profile.d/bash_completion.sh"
+
+    test -e "${script_path}" && source "${script_path}"
 }
 
-clean_ds() {
-    # Clean Pesky .DS.Store files
-    local depth=${1}
-    find . -type f -name '.DS_Store' -maxdepth "${depth:-1}" -exec rm '{}' \;
+function gi {
+    local ignores=$(printf "%s," "${@}")
+    curl -sL "https://www.toptal.com/developers/gitignore/api/${ignores%,}"
 }
 
-clean_docker() {
-    docker ps --all --quiet | xargs docker rm
-    docker images --filter danging=true --quiet | xargs docker rmi
+# Homebrew Update
+function homebrew {
+    brew update
+    brew upgrade
+    brew upgrade --cask
+    brew cleanup
 }
 
-extract() {
+# Delete Leftover Python Bytecode
+function rmpyc {
+    find . -type f -name '*.pyc' -maxdepth 3 -delete
+}
+
+# Clean Pesky .DS.Store files
+function rmds {
+    find . -type f -name '.DS_Store' -maxdepth 3 -delete
+}
+
+function ff-dl {
+    local url="$1"
+    local output="${2,,}"
+    local output="${output//-/\.}"
+    ffmpeg-bar -i "$url" -c copy "${output//\//\.}"
+}
+
+# Multipurpose Archive Extractor
+function extract {
     # display usage if no parameters given
      if [ -z "$1" ]; then
         echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
@@ -47,5 +69,35 @@ extract() {
     fi
 }
 
+# Process PS
+function p {
+    command ps -axr -o "user pid sig %cpu %mem addr comm" 2>/dev/null
+}
+
+function mpv-sort {
+    local ARGS=( $@ )
+    find "${ARGS[@]:-'.'}" \
+        -d 1 \
+        -type f \( -name "*avi" -o -name "*mp4" -o -name "*wmv" -o -name "*mkv" \) \
+        -exec du -hma '{}' \; \
+    | sort -rn \
+    | cut -d $'\t' -f 2 \
+    | sed 's/\(.*\)/"\1"/g' | xargs mpv
+}
+
+function kill-audio {
+    sudo kill -9 $(pgrep coreaudiod)
+}
+
+function pyenv-install-cmd {
+    local ssl_prefix="$(brew --prefix openssl)"
+    local sqlite_prefix="$(brew --prefix sqlite)"
+
+    PYTHON_CFLAGS='-march=native' \
+    CPPFLAGS="-I${ssl_prefix}/include -I${sqlite_prefix}/include" \
+    LDFLAGS="-L$(ssl_prefix)/lib -L${sqlite_prefix}/lib" \
+    PYTHON_CONFIGURE_OPTS='--enable-loadable-sqlite-extensions --enable-framework' \
+        pyenv install --verbose $1
+}
 
 # vi: ft=sh

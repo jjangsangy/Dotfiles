@@ -1,19 +1,7 @@
+
+[user]
+	name = Sang Han
+	email = jjangsangy@gmail.com
+	signingKey = C8AFCD172B89121A
+
 # vi: ft=gitconfig
-
-[alias]
-	a = add --all
-	c = commit --all
-	d = diff
-	l = "log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short"
-	s = status
-	cl = clone --jobs=4 --recursive
-	br = branch
-	pl = pull
-	co = checkout
-	sub = submodule update --init --recursive
-	type = cat-file -t
-	dump = cat-file -p
-	hist = l
-
-[credential]
-	helper = osxkeychain

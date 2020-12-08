@@ -1,8 +1,38 @@
+__bp_precmd_invoke_cmd() {
+    # Save the returned value from our last command, and from each process in
+    # its pipeline. Note: this MUST be the first thing done in this function.
+    __bp_last_ret_value="$?" BP_PIPESTATUS=("${PIPESTATUS[@]}")
+
+    # Don't invoke precmds if we are inside an execution of an "original
+    # prompt command" by another precmd execution loop. This avoids infinite
+    # recursion.
+    if (( __bp_inside_precmd > 0 )); then
+      return
+    fi
+    local __bp_inside_precmd=1
+
+    # Invoke every function defined in our function array.
+    local precmd_function
+    for precmd_function in "${precmd_functions[@]}"; do
+
+        # Only execute this function if it actually exists.
+        # Test existence of functions with: declare -[Ff]
+        if type -t "$precmd_function" 1>/dev/null; then
+            __bp_set_ret_value "$__bp_last_ret_value" "$__bp_last_argument_prev_command"
+            # Quote our function invocation to prevent issues with IFS
+            "$precmd_function"
+        fi
+    done
+}
+
+__bp_interactive_mode() {
+    __bp_preexec_interactive_mode="on";
+}
 
 # Powerline Shell
-if hash powerline-shell-go 2>/dev/null;  then
+if hash powerline-go 2>/dev/null;  then
     prompt_command () {
-        export PS1="$(command powerline-shell-go)"
+        PS1="$(powerline-go -newline -error $? -modules docker-context,kube,venv,user,ssh,cwd,perms,git)"
     }
 else
     prompt_command () {
@@ -21,7 +51,7 @@ if [ -f "${HOME}/.dircolors" ] && hash dircolors 2>/dev/null 2>&1; then
     eval "$(dircolors "${HOME}/.dircolors")"
 fi
 
-export PROMPT_COMMAND=prompt_command
+export PROMPT_COMMAND="prompt_command; $PROMPT_COMMAND"
 
 declare -xf prompt_command
 

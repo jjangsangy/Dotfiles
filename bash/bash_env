@@ -1,81 +1,63 @@
 # Bash Environment
 # ================
-
-# eval $(keychain --eval --agents ssh --inherit local -q)
-
-# Shell Options
-shopt -s cmdhist
-shopt -s histappend
-
-function iterm2_print_user_vars() {
-    iterm2_set_user_var gitBranch $((git branch 2> /dev/null || echo '* origin') | grep \* | cut -c3-)
-}
-
-# TODO: Sepeaate variables based on operating system and programming language
-export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:/usr/local/lib/pkgconfig"
-export CLICOLOR=1
-export EDITOR='vim'
-export PAGER='less'
-export NCPUS=$(sysctl -n hw.ncpu 2>/dev/null || nproc)
-
-# Bash History
-export HISTIGNORE="&:cd:exit:history:jobs:true:false:ls:[bf]g *|[bf]g"
-export HISTCONTROL='ignoreboth'
-export HISTTIMEFORMAT='%F %T '
-
-# Bash Shell
-export PROMPT_DIRTRIM=3
-export GIT_PS1_SHOWCOLORHINTS=true
-export PS2='>    '
-export PROJECT_HOME="${HOME}/Projects"
-export SHELLCHECK_OPTS="--exclude=SC2059,SC2034,SC2155"
-export FIGNORE="colonize ~/.fignore"
-export GLOBIGNORE='.DS_Store:*.o:*.pyc'
-
-# Homebrew Configurations
-export HOMEBREW_VERBOSE=0
-export HOMEBREW_CURL_VERBOSE=0
-export HOMEBREW_EDITOR=$EDITOR
-export HOMEBREW_MAKE_JOBS=$((NCPUS-1))
-export HOMEBREW_NO_ANALYTICS=1
-export HOMEBREW_NO_AUTO_UPDATE=1
-export HOMEBREW_CASK_OPTS='--appdir=~/Applications --verbose'
-
-# Scientific Python
-export PIP_CONFIG_FILE="$HOME/.pip.conf"
-export PYTHONDONTWRITEBYTECODE=1
-export JUPYTER_DATA_DIR="/usr/local/share/jupyter/data"
-export JUPYTER_RUNTIME_DIR="/usr/local/share/jupyter/runtime"
-export CONFIGPROXY_AUTH_TOKEN="$(openssl rand -hex 64)"
-
-# Ruby Environment
-export RBENV_VERSION="system"
-
-# Node Version Manager
-if [ -d "$HOME/.nvm" ];  then
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ]          && source "$NVM_DIR/nvm.sh" --no-use;
-    [ -r "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+# macos specific
+if [ "$(uname -r)" = "Darwin" ]; then
+    export HOMEBREW_NO_AUTO_UPDATE=1
+    export HOMEBREW_MAKE_JOBS=$(nproc)
 fi
 
-# Golang Environment
+# shell options
+export EDITOR='nvim'
+export PAGER='less'
+
+# bash history
+export HISTIGNORE="&:cd:history:jobs:true:false:ls"
+export HISTTIMEFORMAT='%F %T '
+export HISTSIZE=100000
+
+# bash prompt
+export PROMPT_DIRTRIM=3
+export PS2='>    '
+export GLOBIGNORE='.DS_Store:*.o:*.pyc'
+export GPG_TTY=$(tty)
+export GIT_PS1_SHOWCOLORHINTS=true
+
+# build environment
+export MAKEFLAGS="-j$(nproc)"
+
+# python
+export PYTHONDONTWRITEBYTECODE=1
+export PIP_CONFIG_FILE="${HOME}/.config/pip/pip.conf"
+
+# ruby Environment
+export RBENV_VERSION="system"
+
+# golang Environment
 if [ -d "${HOME}/Go" ]; then
     export GOPATH="${HOME}/Go"
     export GOBIN="${GOPATH}/bin"
 fi
 
-# Google Cloud SDK
-# TODO: Do not try to assume that SDK will be located in Caskroom
-declare GOOGLE_CLOUD_SDK_DIR='/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/'
-
-if [ -d "$GOOGLE_CLOUD_SDK_DIR" ]; then
-    source "$GOOGLE_CLOUD_SDK_DIR/path.bash.inc"
-    source "$GOOGLE_CLOUD_SDK_DIR/completion.bash.inc"
+# poetry
+if [ -d "${HOME}/.poetry" ] && hash pyenv 2>/dev/null; then
+    export PATH="${HOME}/.poetry/bin:${PATH}"
 fi
 
-# Cleanup
-unset GOOGLE_CLOUD_SDK_DIR
-unset HOMEBREW_LOGS
+# pyenv
+if [ -d ~/.pyenv ] && hash pyenv 2>/dev/null; then
+    eval "$(pyenv init --no-rehash -)"
+fi
 
+# iterm2 integration
+if [ -r "${HOME}/.iterm2_shell_integration.bash" ] && [ "${TERM_PROGRAM}" = "iTerm.app" ]; then
+    source "${HOME}/.iterm2_shell_integration.bash"
+fi
 
-# vi: ft=sh
+# Kube Context
+if [ -d ~/.kubectx ]; then
+    export PATH="${PATH}:${HOME}/.kubectx"
+    export KUBECTX_CURRENT_FGCOLOR="$(tput setaf 6)" # blue text
+    export KUBECTX_CURRENT_BGCOLOR="$(tput setab 7)" # white bg
+fi
+
+# vi: set ft=sh

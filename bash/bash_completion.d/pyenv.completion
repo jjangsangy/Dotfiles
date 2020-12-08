@@ -1,0 +1,7 @@
+if [ -d ~/.pyenv ] && hash pyenv 2>/dev/null; then
+    export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+    eval "$(pyenv init - bash)"
+    eval "$(pyenv virtualenv-init -)"
+fi
+
+# vi: ft=sh

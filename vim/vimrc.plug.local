@@ -1,29 +1,5 @@
-function! BuildYCM(info)
-  if a:info.status == 'installed' || a:info.force
-    !./install.py --clang-completer
-  endif
-endfunction
-
-Plug 'Valloric/YouCompleteMe', { 'do': function('BuildYCM') }
-Plug 'rdnetto/YCM-Generator', { 'branch': 'stable'}
-Plug 'Glench/Vim-Jinja2-Syntax'
-Plug 'Raimondi/delimitMate'
-Plug 'Rykka/riv.vim'
-Plug 'Shougo/unite.vim'
-Plug 'Shougo/vimproc'
-Plug 'Shougo/vimshell'
-Plug 'chriskempson/vim-tomorrow-theme'
-Plug 'ekalinin/Dockerfile.vim'
-Plug 'elzr/vim-json'
-Plug 'evanmiller/nginx-vim-syntax'
-Plug 'fatih/vim-go'
-Plug 'mattn/emmet-vim'
-Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-Plug 'othree/yajs.vim', { 'for': 'javascript' }
-Plug 'sudar/vim-arduino-syntax'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'vim-scripts/restore_view.vim'
-Plug 'xu-cheng/brew.vim'
+" Search
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 " vi: ft=vim

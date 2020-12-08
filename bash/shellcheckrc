@@ -1,0 +1,10 @@
+shell=bash
+
+enable=quote-safe-variables
+source=/dev/null
+
+disable=SC2034
+disable=SC2039
+disable=SC2059
+disable=SC2155
+disable=SC2155

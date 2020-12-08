@@ -55,3 +55,4 @@ mp.add_key_binding("d", "delete_current_track", delete_current_track, {repeatabl
 mp.add_key_binding("r", "restore_prev_track",   restore_prev_track,   {repeatable=false})
 
 mp.add_hook('on_unload', 50, clean_up)
+

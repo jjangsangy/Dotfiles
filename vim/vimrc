@@ -1,38 +1,45 @@
-" Vimrc  {{{
-" ==========================================================
-call plug#begin('~/.vim/plugged')
-    if filereadable(expand("~/.vimrc.plug"))
-        source ~/.vimrc.plug
-    endif
-    if filereadable(expand("~/.vimrc.plug.local"))
-        source ~/.vimrc.plug.local
-    endif
-call plug#end()
-" }}}
-" - MapLeader {{{
+" Vimrc
+" =====
+if has('neovim') && empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+    !curl -fL --create-dirs -o ~/.local/share/nvim/site/autoload/plug.vim https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd! VimEnter * PlugInstall --sync | source ~/.config/nvim/init.vim
+endif
+"
 let mapleader = ','
 
-inoremap jk <Esc>
-vnoremap jk <Esc>
+" Load Plug {{{
+call plug#begin('~/.vim/plugged')
+ if filereadable(expand("~/.vimrc.plug"))
+   source ~/.vimrc.plug
+ endif
 
+ if filereadable(expand("~/.vimrc.plug.local"))
+   source ~/.vimrc.plug.local
+ endif
+call plug#end()
 " }}}
-" - Set Config {{{
+
+" - Settings {{{
 " ==========================================================
-set nowrap
-set splitright
-set splitbelow
 set autoindent
 set autoread
 set backspace=2
-set backupcopy=yes
-set clipboard=unnamed
+set clipboard=unnamedplus
+set directory-=.
 set encoding=utf-8
 set expandtab
+set foldcolumn=2
+set foldlevelstart=20
+set hlsearch
 set ignorecase
 set incsearch
 set laststatus=2
 set list
 set listchars=tab:▸\ ,trail:▫
+set nobackup
+set noswapfile
+set nowritebackup
+set nowrap
 set number
 set ruler
 set scrolloff=3
@@ -40,295 +47,24 @@ set shiftwidth=4
 set showcmd
 set smartcase
 set softtabstop=4
+set splitright
 set tabstop=4
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu
 set wildmode=longest,list,full
-set foldcolumn=2
-set foldlevelstart=20
-set nobackup
-set nowritebackup
-set noswapfile
-set hlsearch
-set directory-=.
 
-" Enable basic mouse behavior such as resizing buffers. {{{
-set mouse=a
-if exists('$TMUX')  " Support resizing in tmux
-  set ttymouse=xterm2
-endif
+let &undodir = stdpath('config') . '/undodir'
+set undofile
+" }}}
 
-" }}}
-    " }}}
-" {{{ Open in Marked 2
-nnoremap <leader>m :silent !open -a Marked\ 2.app '%:p'<cr>
-" }}}
-" - Windows Management {{{
+" - Functions {{{
 " ==========================================================
-" <Ctrl>+hjkl for moving between splits {{{
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
-
-" }}}
-
-" Buffer Management {{{
-nnoremap <Right> :bnext<CR>
-nnoremap <Left>  :bprevious<CR>
-" }}}
-"     }}}
-"  Source and Edit VIMRC{{{
-" Edit :           <leader>ev
-" Source :         <leader>sv
-nnoremap <silent> <leader>ev :vsplit $MYVIMRC<CR>
-nnoremap <silent> <leader>sv :w<CR>:source $MYVIMRC<CR>:filetype detect<CR>:exe ":echo ' reloaded'"<CR>
-
-" Code folding with <Space> {{{
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
-noremap <C-r> zr
-noremap <C-m> zm
-
-" }}}
-"
-" Emacs style mappings {{{
-noremap <C-e> <esc>$
-noremap <C-a> <esc>0
-" }}}
-"
-"{{{ Sort with <Leader>s
-vnoremap <Leader>s :!sort<CR>
-
-" }}}
-"
-" {{{ Remove trailing whitespace on <leader>S
-nnoremap <leader>S :%s/\s\+$//<cr>:let @/=''<CR>
-
-" }}}
-"
-" {{{ Nohlsearch with enter
-nnoremap <CR> :nohlsearch<cr>
-
-" }}}
-
-" Leave with <leader>q
-nnoremap <leader>q :q<CR
-
-" }}}
-" - Plugins {{{
-" ==========================================================
-" Access with mapleader which is set to comma.
-" Align:                l
-" Ack:                  a
-" CtrlP:                t
-" CtrlP Clear Cache:    T
-" CtrlP Buffer:         b
-" NERDTree:             d
-" NERDTree Find:        f
-" Tagbar Toggle:        ]
-" Strip Whitespace:     space
-" Git Gutter:           g
-" Plug:                 c
-noremap <leader>l           :Align
-nnoremap <leader>a          :Ack<space>
-nnoremap <leader>b          :CtrlPBuffer<CR>
-nnoremap <leader>d          :NERDTreeToggle<CR>
-nnoremap <leader>f          :NERDTreeFind<CR>
-nnoremap <leader>t          :CtrlP<CR>
-nnoremap <leader>T          :CtrlPClearCache<CR>:CtrlP<CR>
-nnoremap <leader>]          :TagbarToggle<CR>
-nnoremap <leader>g          :GitGutterToggle<CR>
-nnoremap <leader>c          <Plug>Kwbd
-
-" }}}
-" - Settings "{{{
-" ==========================================================
-" Plugin settings {{{
-let g:NERDSpaceDelims = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#fnamemod = ':t'
-let g:ctrlp_match_window = 'order:ttb,max:20'
-let g:ctrlp_max_files = 0
-let g:ctrlp_custom_ignore = '\v\~$|\.(o|swp|pyc|wav|mp3|ogg|blend)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])|__init__\.py'
-let g:gitgutter_enabled = 0
-
-" Don't warn on
-"   E121 continuation line indentation is not a multiple of four
-"   E128 continuation line under-indented for visual indent
-"   E711 comparison to None should be 'if cond is not None:'
-"   E301 expected 1 blank line, found 0
-"   E261 at least two spaces before inline comment
-"   E241 multiple spaces after ':'
-"   E124 closing bracket does not match visual indentation
-"   E126 continuation line over-indented for hanging indent
-"   E721 do not compare types, use 'isinstance()'
-let g:syntastic_python_checkers=['flake8', 'python']
-let g:syntastic_html_tidy_ignore_errors=[" proprietary attribute \"ng-"]
-let g:syntastic_python_flake8_args='--ignore=E121,E128,E711,E301,E261,E241,E124,E126,E721
-    \ --max-line-length=84'
-
-" YouCompleteMe Overrides {{{
-let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<S-Tab>', '<Up>']
-let g:ycm_key_invoke_completion = '<C-Space>'
-let g:ycm_key_detailed_diagnostics = '<leader>a'
-let g:ycm_global_ycm_extra_conf = '/Volumes/User/jjangsangy/.ycm_extra_conf.py'
-let g:ycm_confirm_extra_conf = 0
-let g:ycm_add_preview_to_completeopt = 1
-
-" Homebrew Python Interpreter
-let homebrew_python = '/usr/local/Frameworks/Python.framework/Versions/2.7/bin/python'
-if executable(homebrew_python)
-    let g:ycm_path_to_python_interpreter = homebrew_python
-endif
-    " }}}
-" }}}
-" Line 80 gets a tag {{{
-highlight ColorColumn ctermbg=magenta
-call matchadd('ColorColumn', '\%81v', 100)
-
-" }}}
-" Better Indentation {{{
-vnoremap < <gv
-vnoremap > >gv
-
-" }}}
-    " }}}
-" - Search {{{
-" ==========================================================
-" use ag if exists {{{
-if executable('ag')
-  let g:ackprg = 'ag --nogroup --column'
-
-  set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-endif
-
-" pt with unite
-if executable('pt')
-  nnoremap <silent> ,g :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
-  let g:unite_source_grep_command = 'pt'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor'
-  let g:unite_source_grep_recursive_opt = ''
-  let g:unite_source_grep_encoding = 'utf-8'
-endif
-
-"     }}}
-" }}}
-" - Filetype Specific {{{
-" ==========================================================
-
-" Jump to last cursor position unless it's invalid or an event handler
-autocmd BufReadPost *
-  \ if line("'\"") > 1 && line("'\"") <= line("$") |
-  \   exe "normal! g`\"" |
-  \ endif
-
-autocmd BufRead,BufNewFile *inputrc set noexpandtab sw=4
-
-augroup filetype_yaml
-    autocmd!
-    autocmd BufRead,BufNewFile *.fdoc set filetype=yaml
-augroup END
-
-augroup filetype_md
-    autocmd!
-    autocmd BufRead,BufNewFile *.md set filetype=markdown
-    autocmd BufRead,BufNewFile README set filetype=markdown
-augroup END
-
-augroup filetype_vim
-    autocmd!
-    autocmd FileType vim setlocal foldmethod=marker
-augroup END
-
-augroup filetype_shell
-    autocmd!
-    autocmd BufRead,BufNewFile *path    set ft=sh expandtab
-    autocmd BufRead,BufNewFile *aliases set ft=sh expandtab
-    autocmd BufRead,BufNewFile *profile set ft=sh expandtab
-    autocmd BufRead,BufNewFile bash*    set ft=sh expandtab
-    autocmd BufRead,BufNewFile *.sh     set ft=sh expandtab
-    autocmd FileType sh nnoremap <leader>$$ bi$<esc>l
-augroup END
-
-augroup filetype_git
-    autocmd!
-    autocmd BufRead, .gitconfig setlocal noexpandtab
-    autocmd BufRead, config setlocal noexpandtab
-augroup END
-
-augroup filetype_html
-    autocmd!
-    autocmd FileType html setlocal shiftwidth=2 softtabstop=2
-augroup END
-
-augroup Python
-    autocmd!
-    autocmd FileType python nnoremap <leader>z :!python %<CR>
-augroup END
-
-augroup Typescript
-    autocmd!
-    autocmd FileType typescript :set makeprg=tsc
-augroup END
-
-augroup filetype_go
-    autocmd!
-    autocmd FileType go nmap <leader>r <Plug>(go-run)
-    autocmd FileType go nmap <leader>b <Plug>(go-build)
-    autocmd FileType go nmap <leader>t <Plug>(go-test)
-    autocmd FileType go nmap <leader>c <Plug>(go-coverage)
-
-    autocmd FileType go nmap <Leader>gd <Plug>(go-doc)
-    autocmd FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
-
-    let g:go_fmt_command = "goimports"
-
-    autocmd FileType go set noet ci pi sts=0 sw=4 ts=4
-augroup END
-" }}}
-" - Gui Options {{{
-" ==========================================================
-if (&t_Co == 256 || has ('gui_running'))
-    set guifont=Ubuntu\ Mono\ 14
-    let g:solarized_term_italics=1
-
-    if strftime("%H") >= 8 && strftime("%H") <= 20
-        colorscheme solarized8_dark
-    else
-        colorscheme solarized8_dark
-    endif
-
-elseif $COLORTERM == 'gnome-terminal'
-    set t_Co=256
-    colorscheme Tomorrow-Night
-endif
-
-" }}}
-" - TMUX Cursor Fix {{{
-" ==========================================================
-if exists('$TMUX')
-    let &t_SI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=1\x7\<Esc>\\"
-    let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
-else
-    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-endif
-
-" }}}
-" - Source More RC Files {{{
-" ==========================================================
-if filereadable(expand("~/.vimrc.local"))
-    source ~/.vimrc.local
-endif
-" }}}
-" {{{ Multipurpose Tab Key
-" ==========================================================
-" Indent if we're at the beginning of a line. Else, do completion.
+"  Multipurpose Tab Key {{{
+"  ------------------------
+"  if <line at start position>:
+"    do indent
+"  else:
+"    do completion
 function! InsertTabWrapper()
     let col = col('.') - 1
     if !col || getline('.')[col - 1] !~ '\k'
@@ -337,6 +73,141 @@ function! InsertTabWrapper()
         return "\<c-p>"
     endif
 endfunction
+"   }}}
+
+" - Theme {{{
+" ==========================================================
+" Background
+set background=dark
+
+" GUI Colors
+if has("termguicolors")
+  set termguicolors
+endif
+
+" Color Scheme
+if (&t_Co == 256 || has('gui_running'))
+  colorscheme solarized8_flat
+  let g:solarized_term_italics=1
+  set guifont=Ubuntu\ Mono\ 14
+else
+  colorscheme tomorrow-night
+endif
+"   }}}
+
+" Key Remapping {{{
+" ==========================================================
+"   <Ctrl>+hjkl for moving between splits {{{
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+"   }}}
+"
+"   Buffer Management {{{
+nnoremap <Right> :bnext<CR>
+nnoremap <Left>  :bprevious<CR>
+"   }}}
+"
+"   Emacs style mappings {{{
+nnoremap <C-e> <esc>$
+nnoremap <C-a> <esc>0
+"   }}}
+"
+"   Sort with <Leader>s {{{
+vnoremap <Leader>s :!sort<CR>
+"   }}}
+"
+"   Remove trailing whitespace on <leader>S {{{
+nnoremap <leader>S :%s/\s\+$//<cr>:let @/=''<CR>
+"   }}}
+"
+"   Code folding with <Space> {{{
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
+nnoremap <C-r> zr
+nnoremap <C-m> zm
+"   }}}
+"
+"   Better Indentation {{{
+vnoremap < <gv
+vnoremap > >gv
+"   }}}
+"
+"   MultiTab {{{
 inoremap <tab> <c-r>=InsertTabWrapper()<cr>
 inoremap <s-tab> <c-n>
+"   }}}
+"
+"   Nohlsearch with enter {{{
+nnoremap <CR> :nohlsearch<CR>
+"   }}}
+"
 " }}}
+
+" - Autocommand Groups {{{
+" ==========================================================
+"   Jump to last cursor position unless it's invalid or an event handler {{{
+augroup readpos
+  autocmd!
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+  autocmd WinNew      * :wincmd L
+augroup END
+"   }}}
+
+"   Filetype Configuration {{{
+augroup ftconfig
+  autocmd!
+  autocmd FileType Makefile setlocal noet
+  autocmd FileType vim      setlocal fdm=marker shiftwidth=2
+augroup END
+"   }}}
+
+" }}}
+"
+
+" - Plugins Configuration {{{
+" ==========================================================
+"   Jedi {{{
+if has("python3")
+  let g:jedi#use_tabs_not_buffers = 1
+  let g:jedi#use_splits_not_buffers = "left"
+  let g:jedi#show_call_signatures = "1"
+  let g:jedi#force_py_version = "3"
+endif
+"   }}}
+"
+"   FZF {{{
+set rtp+=/usr/local/opt/fzf
+
+let g:fzf_history_dir = '~/.local/share/fzf-history'
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+let g:fzf_layout = {'left': '30%'}
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+if has('nvim')
+  augroup fuzzyfinder
+    autocmd!
+    autocmd FileType fzf set laststatus=0 noshowmode noruler | autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+  augroup END
+endif
+"   }}}
+
+" }}}
+
