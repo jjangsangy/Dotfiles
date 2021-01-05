@@ -52,9 +52,6 @@ set tabstop=4
 set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
 set wildmenu
 set wildmode=longest,list,full
-
-let &undodir = stdpath('config') . '/undodir'
-set undofile
 " }}}
 
 " - Functions {{{
@@ -77,12 +74,15 @@ endfunction
 
 " - Theme {{{
 " ==========================================================
+
 " Background
 set background=dark
 
 " GUI Colors
 if has("termguicolors")
   set termguicolors
+else
+  set notermguicolors
 endif
 
 " Color Scheme
@@ -93,6 +93,7 @@ if (&t_Co == 256 || has('gui_running'))
 else
   colorscheme tomorrow-night
 endif
+
 "   }}}
 
 " Key Remapping {{{
@@ -208,6 +209,7 @@ if has('nvim')
   augroup END
 endif
 "   }}}
+
 
 " }}}
 

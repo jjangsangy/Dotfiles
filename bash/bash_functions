@@ -4,11 +4,20 @@ function shcmp {
     local script_path="/usr/local/etc/profile.d/bash_completion.sh"
 
     test -e "${script_path}" && source "${script_path}"
+    if [ -r ~/.bash_completion ]; then
+        source ~/.bash_completion
+    fi
 }
 
 function gi {
     local ignores=$(printf "%s," "${@}")
     curl -sL "https://www.toptal.com/developers/gitignore/api/${ignores%,}"
+}
+
+function cloudwatch {
+    local server_loc="${1}"
+
+    ssh -t "${server_loc}" -- tail -f /var/log/cloud-init-output.log
 }
 
 # Homebrew Update

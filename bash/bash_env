@@ -22,6 +22,11 @@ export GLOBIGNORE='.DS_Store:*.o:*.pyc'
 export GPG_TTY=$(tty)
 export GIT_PS1_SHOWCOLORHINTS=true
 
+# bash completion
+if [ -d "${HOME}/.bash_completion.d" ]; then
+    export BASH_COMPLETION_COMPAT_DIR="${HOME}/.bash_completion.d"
+fi
+
 # build environment
 export MAKEFLAGS="-j$(nproc)"
 
@@ -60,4 +65,4 @@ if [ -d ~/.kubectx ]; then
     export KUBECTX_CURRENT_BGCOLOR="$(tput setab 7)" # white bg
 fi
 
-# vi: set ft=sh
+# vi: ft=sh

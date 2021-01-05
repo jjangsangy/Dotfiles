@@ -1,0 +1,79 @@
+env:
+  # TERM variable
+  #
+  # This value is used to set the `$TERM` environment variable for
+  # each instance of Alacritty. If it is not present, alacritty will
+  # check the local terminfo database and use `alacritty` if it is
+  # available, otherwise `xterm-256color` is used.
+  TERM: xterm-256color
+
+window:
+  dynamic_padding: true
+  decorations: buttonless
+  startup_mode: SimpleFullscreen
+
+scrolling:
+  tabspaces: 4
+
+colors: # Solarized Dark
+  primary:
+    background: '#002b36' # base03
+    foreground: '#839496' # base0
+  cursor:
+    text:   '#002b36' # base03
+    cursor: '#839496' # base0
+  normal:
+    black:   '#073642' # base02
+    red:     '#dc322f' # red
+    green:   '#859900' # green
+    yellow:  '#b58900' # yellow
+    blue:    '#268bd2' # blue
+    magenta: '#d33682' # magenta
+    cyan:    '#2aa198' # cyan
+    white:   '#eee8d5' # base2
+  bright:
+    black:   '#002b36' # base03
+    red:     '#cb4b16' # orange
+    green:   '#586e75' # base01
+    yellow:  '#657b83' # base00
+    blue:    '#839496' # base0
+    magenta: '#6c71c4' # violet
+    cyan:    '#93a1a1' # base1
+    white:   '#fdf6e3' # base3
+
+
+font:
+  size: 14
+  use_thin_strokes: true
+  normal:
+    family: Fira Mono for Powerline
+    style: Regular
+  bold:
+    family: Fira Mono for Powerline
+    style: Bold
+  italic:
+    family: Fira Mono for Powerline
+    style: Italic
+  bold:
+    family: Fira Mono for Powerline
+    style: Bold Italic
+
+
+draw_bold_text_with_bright_colors: true
+shell:
+  program: /usr/local/bin/bash
+  args:
+  - -il
+  - -c
+  - tmux
+
+key_bindings:
+- { key: Return,   mods: Command,       action: ToggleSimpleFullscreen }
+- { key: W,        mods: Command,       chars: "\x06\x78"              }
+- { key: D,        mods: Command,       chars: "\x06\x76"              }
+- { key: D,        mods: Command|Shift, chars: "\x06\x73"              }
+- { key: T,        mods: Command,       chars: "\x06\x63"              }
+- { key: Tab,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x36\x43" }
+- { key: Tab,      mods: Control|Shift, chars: "\x1b\x5b\x31\x3b\x36\x44" }
+- { key: Left,     mods: Alt,           chars: "\x1b\x62"              }
+- { key: Right,    mods: Alt,           chars: "\x1b\x66"              }

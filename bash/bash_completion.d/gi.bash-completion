@@ -1,0 +1,20 @@
+function _gi {
+    local applist
+    local cur=${COMP_WORDS[COMP_CWORD]}
+
+    [ "${#COMP_WORDS[@]}" -lt 1 ] && return
+
+    COMPREPLY=()
+    if ! [ -r "/tmp/gi.list" ]; then
+        curl -sL "https://www.toptal.com/developers/gitignore/api/list" | tr "," "\n" > "/tmp/gi.list"
+    fi
+
+    readarray -t applist < "/tmp/gi.list"
+
+    COMPREPLY=( $(compgen -W "${applist[*]}" -- "${cur}") )
+}
+
+complete -o default -F _gi gi
+
+# vi: ft=sh
+

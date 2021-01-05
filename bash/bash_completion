@@ -64,4 +64,8 @@ for completion in ~/.bash_completion.d/*.bash-completion; do
     source "${completion}"
 done
 
+for completion in /usr/local/etc/bash_completion.d/*; do
+    source "${completion}"
+done
+
 # vi: ft=sh

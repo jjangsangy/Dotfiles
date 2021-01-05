@@ -1,5 +1,6 @@
 " Search
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'goerz/jupytext.vim'
 
 " vi: ft=vim
