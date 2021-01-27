@@ -4,8 +4,8 @@ LINK := @ln -vns
 
 destdir := ~
 
-BASH_OBJECTS := bash_aliases bash_completion bash_env bash_functions \
-                bash_logout bash_completion bash_completion.d bash_sources \
+BASH_OBJECTS := bash_aliases bash_completion bash_completion.d \
+                bash_env bash_functions bash_logout bash_env bash_sources \
                 dircolors dircolors_dark dircolors_light \
                 fignore inputrc profile pip.conf prompt
 VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local tmux.conf
