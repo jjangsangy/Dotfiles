@@ -56,6 +56,13 @@ if [ -d ~/.fzf ]; then
 
 fi
 
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+if [ -r /opt/vagrant/embedded/gems/2.2.14/gems/vagrant-2.2.14/contrib/bash/completion.sh ]; then
+    source /opt/vagrant/embedded/gems/2.2.14/gems/vagrant-2.2.14/contrib/bash/completion.sh
+fi
+
 if hash aws-vault &>/dev/null; then
     eval "$(aws-vault --completion-script-bash)"
 fi

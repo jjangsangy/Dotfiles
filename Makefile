@@ -5,9 +5,10 @@ LINK := @ln -vns
 destdir := ~
 
 BASH_OBJECTS := bash_aliases bash_completion bash_env bash_functions \
-                bash_logout dircolors dircolors_dark dircolors_light \
+                bash_logout bash_completion bash_completion.d bash_sources \
+                dircolors dircolors_dark dircolors_light \
                 fignore inputrc profile pip.conf prompt
-VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local
+VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local tmux.conf
 GIT_OBJECTS  := git_log.sh gitconfig gitconfig.local gitignore
 
 BASH_TARGETS := $(BASH_OBJECTS:%=$(destdir)/.%)

@@ -1,7 +1,7 @@
 # Bash Environment
 # ================
 # macos specific
-if [ "$(uname -r)" = "Darwin" ]; then
+if [ "$(uname -s)" = "Darwin" ]; then
     export HOMEBREW_NO_AUTO_UPDATE=1
     export HOMEBREW_MAKE_JOBS=$(nproc)
 fi

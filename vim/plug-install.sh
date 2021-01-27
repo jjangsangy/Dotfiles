@@ -41,6 +41,10 @@ function install_plug() {
     fi
 }
 
+function install_tmux() {
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+}
+
 
 function nvim_config() {
     local VIMRC="${1}"
@@ -59,7 +63,7 @@ function nvim_config() {
 }
 
 
-function main() {
+function install_vim() {
     # Grab vim version banner
     local VIM_TYPE="$(vim --version | head -n1 | awk '{print $1}')"
 
@@ -72,6 +76,11 @@ function main() {
     fi
 }
 
+function main() {
+    install_plug 2>/dev/null
+    install_vim && success
+}
+
 if [ $0 = $BASH_SOURCE ]; then
-    main && success
+    main
 fi
