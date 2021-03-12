@@ -1,12 +1,19 @@
 # Bash Utility Functions
 
-function shcmp {
-    local script_path="/usr/local/etc/profile.d/bash_completion.sh"
+function jupyterlab {
+    local pyenv_env="miniconda3-4.7.12"
+    local conda_env="xeus-python"
 
-    test -e "${script_path}" && source "${script_path}"
-    if [ -r ~/.bash_completion ]; then
-        source ~/.bash_completion
+    if [ "${pyenv_env}" != "$(pyenv version-name | tr -d '\n')" ]; then
+        pyenv activate --verbose "${pyenv_env}"
     fi
+
+    if [ "${conda_env}" != "$(conda info -e | grep '*' | cut -f1 -d '*' | tr -d ' ')" ]; then
+        printf "conda: activate %s\n" "${conda_env}"
+        conda activate "${conda_env}"
+    fi
+
+    jupyter lab "${@}"
 }
 
 function gi {

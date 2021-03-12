@@ -1,58 +1,39 @@
-__bp_precmd_invoke_cmd() {
-    # Save the returned value from our last command, and from each process in
-    # its pipeline. Note: this MUST be the first thing done in this function.
-    __bp_last_ret_value="$?" BP_PIPESTATUS=("${PIPESTATUS[@]}")
-
-    # Don't invoke precmds if we are inside an execution of an "original
-    # prompt command" by another precmd execution loop. This avoids infinite
-    # recursion.
-    if (( __bp_inside_precmd > 0 )); then
-      return
-    fi
-    local __bp_inside_precmd=1
-
-    # Invoke every function defined in our function array.
-    local precmd_function
-    for precmd_function in "${precmd_functions[@]}"; do
-
-        # Only execute this function if it actually exists.
-        # Test existence of functions with: declare -[Ff]
-        if type -t "$precmd_function" 1>/dev/null; then
-            __bp_set_ret_value "$__bp_last_ret_value" "$__bp_last_argument_prev_command"
-            # Quote our function invocation to prevent issues with IFS
-            "$precmd_function"
-        fi
-    done
-}
-
-__bp_interactive_mode() {
-    __bp_preexec_interactive_mode="on";
-}
-
-# Powerline Shell
-if hash powerline-go 2>/dev/null;  then
-    prompt_command () {
-        PS1="$(powerline-go -newline -error $? -modules docker-context,kube,venv,user,ssh,cwd,perms,git)"
-    }
-else
-    prompt_command () {
-
-    # get basename of current git repo (or nothing)
-    __repo=$(basename $(git repo 2> /dev/null) 2> /dev/null)
-
-    if [ -n $__repo ]; then __repo="repo:${__repo}"; fi
-
-    __git_ps1 "\n[$(tput setaf 4)\u@\h$(tput sgr0) \[\e[1;34m\]\w\[\e[0m\]${handle_virtualenv_prompt}" "]\n\\\$ " " git:%s ${__repo}"
-    }
-fi
-
 # Dircolors
-if [ -f "${HOME}/.dircolors" ] && hash dircolors 2>/dev/null 2>&1; then
+if [ -f "${HOME}/.dircolors" ] && hash dircolors 2>/dev/null; then
     eval "$(dircolors "${HOME}/.dircolors")"
 fi
 
-export PROMPT_COMMAND="prompt_command; $PROMPT_COMMAND"
+# iTerm2
+if [ "${TERM_PROGRAM}" = "iTerm.app" ]; then
+    if [ -r "${HOME}/.iterm2_shell_integration.${SHELL##*/}" ] && ! [ -n "${__bp_imported}" ]; then
+        source ~/.iterm2_shell_integration.bash
+    fi
+    if ! hash it2check 2>/dev/null && [ -x "${HOME}/.iterm2/it2check" ]; then
+        export PATH="${PATH}:${HOME}/.iterm2"
+    fi
+fi
 
-declare -xf prompt_command
+# Powerline Prompt
+if hash powerline-go 2>/dev/null;  then
+    function prompt_command {
+        PS1="$(powerline-go -newline -error $? -modules docker-context,kube,venv,user,ssh,cwd,perms,git)"
+    }
+
+# Git Prompt
+elif hash __git_ps1 2>/dev/null; then
+    function prompt_command {
+        __repo=$(basename $(git repo 2> /dev/null) 2> /dev/null)
+
+        if [ -n $__repo ]; then __repo="repo:${__repo}"; fi
+
+        __git_ps1 "\n[$(tput setaf 4)\u@\h$(tput sgr0) \[\e[1;34m\]\w\[\e[0m\]${handle_virtualenv_prompt}" "]\n\\\$ " " git:%s ${__repo}"
+    }
+fi
+
+if hash prompt_command 2>/dev/null; then
+    export PROMPT_COMMAND="prompt_command; $PROMPT_COMMAND"
+
+    declare -xf prompt_command
+fi
 
 # vi: ft=sh

@@ -2,10 +2,13 @@
 
 # Use os provided `ls`
 if [ "$(uname -s)" = "Darwin" ]; then
-    alias ls='command -p ls -FG'
+    if hash exa 2>/dev/null; then
+        alias ls='exa -F'
+    else
+        alias ls='command -p ls -FG'
+    fi
     alias l='ls -1'
     alias ll='ls -lahT'
-    alias lf='ls -AsS1r'
 fi
 
 # Get rid of pesky network permissions

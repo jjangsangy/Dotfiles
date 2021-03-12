@@ -3,7 +3,7 @@
 # macos specific
 if [ "$(uname -s)" = "Darwin" ]; then
     export HOMEBREW_NO_AUTO_UPDATE=1
-    export HOMEBREW_MAKE_JOBS=$(nproc)
+    export HOMEBREW_MAKE_JOBS=8
 fi
 
 # shell options
@@ -23,19 +23,37 @@ export GPG_TTY=$(tty)
 export GIT_PS1_SHOWCOLORHINTS=true
 
 # bash completion
-if [ -d "${HOME}/.bash_completion.d" ]; then
-    export BASH_COMPLETION_COMPAT_DIR="${HOME}/.bash_completion.d"
+export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+
+if [ -d "${BASH_COMPLETION_COMPAT_DIR}" ]; then
+    if [ -r "/usr/local/etc/profile.d/bash_completion.sh" ]; then
+        source "/usr/local/etc/profile.d/bash_completion.sh"
+    fi
+
+    # git completion
+    if [ -r "${BASH_COMPLETION_COMPAT_DIR}/git-completion.bash" ]; then
+        source "${BASH_COMPLETION_COMPAT_DIR}/git-completion.bash"
+    fi
 fi
 
 # build environment
-export MAKEFLAGS="-j$(nproc)"
-
-# python
-export PYTHONDONTWRITEBYTECODE=1
-export PIP_CONFIG_FILE="${HOME}/.config/pip/pip.conf"
+export MAKEFLAGS="-j8"
 
 # ruby Environment
 export RBENV_VERSION="system"
+
+
+# python
+export PYTHONDONTWRITEBYTECODE=1
+
+# aws
+export AWS_DEFAULT_REGION='us-west-2'
+
+# pyenv
+if [ -d ~/.pyenv ]; then
+    export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+fi
+
 
 # golang Environment
 if [ -d "${HOME}/Go" ]; then
@@ -53,10 +71,11 @@ if [ -d ~/.pyenv ] && hash pyenv 2>/dev/null; then
     eval "$(pyenv init --no-rehash -)"
 fi
 
+
 # iterm2 integration
-if [ -r "${HOME}/.iterm2_shell_integration.bash" ] && [ "${TERM_PROGRAM}" = "iTerm.app" ]; then
-    source "${HOME}/.iterm2_shell_integration.bash"
-fi
+#if [ -r "${HOME}/.iterm2_shell_integration.bash" ] && [ "${TERM_PROGRAM}" = "iTerm.app" ]; then
+#    source "${HOME}/.iterm2_shell_integration.bash"
+#fi
 
 # Kube Context
 if [ -d ~/.kubectx ]; then
@@ -64,5 +83,6 @@ if [ -d ~/.kubectx ]; then
     export KUBECTX_CURRENT_FGCOLOR="$(tput setaf 6)" # blue text
     export KUBECTX_CURRENT_BGCOLOR="$(tput setab 7)" # white bg
 fi
+
 
 # vi: ft=sh

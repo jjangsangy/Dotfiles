@@ -3,8 +3,8 @@
 set -o emacs \
        errtrace \
        functrace \
-       hashall \
        histappend \
+       hashall \
        history \
        interactive-comments \
        monitor \
@@ -15,10 +15,6 @@ shopt -s cmdhist
 
 # dont autorun commands from history
 shopt -s histverify
-
-# correct mispellings
-shopt -s cdspell
-
 
 if [ -r "${HOME}/.bash_sources" ] && [ ${BASH_VERSINFO} -ge 4 ]; then
     source "${HOME}/.bash_sources"

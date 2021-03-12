@@ -59,7 +59,6 @@ set +a
 declare -a BINAPPEND=(
     /usr/local/opt/{qt,go,coreutils}/{bin,libexec/{gnubin,bin}}
     ~/{,Desktop,conda,Go}/bin
-    ~/.iterm2
     /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources
     /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources
     /Applications/MEGAcmd.app/Contents/MacOS
@@ -81,7 +80,7 @@ declare -a BINPREPEND=(
 
 declare -a SOURCEMAP=(
     /etc/bash_completion
-    ~/.{path,prompt,bash_aliases,bash_env,secrets,bash_generated,bash_functions}
+    ~/.{prompt,bash_aliases,bash_env,secrets,bash_generated,bash_functions}
     ~/.cargo/env
 )
 
