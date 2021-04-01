@@ -1,9 +1,13 @@
 # Bash Environment
 # ================
-# macos specific
+
 if [ "$(uname -s)" = "Darwin" ]; then
+    export N_CPUS="$(sysctl -n hw.ncpu)"
+    export HOMEBREW_MAKE_JOBS="${N_CPUS}"
+    export NUMEXPR_MAX_THREADS="${N_CPUS}"
     export HOMEBREW_NO_AUTO_UPDATE=1
-    export HOMEBREW_MAKE_JOBS=8
+else
+    export N_CPUS="$(grep -c processor /proc/cpuinfo)"
 fi
 
 # shell options
@@ -37,7 +41,7 @@ if [ -d "${BASH_COMPLETION_COMPAT_DIR}" ]; then
 fi
 
 # build environment
-export MAKEFLAGS="-j8"
+export MAKEFLAGS="-j${N_CPUS}"
 
 # ruby Environment
 export RBENV_VERSION="system"
@@ -45,6 +49,7 @@ export RBENV_VERSION="system"
 
 # python
 export PYTHONDONTWRITEBYTECODE=1
+export NUMEXPR_MAX_THREADS="${N_CPUS}"
 
 # aws
 export AWS_DEFAULT_REGION='us-west-2'

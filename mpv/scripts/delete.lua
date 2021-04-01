@@ -31,14 +31,14 @@ end
 -- Delete The Current Track
 function delete_current_track()
   local paths =  get_filepaths()
-  mp.osd_message("'" .. paths.filepath.. "' deleting.", 1000)
+  mp.osd_message("'" .. paths.filepath.. "' deleting.", 1)
   move_file(paths.filepath, paths.tmp)
 end
 
 -- Restore the last deleted track.
 function restore_prev_track()
   local paths =  get_filepaths()
-  mp.osd_message("'" .. paths.filepath .. "' restoring.", 1000)
+  mp.osd_message("'" .. paths.filepath .. "' restoring.", 1)
   move_file(paths.tmp, paths.filepath)
 end
 
