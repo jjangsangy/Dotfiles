@@ -159,8 +159,9 @@ augroup END
 "   Filetype Configuration {{{
 augroup ftconfig
   autocmd!
-  autocmd FileType Makefile setlocal noet
-  autocmd FileType vim      setlocal fdm=marker shiftwidth=2
+  autocmd FileType Makefile  setlocal noet
+  autocmd FileType vim       setlocal fdm=marker shiftwidth=2
+  autocmd FileType sshconfig setlocal noexpandtab
 augroup END
 "   }}}
 

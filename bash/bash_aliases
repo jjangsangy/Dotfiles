@@ -1,21 +1,21 @@
 # Bash Aliases
 
-# Use os provided `ls`
-if [ "$(uname -s)" = "Darwin" ]; then
-    if hash exa 2>/dev/null; then
-        alias ls='exa -F'
-    else
-        alias ls='command -p ls -FG'
-    fi
-    alias l='ls -1'
-    alias ll='ls -lahT'
+# default rsync flags
+alias rsync='command rsync -av --progress --exclude-from='${HOME}'/.rsync-excludes.conf'
+
+# ls aliases
+if hash exa 2>/dev/null; then
+    alias ls='exa -F'
+else
+    alias ls='command -p ls -FG'
 fi
+
+alias l='ls -1'
+alias ll='ls -lah'
+alias la='ls -la'
 
 # Get rid of pesky network permissions
 alias app-enable='sudo xattr -r -d com.apple.quarantine'
-
-# Rsync Defaults
-alias rsync="command rsync --exclude '.DS_Store' --exclude '.Spotlight-V100' --exclude '.fseventsd'"
 
 # Display open sockets
 alias listsocks='command lsof -i -P'
@@ -48,6 +48,19 @@ fi
 if hash kubectx 2>/dev/null; then
     alias kctx='kubectx'
     alias kns='kubens'
+fi
+
+# arch linux
+if [ -r /etc/arch-release ]; then
+    # `makepkg`
+    alias pkg-build='command makepkg -scr'
+    alias pkg-install='command makepkg -scri'
+
+    # `pacman`
+    alias pac-get='sudo pacman --sync'
+    alias pac-remove='sudo pacman --remove'
+    alias pac-update='sudo pacman --sync --refresh --upgrade'
+    alias pac-search='sudo pacman --sync --search'
 fi
 
 # vi: ft=sh

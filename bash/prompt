@@ -16,7 +16,7 @@ fi
 # Powerline Prompt
 if hash powerline-go 2>/dev/null;  then
     function prompt_command {
-        PS1="$(powerline-go -newline -error $? -modules docker-context,kube,venv,user,ssh,cwd,perms,git)"
+        PS1="$(powerline-go -hostname-only-if-ssh -colorize-hostname -shell bash -newline -error $? -modules aws,docker-context,kube,venv,user,ssh,cwd,perms,git)"
     }
 
 # Git Prompt
