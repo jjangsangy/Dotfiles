@@ -36,7 +36,6 @@ $if Bash
 		# allow the use of the Home/End keys
 		"\e[1~": beginning-of-line
 		"\e[4~": end-of-line
-		"\ez": 'cd ..\015ls\015'
 
 		# When pressing up or down arrows,
 		# show only history entries that match what was already typed
@@ -56,17 +55,8 @@ $if Bash
 		"\e[1;5C": forward-word
 		"\e\e[C": forward-word
 
-		# Add a binding to refresh the line, which is unbound
-		"\C-xr": redraw-current-line
-
 		# Backspace Kill
 		"\C-h": backward-kill-word
-
-		# Edit PATH
-		"\C-xp": "PATH=${PATH}\e\C-e\C-a\ef\C-f"
-
-		# Edit Variable on Line
-		"\C-xe": "\C-a\C-k$\C-y\M-\C-e\C-a\C-y="
 	$endif
 
 	$if term=rxvt

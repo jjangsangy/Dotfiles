@@ -10,6 +10,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'psliwka/vim-smoothie'
 Plug 'lambdalisue/fern.vim'
+Plug 'christoomey/vim-tmux-navigator'
 
 " Tools
 Plug 'tpope/vim-fugitive'

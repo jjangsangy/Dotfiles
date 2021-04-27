@@ -95,5 +95,18 @@ map pathprepend $(filter_path ${BINPREPEND[@]})
 
 # Cleanup
 unset BINAPPEND BINPREPEND SOURCEMAP
+__conda_setup="$('/Users/sanghan/.pyenv/versions/miniconda3-4.7.12/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/sanghan/.pyenv/versions/miniconda3-4.7.12/etc/profile.d/conda.sh" ]; then
+        . "/Users/sanghan/.pyenv/versions/miniconda3-4.7.12/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/sanghan/.pyenv/versions/miniconda3-4.7.12/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
 
 # vi: ft=sh

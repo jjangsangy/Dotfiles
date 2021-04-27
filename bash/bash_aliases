@@ -1,6 +1,7 @@
 # Bash Aliases
 
 # default rsync flags
+test -e "${HOME}/.rsync-excludes.conf" || touch "${HOME}/.rsync-excludes.conf"
 alias rsync='command rsync -av --progress --exclude-from='${HOME}'/.rsync-excludes.conf'
 
 # ls aliases
@@ -62,5 +63,7 @@ if [ -r /etc/arch-release ]; then
     alias pac-update='sudo pacman --sync --refresh --upgrade'
     alias pac-search='sudo pacman --sync --search'
 fi
+
+test -d "/Applications/Chromium.app" && alias browser-chromium='/Applications/Chromium.app/Contents/MacOS/Chromium'
 
 # vi: ft=sh

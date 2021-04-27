@@ -1,6 +1,10 @@
 # Bash Environment
 # ================
 
+# if test -z "${SSH_AGENT_PID}"; then
+#     eval $(ssh-agent -s)
+# fi
+
 if [ "$(uname -s)" = "Darwin" ]; then
     export N_CPUS="$(sysctl -n hw.ncpu)"
     export HOMEBREW_MAKE_JOBS="${N_CPUS}"
