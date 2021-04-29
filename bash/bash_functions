@@ -116,4 +116,21 @@ function pyenv-install-cmd {
         pyenv install --verbose $1
 }
 
+function activate-mamba {
+    local root_dir="${1:-/opt/mamba}"
+    local executable="${root_dir}/bin/micromamba"
+
+    if test -x "${executable}"; then
+        if eval "$(${executable} shell activate -s bash --auto-activate-base)"; then
+            echo -en "\E[1menvironment activated\n"
+        else
+            echo -en "\E[1mfailed to activate environment\n" 1>&2
+        fi
+    else
+        echo -en "could not activate mamba\n" 1>&2
+        echo -en "no binary at ${executable}\n" 1>&2
+    fi
+    tput sgr0
+}
+
 # vi: ft=sh

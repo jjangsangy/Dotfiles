@@ -3,6 +3,7 @@
 # default rsync flags
 test -e "${HOME}/.rsync-excludes.conf" || touch "${HOME}/.rsync-excludes.conf"
 alias rsync='command rsync -av --progress --exclude-from='${HOME}'/.rsync-excludes.conf'
+alias rsync-h265="command rsync -av --progress --include='*.h265.mp4' --include='*/' --exclude='*'"
 
 # ls aliases
 if hash exa 2>/dev/null; then

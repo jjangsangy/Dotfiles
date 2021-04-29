@@ -2,6 +2,7 @@
 set editing-mode emacs-meta
 set colored-stats on
 set match-hidden-files off
+set bell-style none
 
 # Completion
 set completion-ignore-case on

@@ -63,12 +63,13 @@ declare -a BINAPPEND=(
     /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources
     /Applications/MEGAcmd.app/Contents/MacOS
     ~/.cargo/bin
+    /opt/cuda/bin
 )
 
 declare -a BINPREPEND=(
     /usr/local/opt/python/bin
     /usr/local/{s,.,}bin
-    ~/.cargo/bin
+    /opt/{conda,mamba}/bin
 )
 
 # ==========================================================
@@ -80,7 +81,7 @@ declare -a BINPREPEND=(
 
 declare -a SOURCEMAP=(
     /etc/bash_completion
-    ~/.{prompt,bash_aliases,bash_env,secrets,bash_generated,bash_functions}
+    ~/.{prompt,bash_aliases,bash_env,secrets,bash_generated,bash_functions,conda-init.sh}
     ~/.cargo/env
 )
 
