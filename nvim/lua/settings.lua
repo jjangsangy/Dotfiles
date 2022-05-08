@@ -31,6 +31,6 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.wrap = false
-vim.opt.completeopt = nil
+vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
 
 pcall(vim.cmd, 'colorscheme onedark')
