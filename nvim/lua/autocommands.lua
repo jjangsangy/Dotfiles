@@ -1,37 +1,41 @@
-vim.cmd([[
-    " - Autocommand Groups {{{
-    " ==========================================================
-    "   Jump to last cursor position unless it's invalid or an event handler {{{
-    augroup readpos
-      autocmd!
-      autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-      autocmd WinNew      * :wincmd L
-    augroup END
-    "   }}}
+-- filetype autocommands
+local ftconfig_group = vim.api.nvim_create_augroup('ftconfig', {
+    clear = true
+})
+vim.api.nvim_create_autocmd('FileType', {
+    group = ftconfig_group,
+    pattern = 'Makefile',
+    command = 'setlocal noet'
+})
+vim.api.nvim_create_autocmd('FileType', {
+    group = ftconfig_group,
+    pattern = 'vim',
+    command = 'setlocal fdm=marker shiftwidth=2'
+})
+vim.api.nvim_create_autocmd('FileType', {
+    group = ftconfig_group,
+    pattern = 'sshconfig',
+    command = 'setlocal shiftwidth=2'
+})
+vim.api.nvim_create_autocmd('FileType', {
+    group = ftconfig_group,
+    pattern = 'fish',
+    command = 'setlocal omnifunc=v:lua.vim.slp.omnifunc'
+})
 
-    "   Filetype Configuration {{{
-    augroup ftconfig
-      autocmd!
-      autocmd FileType Makefile  setlocal noet
-      autocmd FileType vim       setlocal fdm=marker shiftwidth=2
-      autocmd FileType sshconfig setlocal noexpandtab
-      autocmd FileType fish      setlocal shiftwidth=2
-      autocmd FileType python    setlocal omnifunc=v:lua.vim.lsp.omnifunc
-    augroup END
-
-    "   }}}
-
-    "   Microsoft Yank {{{
-    if system('uname -r') =~ "Microsoft"
-        augroup Yank
-            autocmd!
-            autocmd TextYankPost * :call system('/mnt/c/windows/system32/clip.exe ',@")
-        augroup END
-
-        autocmd VimLeave * set guicursor=a:ver25blinkon100
-    endif
-    "   }}}
-
-    " }}}
-]])
-
+-- microsoft clipboard
+if vim.call('system', 'uname -r'):match('[Mm]icrosoft') then
+    local yank_group = vim.api.nvim_create_augroup('Yank', {
+        clear = true
+    })
+    vim.api.nvim_create_autocmd('TextYankPost', {
+        group = yank_group,
+        pattern = '*',
+        command = ":call system('/mnt/c/windows/system32/clip.exe ',@\")",
+    })
+    vim.api.nvim_create_autocmd('VimLeave', {
+        group = yank_group,
+        pattern = '*',
+        command = "set guicursor=a:ver25blinkon100"
+    })
+end
