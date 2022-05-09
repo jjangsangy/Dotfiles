@@ -1,69 +1,86 @@
 require('packer').startup(function(use)
-  -- packer can manage itself
-  use 'wbthomason/packer.nvim'
+   -- packer can manage itself
+   use 'wbthomason/packer.nvim'
 
-  -- colorscheme
-  use 'joshdick/onedark.vim'
+   -- colorscheme
+   use 'joshdick/onedark.vim'
 
-  -- improved buffer search
-  use 'junegunn/vim-slash'
+   -- improved buffer search
+   use 'junegunn/vim-slash'
 
-  -- replace 'tpope/vim-surround'
-  use {
-    'ur4ltz/surround.nvim',
-    config = function()
-      require("surround").setup({mappings_style = "sandwich"})
-    end
-  }
-  -- replace vim-airline
-  use {
-    'nvim-lualine/lualine.nvim',
-    requires = { 'kyazdani42/nvim-web-devicons', opt = true },
-    config = function ()
-        require('lualine').setup({
-          options = {
-            theme = 'onedark',
-            icons_enabled = true,
-          }
-        })
-    end
-  }
+   -- replace 'tpope/vim-surround'
+   use {
+     'ur4ltz/surround.nvim',
+     config = function()
+       require("surround").setup({mappings_style = "sandwich"})
+     end
+   }
+   -- replace vim-airline
+   use {
+     'nvim-lualine/lualine.nvim',
+     requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+     config = function ()
+         require('lualine').setup({
+           options = {
+             theme = 'onedark',
+             icons_enabled = true,
+           }
+         })
+     end
+   }
 
-  -- replace 'jiangmiao/auto-pairs' & 'sheerun/vim-polyglot'
-  use {
-    'windwp/nvim-autopairs',
-    config = function ()
-        require('nvim-autopairs').setup({ map_cr = true })
-    end
-  }
+   -- underline cursor word
+   use {
+       'yamatsum/nvim-cursorline',
+       config = function ()
+           require('nvim-cursorline').setup()
+       end
+   }
 
-  -- lsp
-  use 'hrsh7th/cmp-buffer'
-  use 'hrsh7th/cmp-cmdline'
-  use 'hrsh7th/cmp-nvim-lsp'
-  use 'hrsh7th/cmp-path'
-  use 'hrsh7th/nvim-cmp'
-  use 'neovim/nvim-lspconfig'
+   -- correct python indentation
+   use 'Vimjas/vim-python-pep8-indent'
 
-  -- For vsnip users.
-  use 'hrsh7th/cmp-vsnip'
-  use 'hrsh7th/vim-vsnip'
+   -- comment with [gcc|gbc]
+   use {
+       'numToStr/Comment.nvim',
+       config = function()
+           require('Comment').setup()
+       end
+   }
 
-  -- tree-sitter
-  use {
-      'nvim-treesitter/nvim-treesitter',
-      run = ':TSUpdate'
-  }
+   -- replace 'jiangmiao/auto-pairs' & 'sheerun/vim-polyglot'
+   use {
+       'windwp/nvim-autopairs',
+       config = function ()
+           require('nvim-autopairs').setup({
+               map_cr = true,
+           })
+       end
+   }
+
+   -- lsp
+   use 'hrsh7th/cmp-buffer'
+   use 'hrsh7th/cmp-cmdline'
+   use 'hrsh7th/cmp-nvim-lsp'
+   use 'hrsh7th/cmp-path'
+   use 'hrsh7th/nvim-cmp'
+   use 'neovim/nvim-lspconfig'
+
+   -- For vsnip users.
+   use 'hrsh7th/cmp-vsnip'
+   use 'hrsh7th/vim-vsnip'
+
+   -- tree-sitter
+   use {
+       'nvim-treesitter/nvim-treesitter',
+       run = ':TSUpdate'
+   }
 
 end)
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-end
-
-local feedkey = function(key, mode)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
 end
 
 local cmp = require 'cmp'
@@ -90,8 +107,6 @@ cmp.setup({
     ['<Tab>'] = cmp.mapping(function(fallback)
         if cmp.visible() then
             cmp.select_next_item()
-        elseif vim.fn["vsnip#available"](1) == 1 then
-            feedkey("<Plug>(vsnip-expand-or-jump)", "")
         elseif has_words_before() then
             cmp.complete()
         else
@@ -101,8 +116,6 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping(function()
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-        feedkey("<Plug>(vsnip-jump-prev)", "")
       end
     end, { "i", "s" }),
   }),
@@ -134,6 +147,11 @@ cmp.setup.cmdline(':', {
     { name = 'cmdline' }
   })
 })
+
+-- cmp and autopair compatability
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({  map_char = { tex = '' } }))
+
 
 -- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
