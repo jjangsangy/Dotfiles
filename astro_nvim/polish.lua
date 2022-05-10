@@ -1,6 +1,28 @@
 return function()
   -- set key bindings
   local map_opts = { noremap = true }
+  local ls = require("luasnip")
+
+  -- <C-k> jump forward snip
+  vim.keymap.set({ "i", "s" }, "<C-k>", function()
+    if ls.expand_or_jumpable() then
+      ls.expand_or_jump()
+    end
+  end, { silent = true })
+
+  -- <C-j> jump backward snip
+  vim.keymap.set({ "i", "s" }, "<C-j>", function()
+    if ls.jumpable(-1) then
+      ls.jump(-1)
+    end
+  end, { silent = true })
+
+  -- <C-l> list snip choices
+  vim.keymap.set({ "i", "s" }, "<C-l>", function()
+    if ls.choice_active() then
+      ls.change_choice(1)
+    end
+  end)
 
   -- save with ctrl-s
   vim.keymap.set("n", "<C-s>", ":w!<CR>", map_opts)
