@@ -3,7 +3,6 @@ return function()
   if not status_ok then
     return
   end
-
   -- Check supported formatters
   -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
   local formatting = null_ls.builtins.formatting
@@ -14,7 +13,25 @@ return function()
 
   null_ls.setup {
     debug = false,
-    sources = { diagnostics.fish, formatting.stylua, formatting.black },
+    sources = {
+      diagnostics.jsonlint,
+      diagnostics.fish,
+      formatting.stylua.with {
+        extra_args = {
+          "--indent-type",
+          "Spaces",
+          "--indent-width",
+          "2",
+          "--call-parentheses",
+          "NoSingleTable",
+        },
+      },
+      formatting.fish_indent,
+      formatting.black,
+      formatting.isort.with {
+        extra_args = { "--profile", "black" },
+      },
+    },
 
     -- format on save
     on_attach = function(client)

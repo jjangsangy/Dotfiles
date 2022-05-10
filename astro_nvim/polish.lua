@@ -1,4 +1,17 @@
 return function()
+  -- vim options
+  vim.opt.listchars = { tab = " >", trail = "▫" }
+  vim.opt.list = true
+  vim.opt.encoding = "utf-8"
+  vim.opt.expandtab = true
+  vim.opt.ignorecase = true
+  vim.opt.shiftwidth = 4
+  vim.opt.smartcase = true
+  vim.opt.smartindent = true
+  vim.opt.softtabstop = 4
+  vim.opt.splitright = true
+  vim.opt.tabstop = 4
+
   local map_opts = { noremap = true }
   -- Set key bindings
   vim.keymap.set("n", "<C-s>", ":w!<CR>", map_opts)
@@ -20,7 +33,7 @@ return function()
   })
 
   -- microsoft clipboard
-  if vim.call("system", "uname -r"):match "[Mm]icrosoft" then
+  if vim.call("system", "uname -r"):match("[Mm]icrosoft") then
     vim.api.nvim_create_augroup("Yank", {
       clear = true,
     })

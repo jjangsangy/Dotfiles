@@ -8,7 +8,7 @@ local config = {
     },
     -- Modify the highlight groups
     highlights = function(highlights)
-      local C = require "default_theme.colors"
+      local C = require("default_theme.colors")
 
       highlights.Normal = { fg = C.fg, bg = C.bg }
       return highlights
