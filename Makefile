@@ -21,8 +21,8 @@ FISH_FUNCS_TARGETS := $(FISH_FUNCS:%=$(destdir)/.config/fish/functions/%)
 OBJECTS := $(BASH_OBJECTS) $(VIM_OBJECTS) $(GIT_OBJECTS) $(FISH_FUNCS)
 TARGETS := $(BASH_TARGETS) $(VIM_TARGETS) $(GIT_TARGETS) $(FISH_TARGETS)
 
-all: bash vim git
-clean: clean_git clean_bash clean_vim clean_fish_funcs
+all: bash vim git astronvim fish_funcs
+clean: clean_git clean_bash clean_vim clean_fish_funcs clean_astronvim
 
 bash: $(BASH_OBJECTS)
 $(BASH_OBJECTS): $(BASH_TARGETS)
@@ -44,12 +44,14 @@ $(FISH_FUNCS): $(FISH_FUNCS_TARGETS)
 $(FISH_FUNCS_TARGETS):
 	$(LINK) $(realpath fish/functions/$(patsubst .%,%,$(@F))) $@
 
+bin: $(destdir)/bin
+$(destdir)/bin:
+	$(LINK) $(realpath bin) $(destdir)
 
-clean_fish_funcs:
-	@echo
-	@echo Fish Functions
-	@echo ==========================
-	$(RM) $(addprefix $(destdir)/.config/fish/functions/,$(notdir $(FISH_FUNCS_TARGETS)))
+astronvim: $(destdir)/.config/nvim/lua/user
+$(destdir)/.config/nvim/lua/user:
+	$(LINK) $(realpath astro_nvim) $(destdir)/.config/nvim/lua/user
+
 
 clean_bash:
 	@echo
@@ -68,6 +70,25 @@ clean_git:
 	@echo Git Files
 	@echo ==========================
 	$(RM) $(addprefix $(destdir)/,$(notdir $(GIT_TARGETS)))
+
+clean_fish_funcs:
+	@echo
+	@echo Fish Functions
+	@echo ==========================
+	$(RM) $(addprefix $(destdir)/.config/fish/functions/,$(notdir $(FISH_FUNCS_TARGETS)))
+
+clean_bin:
+	@echo
+	@echo Bin Directory
+	@echo ==========================
+	$(RM) $(destdir)/bin
+
+clean_astrovim:
+	@echo
+	@echo Astro Vim Directory
+	@echo ==========================
+	$(RM) $(destdir)/.config/nvim/lua/user
+
 
 
 help:

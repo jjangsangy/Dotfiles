@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 
-import zipfile
-import collections
 import argparse
-import pathlib
-import operator
+import collections
 import functools
-import warnings
 import json
+import operator
+import pathlib
+import warnings
+import zipfile
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
-
-from typing import List, Tuple, Union, Sequence
 from PIL import ImageFile
 from sklearn.cluster import KMeans
 from sklearn.exceptions import ConvergenceWarning
@@ -33,15 +32,14 @@ def compute_count(sizes: Sequence[Res]) -> ResProb:
 
 def compute_average(sizes: Sequence[Res]) -> ResProb:
     arr = np.array(sizes)
-    res = int(np.mean(arr[:,0])), int(np.mean(arr[:,1]))
+    res = int(np.mean(arr[:, 0])), int(np.mean(arr[:, 1]))
     return res, 1.0
 
 
 def compute_min_max(sizes: Sequence[Res], operation=max) -> ResProb:
     count = collections.Counter(sizes)
     common = operation(
-        [(np.prod(i[0]), i) for i in count.items()],
-        key=operator.itemgetter(0)
+        [(np.prod(i[0]), i) for i in count.items()], key=operator.itemgetter(0)
     )[1]
     res = common[0]
     prob = common[1] / len(sizes)
@@ -59,11 +57,13 @@ def compute_kmeans(sizes: List[Res], n_clust: int = 3) -> ResProb:
     return res, prob
 
 
-def img_sizes_from_header(zf: zipfile.ZipFile, filelist: Sequence[ZipInput]) -> List[Res]:
+def img_sizes_from_header(
+    zf: zipfile.ZipFile, filelist: Sequence[ZipInput]
+) -> List[Res]:
     chunk_size = 2048
     res = []
     for file in filelist:
-        with zf.open(file, mode='r') as zext:
+        with zf.open(file, mode="r") as zext:
             parser = ImageFile.Parser()
             chunk = zext.read(chunk_size)
             count = 2048
@@ -73,7 +73,7 @@ def img_sizes_from_header(zf: zipfile.ZipFile, filelist: Sequence[ZipInput]) -> 
                     break
                 chunk = zext.read(chunk_size)
                 count += chunk_size
-            res.append(parser.image.size) #type: ignore
+            res.append(parser.image.size)  # type: ignore
     return res
 
 
@@ -81,7 +81,8 @@ def get_image_sizes(zip_file: pathlib.Path, samples: int = 20) -> dict:
     assert zip_file.exists(), f"file {zip_file} does not exist"
     with zipfile.ZipFile(zip_file) as zf:
         namelist = [
-            i for i in zf.namelist()
+            i
+            for i in zf.namelist()
             if any(map(i.endswith, [".jpg", ".jpeg", ".png", ".tiff", ".webp", ".bmp"]))
         ]
 
@@ -90,12 +91,11 @@ def get_image_sizes(zip_file: pathlib.Path, samples: int = 20) -> dict:
             choices = namelist
         else:
             total_samples = len(namelist) if samples > len(namelist) else samples
-            choices = list(np.random.choice(namelist, size=total_samples, replace=False))
+            choices = list(
+                np.random.choice(namelist, size=total_samples, replace=False)
+            )
 
-        return {
-            'sizes': img_sizes_from_header(zf, choices),
-            'n': len(namelist)
-        }
+        return {"sizes": img_sizes_from_header(zf, choices), "n": len(namelist)}
 
 
 def cli(metrics: dict) -> argparse.Namespace:
@@ -103,11 +103,7 @@ def cli(metrics: dict) -> argparse.Namespace:
         description="Get the resolution of images inside cbz files"
     )
     parser.add_argument(
-        "-s",
-        "--samples",
-        default=10,
-        type=int,
-        help="number of images to sample"
+        "-s", "--samples", default=10, type=int, help="number of images to sample"
     )
     parser.add_argument(
         "-m",
@@ -125,53 +121,51 @@ def cli(metrics: dict) -> argparse.Namespace:
         help="number of clusters when using kmeans",
     )
     parser.add_argument(
-        "-j",
-        "--json",
-        action='store_true',
-        help="output in json format"
+        "-j", "--json", action="store_true", help="output in json format"
     )
-    parser.add_argument(
-        "files",
-        nargs="+",
-        type=pathlib.Path,
-        help="cbz files"
-    )
+    parser.add_argument("files", nargs="+", type=pathlib.Path, help="cbz files")
     return parser.parse_args()
 
 
 def main():
     metrics = {
-        'count': compute_count,
-        'average': compute_average,
-        'min': functools.partial(compute_min_max, operation=min),
-        'max': functools.partial(compute_min_max, operation=max),
-        'kmeans': compute_kmeans
+        "count": compute_count,
+        "average": compute_average,
+        "min": functools.partial(compute_min_max, operation=min),
+        "max": functools.partial(compute_min_max, operation=max),
+        "kmeans": compute_kmeans,
     }
     args = cli(metrics)
-    metrics['kmeans'] = functools.partial(compute_kmeans, n_clust=args.n_clust)
+    metrics["kmeans"] = functools.partial(compute_kmeans, n_clust=args.n_clust)
     metric_func = metrics[args.metric]
 
     for file in args.files:
         img_sizes = get_image_sizes(file, samples=args.samples)
-        samples = len(img_sizes['sizes'])
-        res, prob = metric_func(img_sizes['sizes'])
+        samples = len(img_sizes["sizes"])
+        res, prob = metric_func(img_sizes["sizes"])
 
         if args.json:
-            print(json.dumps(
-                {
-                    'file': str(file),
-                    'metric': args.metric,
-                    'resolution': f"{res[0]}x{res[1]}",
-                    'n': samples,
-                    'prob': f'{prob:.2%}',
-                }, indent=4
-            ))
+            print(
+                json.dumps(
+                    {
+                        "file": str(file),
+                        "metric": args.metric,
+                        "resolution": f"{res[0]}x{res[1]}",
+                        "n": samples,
+                        "prob": f"{prob:.2%}",
+                    },
+                    indent=4,
+                )
+            )
         else:
-            print(f'File: {file}')
-            print(f"Metric:{args.metric}, Resolution:{res[0]}x{res[1]}, n:{samples}, p:{prob:.2%}\n")
+            info = [
+                f"Metric:{args.metric}",
+                f"Resolution:{res[0]}x{res[1]}",
+                f"n:{samples}, p:{prob:.2%}",
+            ]
+            print(f"File: {file}")
+            print(*info, sep=", ", end="\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-

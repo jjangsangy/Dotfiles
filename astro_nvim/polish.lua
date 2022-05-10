@@ -11,9 +11,20 @@ return function()
   vim.opt.softtabstop = 4
   vim.opt.splitright = true
   vim.opt.tabstop = 4
+  vim.opt.wildignore = {
+    "*.o",
+    "*~",
+    "*.pyc",
+    "*/node_modules/*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.git/*",
+  }
 
+  -- set key bindings
   local map_opts = { noremap = true }
-  -- Set key bindings
+
+  -- save with ctrl-s
   vim.keymap.set("n", "<C-s>", ":w!<CR>", map_opts)
 
   -- redo key mapped to U
@@ -23,7 +34,7 @@ return function()
   vim.api.nvim_set_keymap("n", "<Right>", ":bnext<CR>", map_opts)
   vim.api.nvim_set_keymap("n", "<Left>", ":bprevious<CR>", map_opts)
 
-  -- Set autocommands
+  -- set autocommands
   vim.api.nvim_create_augroup("packer_conf", { clear = true })
   vim.api.nvim_create_autocmd("BufWritePost", {
     desc = "Sync packer after modifying plugins.lua",
