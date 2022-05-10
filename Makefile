@@ -50,6 +50,7 @@ $(destdir)/bin:
 
 astronvim: $(destdir)/.config/nvim/lua/user
 $(destdir)/.config/nvim/lua/user:
+	git clone https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 	$(LINK) $(realpath astro_nvim) $(destdir)/.config/nvim/lua/user
 
 
@@ -83,7 +84,7 @@ clean_bin:
 	@echo ==========================
 	$(RM) $(destdir)/bin
 
-clean_astrovim:
+clean_astronvim:
 	@echo
 	@echo Astro Vim Directory
 	@echo ==========================
