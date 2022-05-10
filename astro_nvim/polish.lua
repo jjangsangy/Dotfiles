@@ -1,26 +1,4 @@
 return function()
-  -- vim options
-  vim.opt.listchars = { tab = " >", trail = "▫" }
-  vim.opt.list = true
-  vim.opt.encoding = "utf-8"
-  vim.opt.expandtab = true
-  vim.opt.ignorecase = true
-  vim.opt.shiftwidth = 4
-  vim.opt.smartcase = true
-  vim.opt.smartindent = true
-  vim.opt.softtabstop = 4
-  vim.opt.splitright = true
-  vim.opt.tabstop = 4
-  vim.opt.wildignore = {
-    "*.o",
-    "*~",
-    "*.pyc",
-    "*/node_modules/*",
-    "*/__pycache__/*",
-    "*/venv/*",
-    "*/.git/*",
-  }
-
   -- set key bindings
   local map_opts = { noremap = true }
 
