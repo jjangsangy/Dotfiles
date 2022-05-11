@@ -1,7 +1,23 @@
 return function()
-  -- set key bindings
-  local map_opts = { noremap = true }
   local ls = require("luasnip")
+
+  require("luasnip.loaders.from_lua").load {
+    paths = "~/.config/nvim/lua/user/snippets/",
+  }
+
+  local types = require("luasnip.util.types")
+  ls.config.set_config {
+    history = true, --keep around last snippet local to jump back
+    updateevents = "TextChanged,TextChangedI", --update changes as you type
+    enable_autosnippets = true,
+    ext_opts = {
+      [types.choiceNode] = {
+        active = {
+          virt_text = { { "●", "GruvboxOrange" } },
+        },
+      },
+    },
+  }
 
   -- <C-k> jump forward snip
   vim.keymap.set({ "i", "s" }, "<C-k>", function()
@@ -23,6 +39,9 @@ return function()
       ls.change_choice(1)
     end
   end)
+
+  -- default keybinding opts
+  local map_opts = { noremap = true }
 
   -- save with ctrl-s
   vim.keymap.set("n", "<C-s>", ":w!<CR>", map_opts)
