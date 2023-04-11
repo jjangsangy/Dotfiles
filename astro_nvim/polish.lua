@@ -7,7 +7,7 @@ return function()
 
   local types = require("luasnip.util.types")
   ls.config.set_config {
-    history = true, --keep around last snippet local to jump back
+    history = true,                            --keep around last snippet local to jump back
     updateevents = "TextChanged,TextChangedI", --update changes as you type
     enable_autosnippets = true,
     ext_opts = {
@@ -49,6 +49,9 @@ return function()
   -- redo key mapped to U
   vim.keymap.set("n", "U", ":redo<CR>", map_opts)
 
+  -- fold with spacebar
+  vim.api.nvim_set_keymap("n", "<space>", "za", map_opts)
+
   -- move buffers with left/right
   vim.api.nvim_set_keymap("n", "<Right>", ":bnext<CR>", map_opts)
   vim.api.nvim_set_keymap("n", "<Left>", ":bprevious<CR>", map_opts)
@@ -78,4 +81,12 @@ return function()
       command = "set guicursor=a:ver25blinkon100",
     })
   end
+
+  -- disable inline diagnostics
+  vim.diagnostic.config {
+    virtual_text = false,
+  }
+  -- Show line diagnostics automatically in hover window
+  vim.o.updatetime = 250
+  vim.cmd([[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]])
 end

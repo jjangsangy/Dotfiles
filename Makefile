@@ -11,7 +11,7 @@ BASH_OBJECTS := bash_aliases bash_completion bash_completion.d \
 VIM_OBJECTS  := vimrc vimrc.plug vimrc.plug.local tmux.conf
 GIT_OBJECTS  := git_log.sh gitconfig gitconfig.local gitignore
 FISH_FUNCS   := kindle_comic_converter.fish pack_manga.fish rename_kepub_epub.fish \
-                rips_capitalize.fish zip_manga.fish zip_manga_dirs.fish
+                rips_capitalize.fish zip_manga.fish zip_manga_dirs.fish get_codec.fish
 
 BASH_TARGETS := $(BASH_OBJECTS:%=$(destdir)/.%)
 VIM_TARGETS  := $(VIM_OBJECTS:%=$(destdir)/.%)
