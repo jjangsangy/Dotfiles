@@ -224,4 +224,6 @@ tags
 .history
 .ionide
 
+.luarc.json
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,dotfilessh,git,macos,vim,homebrew,python
