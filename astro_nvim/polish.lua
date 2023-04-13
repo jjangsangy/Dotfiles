@@ -1,13 +1,13 @@
 return function()
   local ls = require("luasnip")
 
-  require("luasnip.loaders.from_lua").load({
+  require("luasnip.loaders.from_lua").load {
     paths = "~/.config/nvim/lua/user/snippets/",
-  })
+  }
 
   local types = require("luasnip.util.types")
-  ls.config.set_config({
-    history = true,                          --keep around last snippet local to jump back
+  ls.config.set_config {
+    history = true,                            --keep around last snippet local to jump back
     updateevents = "TextChanged,TextChangedI", --update changes as you type
     enable_autosnippets = true,
     ext_opts = {
@@ -17,7 +17,7 @@ return function()
         },
       },
     },
-  })
+  }
 
   -- <C-k> jump forward snip
   vim.keymap.set({ "i", "s" }, "<C-k>", function()
@@ -40,31 +40,6 @@ return function()
     end
   end)
 
-  -- default keybinding opts
-  local map_opts = { noremap = true }
-
-  -- save with ctrl-s
-  vim.keymap.set("n", "<C-s>", ":w!<CR>", map_opts)
-
-  -- redo key mapped to U
-  vim.keymap.set("n", "U", ":redo<CR>", map_opts)
-
-  -- fold with spacebar
-  vim.api.nvim_set_keymap("n", "<space>", "za", map_opts)
-
-  -- move buffers with left/right
-  vim.api.nvim_set_keymap("n", "<Right>", ":bnext<CR>", map_opts)
-  vim.api.nvim_set_keymap("n", "<Left>", ":bprevious<CR>", map_opts)
-
-  -- set autocommands
-  vim.api.nvim_create_augroup("packer_conf", { clear = true })
-  vim.api.nvim_create_autocmd("BufWritePost", {
-    desc = "Sync packer after modifying plugins.lua",
-    group = "packer_conf",
-    pattern = "plugins.lua",
-    command = "source <afile> | PackerSync",
-  })
-
   -- microsoft clipboard
   if vim.call("system", "uname -r"):match("[Mm]icrosoft") then
     vim.api.nvim_create_augroup("Yank", {
@@ -83,9 +58,9 @@ return function()
   end
 
   -- disable inline diagnostics
-  vim.diagnostic.config({
+  vim.diagnostic.config {
     virtual_text = false,
-  })
+  }
   -- Show line diagnostics automatically in hover window
   vim.o.updatetime = 250
   vim.cmd([[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]])

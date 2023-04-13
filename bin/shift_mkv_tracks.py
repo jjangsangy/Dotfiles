@@ -164,11 +164,11 @@ class MKVTrackEditor:
         tracks = self.filter_tracks(track_type=track_type)
 
         if len(tracks) <= 1:
-            logging.info(f"Only one {track_type} track exists. Will not shift")
+            logging.info(f"Only one '{track_type}' track exists. Will not shift")
             return
 
         if not any(map(check, tracks)):
-            logging.info(f"No {track_type} track return true for {check.__name__}")
+            logging.info(f"No '{track_type}' track return true for '{check.__name__}'")
             return
 
         track = tracks[0]
