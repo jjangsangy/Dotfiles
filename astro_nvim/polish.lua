@@ -1,13 +1,13 @@
 return function()
   local ls = require("luasnip")
 
-  require("luasnip.loaders.from_lua").load {
+  require("luasnip.loaders.from_lua").load({
     paths = "~/.config/nvim/lua/user/snippets/",
-  }
+  })
 
   local types = require("luasnip.util.types")
-  ls.config.set_config {
-    history = true,                            --keep around last snippet local to jump back
+  ls.config.set_config({
+    history = true,                          --keep around last snippet local to jump back
     updateevents = "TextChanged,TextChangedI", --update changes as you type
     enable_autosnippets = true,
     ext_opts = {
@@ -17,7 +17,7 @@ return function()
         },
       },
     },
-  }
+  })
 
   -- <C-k> jump forward snip
   vim.keymap.set({ "i", "s" }, "<C-k>", function()
@@ -83,9 +83,9 @@ return function()
   end
 
   -- disable inline diagnostics
-  vim.diagnostic.config {
+  vim.diagnostic.config({
     virtual_text = false,
-  }
+  })
   -- Show line diagnostics automatically in hover window
   vim.o.updatetime = 250
   vim.cmd([[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]])
