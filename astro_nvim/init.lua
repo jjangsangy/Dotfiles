@@ -1,4 +1,4 @@
-local config = {
+return {
   -- Default theme configuration
   default_theme = {
     diagnostics_style = { italic = true },
@@ -14,13 +14,11 @@ local config = {
       return highlights
     end,
   },
-
   -- Disable AstroNvim ui features
   ui = {
     nui_input = true,
     telescope_select = true,
   },
-
   -- LuaSnip Options
   luasnip = {
     -- Add paths for including more VS Code style snippets in luasnip
@@ -30,22 +28,6 @@ local config = {
       javascript = { "javascriptreact" },
     },
   },
-
-  -- Modify which-key registration
-  ["which-key"] = {
-    -- Add bindings
-    register_mappings = {
-      -- first key is the mode, n == normal mode
-      n = {
-        -- second key is the prefix, <leader> prefixes
-        ["<leader>"] = {
-          -- which-key registration table for normal mode, leader prefix
-          -- ["N"] = { "<cmd>tabnew<cr>", "New Buffer" },
-        },
-      },
-    },
-  },
-
   -- CMP Source Priorities
   -- modify here the priorities of default cmp sources
   -- higher value == higher priority
@@ -60,12 +42,9 @@ local config = {
       path = 250,
     },
   },
-
   -- Diagnostics configuration (for vim.diagnostics.config({}))
   diagnostics = {
     virtual_text = true,
     underline = true,
   },
 }
-
-return config

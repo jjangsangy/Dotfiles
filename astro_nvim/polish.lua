@@ -1,4 +1,13 @@
 return function()
+  require("lspconfig").lua_ls.setup {
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = { "vim" },
+        },
+      },
+    },
+  }
   local ls = require("luasnip")
 
   require("luasnip.loaders.from_lua").load {

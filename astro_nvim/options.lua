@@ -1,6 +1,5 @@
 return {
   opt = {
-    relativenumber = false,
     listchars = { tab = " >", trail = "▫" },
     list = true,
     encoding = "utf-8",
