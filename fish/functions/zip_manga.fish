@@ -8,7 +8,7 @@ function zip_manga -d 'convert manga directory into cbz format'
 
   for i in $argv
     if cd $i 2>/dev/null
-      if not count (find . -maxdepth 3 -type f -name '*.jpg' -or -name '*.png') >/dev/null
+      if not count (find . -maxdepth 3 -type f -name '*.jpg' -or -name '*.png' -or -name '*.jpeg' -or -name '*.webp') >/dev/null
         continue
       end
       zip -0 -r ../(string trim -r -c/ $i).cbz *; or return 1

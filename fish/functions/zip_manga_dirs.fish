@@ -2,7 +2,7 @@ function zip_manga_dirs
     set -l cur_dir $PWD
 
     # parse cli arguments
-    argparse k/kcc h/help 'm/move=?' -- $argv; or return
+    argparse k/kcc h/help d/delete 'm/move=?' -- $argv; or return
 
     if set -q _flag_help
         echo "zip_manga_dirs [-k/--kcc] [-h/--help] [dirs]..."
@@ -11,6 +11,8 @@ function zip_manga_dirs
         echo "    -m/--move: upload to directory"
         echo "                 [default:/mnt/b/Manga]"
         echo "    -h/--help: display help page and exit"
+        echo "    -d/--delete: delete original manga after completing"
+        echo "                 [default off]"
         return
     end
 
@@ -47,8 +49,11 @@ function zip_manga_dirs
             set -l dirs (find . -maxdepth 1 -mindepth 1 -type d | string replace -r '^\./' '')
 
             if zip_manga $dirs
-                echo 'cleaning up directories'
-                rm -rf $dirs
+                if set -q _flag_delete
+                    echo 'cleaning up directories'
+                    rm -rf $dirs
+                end
+
                 if set -q _flag_kcc
                     kindle_comic_converter *.cbz
                 end

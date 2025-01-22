@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import pathlib
-import argparse
 import shutil
+
 
 def cli():
     parser = argparse.ArgumentParser(
-         description='Renames NZB files to their folder id',
+        description="Renames NZB files to their folder id",
     )
-    parser.add_argument('-m', '--move', action='store_true', help='Move file to current folder')
+    parser.add_argument(
+        "-m", "--move", action="store_true", help="Move file to current folder"
+    )
     return parser.parse_args()
 
 
 def walkdir(root):
-    extensions = ['.mov', '.wmv', '.mp4', '.mkv', '.m4v', '.avi']
+    extensions = [".mov", ".wmv", ".mp4", ".mkv", ".m4v", ".avi"]
     files = []
     for r, _, f in os.walk(root):
         r = pathlib.Path(r)
@@ -25,12 +28,17 @@ def walkdir(root):
     return files
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = cli()
     root = pathlib.Path()
 
+    if "podcasts" in str(root.absolute()).lower():
+        raise ValueError(
+            f"Error: Path contains 'Podcasts' - operation not allowed: {root.absolute()}"
+        )
+
     for d in root.iterdir():
-        if not d.is_dir() or (d / '_unpack').is_dir():
+        if not d.is_dir() or (d / "_unpack").is_dir():
             continue
 
         vid_files = walkdir(d)
