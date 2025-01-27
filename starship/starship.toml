@@ -11,6 +11,7 @@ $java\
 $c\
 $cmd_duration\
 $shell\
+$conda\
 $time\
 $username\
 $line_break\
@@ -96,6 +97,12 @@ symbol = ' .NET'
 [python]
 format = '[─](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
 symbol = ' python'
+
+[conda]
+format = '[─](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $environment](fg:foreground bg:box)[](fg:box)'
+symbol = ' conda'
+ignore_base = false
+disabled = false
 
 [java]
 format = '[─](fg:current_line)[](fg:red)[$symbol](fg:primary bg:red)[](fg:red bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
