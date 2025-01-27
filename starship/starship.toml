@@ -1,3 +1,6 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
 format = """
 [╭](fg:current_line)\
 $os\
@@ -96,11 +99,11 @@ symbol = ' .NET'
 
 [python]
 format = '[─](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
-symbol = ' python'
+symbol = ' py'
 
 [conda]
-format = '[─](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $environment](fg:foreground bg:box)[](fg:box)'
-symbol = ' conda'
+format = '[─](fg:current_line)[](fg:cyan)[$symbol](fg:primary bg:cyan)[](fg:cyan bg:box)[ $environment](fg:foreground bg:box)[](fg:box)'
+symbol = ''
 ignore_base = false
 disabled = false
 
