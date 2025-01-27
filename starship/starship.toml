@@ -123,7 +123,7 @@ format = '[─](fg:current_line)[](fg:orange)[](fg:primary bg:orange)[]
 [shell]
 format = '[─](fg:current_line)[](fg:blue)[](fg:primary bg:blue)[](fg:blue bg:box)[ $indicator](fg:foreground bg:box)[](fg:box)'
 unknown_indicator = 'shell'
-powershell_indicator = 'powershell'
+powershell_indicator = 'pwrsh'
 fish_indicator = 'fish'
 disabled = false
 
