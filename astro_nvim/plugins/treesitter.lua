@@ -23,6 +23,7 @@ return {
       "python",
       "yaml",
       "toml",
+      "nu",
     },
   },
 }
