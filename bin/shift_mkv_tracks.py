@@ -230,8 +230,7 @@ def cli() -> argparse.Namespace:
     parser.add_argument(
         "-d",
         "--destdir",
-        nargs=1,
-        default="muxed",
+        default=pathlib.Path("muxed"),
         type=pathlib.Path,
         help="output directory to place muxed files",
     )

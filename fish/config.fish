@@ -1,14 +1,19 @@
 function fish_greeting
-  if type --quiet fastfetch
+  if type -q fastfetch
     fastfetch
   end
 end
 
-if type --quiet zoxide
+if type -q zoxide
   zoxide init fish --cmd cd | source
 end
 
-if type --quiet starship
+if not type -q fisher
+  curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher update
+  echo 'Installed Fish Plugins'
+end
+
+if type -q starship
   set -x STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
 
   function starship_transient_prompt_func
