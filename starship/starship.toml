@@ -1,3 +1,6 @@
+# Based on
+# https://github.com/starship/starship/discussions/1107#discussioncomment-11202485
+
 # Get editor completions based on the config schema
 "$schema" = 'https://starship.rs/config-schema.json'
 
@@ -141,4 +144,11 @@ format = """
 [╰─$symbol](fg:current_line) """
 success_symbol = '[λ](fg:bold white)'
 error_symbol = '[×](fg:bold red)'
+
+[nix_shell]
+disabled = false
+impure_msg = '[impure shell](bold red)'
+pure_msg = '[pure shell](bold green)'
+unknown_msg = '[unknown shell](bold yellow)'
+format = 'via [☃️ $state( \($name\))](bold blue) '
 
