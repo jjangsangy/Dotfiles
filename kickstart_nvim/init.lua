@@ -27,7 +27,9 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
   -- plugins
+  require("plugins.alpha"),
   require("plugins.autopairs"),
+  require("plugins.bufferline"),
   require("plugins.debug"),
   require("plugins.gitsigns"),
   require("plugins.indent_line"),
