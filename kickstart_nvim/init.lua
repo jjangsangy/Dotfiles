@@ -26,23 +26,26 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
-
+  -- plugins
   require("plugins.autopairs"),
   require("plugins.debug"),
   require("plugins.gitsigns"),
   require("plugins.indent_line"),
   require("plugins.lazydev"),
   require("plugins.lint"),
+  require("plugins.misc"),
   require("plugins.neo-tree"),
   require("plugins.none-ls"),
+  require("plugins.nvim-cmp"),
   require("plugins.nvim-lspconfig"),
   require("plugins.telescope"),
+  require("plugins.todo-comments"),
   require("plugins.treesitter"),
   require("plugins.which-key"),
-  require("plugins.nvim-cmp"),
-  require("plugins.todo-comments"),
 
+  -- themes
   require("plugins.themes.onedark"),
+  require("plugins.themes.catppuccin"),
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`

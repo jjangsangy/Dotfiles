@@ -1,6 +1,7 @@
 return {
-  'navarasu/onedark.nvim',
-  config = function()
-    require('onedark').load()
-  end,
+	"navarasu/onedark.nvim",
+	priority = 1000,
+	config = function()
+		require("onedark").load()
+	end,
 }
