@@ -38,7 +38,7 @@ require("lazy").setup({
   require("plugins.misc"),
   require("plugins.neo-tree"),
   require("plugins.none-ls"),
-  require("plugins.nvim-cmp"),
+  require("plugins.completion"),
   require("plugins.nvim-lspconfig"),
   require("plugins.telescope"),
   require("plugins.todo-comments"),

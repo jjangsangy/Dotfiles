@@ -35,6 +35,7 @@ return {
         "tsx",
         "css",
         "html",
+        "fish",
       },
 
       -- Autoinstall languages that are not installed
