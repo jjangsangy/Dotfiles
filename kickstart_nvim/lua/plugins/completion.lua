@@ -34,6 +34,17 @@ return {
     sources = {
       default = { "lsp", "path", "snippets", "buffer" },
     },
+    completion = {
+      ghost_text = { enabled = true },
+      documentation = { auto_show = true, auto_show_delay_ms = 500 },
+      menu = {
+        border = "single",
+        draw = {
+          treesitter = { "lsp" },
+        },
+      },
+    },
   },
+  signature = { enabled = true, window = { border = "single" } },
   opts_extend = { "sources.default" },
 }
