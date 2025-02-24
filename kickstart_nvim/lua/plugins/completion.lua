@@ -1,7 +1,16 @@
 return {
   "saghen/blink.cmp",
   -- optional: provides snippets for the snippet source
-  dependencies = "rafamadriz/friendly-snippets",
+  dependencies = {
+    { "rafamadriz/friendly-snippets" },
+    {
+      "L3MON4D3/LuaSnip",
+      -- follow latest release.
+      version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+      -- install jsregexp (optional!).
+      build = "make install_jsregexp",
+    },
+  },
 
   -- use a release tag to download pre-built binaries
   version = "*",
@@ -17,8 +26,11 @@ return {
     -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
     -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
     -- See the full "keymap" documentation for information on defining your own keymap.
-    keymap = { preset = "default" },
-
+    keymap = {
+      preset = "default",
+      ["<C-j>"] = { "snippet_forward", "fallback" },
+      ["<C-k>"] = { "snippet_backward", "fallback" },
+    },
     appearance = {
       -- Sets the fallback highlight groups to nvim-cmp's highlight groups
       -- Useful for when your theme doesn't support blink.cmp

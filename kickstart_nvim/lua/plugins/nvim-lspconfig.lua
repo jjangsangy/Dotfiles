@@ -10,7 +10,7 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
 
     -- Useful status updates for LSP.
-    { "j-hui/fidget.nvim",       opts = {} },
+    { "j-hui/fidget.nvim", opts = {} },
     { "saghen/blink.cmp" },
 
     -- Allows extra capabilities provided by nvim-cmp
@@ -116,8 +116,8 @@ return {
         -- When you move your cursor, the highlights will be cleared (the second autocommand).
         local client = vim.lsp.get_client_by_id(event.data.client_id)
         if
-            client
-            and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf)
+          client
+          and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf)
         then
           local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
           vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
