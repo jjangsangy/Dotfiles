@@ -13,7 +13,7 @@ vim.opt.ignorecase = true
 vim.opt.incsearch = true
 vim.opt.laststatus = 2
 vim.opt.list = true
-vim.opt.listchars = "tab:▸ ,trail:▫"
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.mouse = "a"
 vim.opt.number = true
 vim.opt.ruler = true
