@@ -36,6 +36,7 @@ return {
         "css",
         "html",
         "fish",
+        "powershell",
       },
 
       -- Autoinstall languages that are not installed

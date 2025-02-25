@@ -29,4 +29,28 @@ vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper win
 vim.api.nvim_set_keymap("n", "<Right>", ":bnext<CR>", { noremap = true, desc = "Go to the next buffer" })
 vim.api.nvim_set_keymap("n", "<Left>", ":bprevious<CR>", { noremap = true, desc = "Go to previous buffer" })
 
-vim.api.nvim_set_keymap("x", "<leader>p", '"_dP', { noremap = true, desc = "Paste without removing item" })
+-- paste without replacing from register
+vim.api.nvim_set_keymap("x", "<leader>p", '"_dP', { noremap = true, desc = "Paste without removing from register" })
+
+-- visual move lines up and down
+vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { silent = true, desc = "Visual move lines up" })
+vim.keymap.set("v", "J", ":move '>+1<CR>gv=gv", { silent = true, desc = "Visual move lines down" })
+
+-- use J to move line below up without moving cursor
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Delete newline below without moving cursor" })
+
+-- PageUp/PageDown half page jumping with cursor at center
+vim.keymap.set("n", "<PageDown>", "<C-d>zz", { desc = "Half page jumping while cursor is at center" })
+vim.keymap.set("n", "<PageUp>", "<C-u>zz", { desc = "Half page jumping while cursor is at center" })
+
+-- hlsearch keeps cursor at center
+vim.keymap.set("n", "n", "nzzzv", { desc = "hlsearch keeps cursor at center" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "hlsearch keeps cursor at center" })
+
+-- find and replace under cursor
+vim.keymap.set(
+  "n",
+  "<C-r><C-s>",
+  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Find and replace under cursor" }
+)

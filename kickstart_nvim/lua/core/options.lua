@@ -71,3 +71,17 @@ vim.opt.scrolloff = 10
 -- Don't use tabs, use spaces
 vim.opt.expandtab = true
 vim.opt.ruler = true
+
+-- Use undotree instead
+vim.opt.swapfile = false
+vim.opt.backup = false
+
+-- Dont wrap lines
+vim.opt.wrap = false
+
+-- hlsearch
+vim.opt.hlsearch = true
+vim.opt.incsearch = true
+
+-- gui colors
+vim.opt.termguicolors = true
