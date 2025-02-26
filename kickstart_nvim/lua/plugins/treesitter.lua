@@ -4,6 +4,18 @@ return {
   build = ":TSUpdate",
   dependencies = {
     "nvim-treesitter/nvim-treesitter-textobjects",
+    {
+      "nvim-treesitter/nvim-treesitter",
+      dependencies = { "nvim-treesitter/nvim-treesitter-refactor" },
+      config = function()
+        require("nvim-treesitter.configs").setup({
+          refactor = {
+            highlight_definitions = { enable = true },
+            highlight_current_scope = { enable = true },
+          },
+        })
+      end,
+    },
   },
   config = function()
     require("nvim-treesitter.configs").setup({
