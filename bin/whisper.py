@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
-#     "faster-whisper",
+#     "faster-whisper>=1.1.1",
 #     "pysrt",
 #     "rich",
 # ]
@@ -10,9 +10,12 @@
 
 import argparse
 import pathlib
-from typing import List
+from typing import Union
 
 import pysrt
+from faster_whisper import WhisperModel
+from faster_whisper.transcribe import Segment
+from faster_whisper.utils import available_models
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import (
@@ -28,10 +31,6 @@ from rich.progress import (
 from rich.text import Text
 
 console = Console()
-
-from faster_whisper import WhisperModel
-from faster_whisper.transcribe import Segment
-from faster_whisper.utils import available_models
 
 
 def create_srt(chunks: list[Segment], text_cutoff_length=400) -> pysrt.SubRipFile:
@@ -66,18 +65,18 @@ def create_srt(chunks: list[Segment], text_cutoff_length=400) -> pysrt.SubRipFil
     return subtitles
 
 
-def find_audio_files(
-    path: str | pathlib.Path, skip_exists: bool = True
+def find_media_files(
+    path: Union[str, pathlib.Path], skip_exists: bool = True
 ) -> list[pathlib.Path]:
     """
-    Iterate over a directory and find all files with audio extension types.
+    Iterate over a directory and find all files with media extension types.
 
     Args:
-        path: Directory path to search for audio files
+        path: Directory path to search for media files
         skip_exists: Skip files that already have corresponding .srt files
 
     Returns:
-        list[pathlib.Path]: List of paths to audio files
+        list[pathlib.Path]: List of paths to media files
     """
     extensions = {
         ".m4a",
@@ -91,6 +90,17 @@ def find_audio_files(
         ".opus",
         ".webm",
         ".ac3",
+        ".mkv",
+        ".mp4",
+        ".wmv",
+        ".m4v",
+        ".avi",
+        ".flv",
+        ".mov",
+        ".amv",
+        ".mpg",
+        ".mpeg",
+        ".f4v",
     }
     files = [f for f in pathlib.Path(path).iterdir() if f.suffix in extensions]
     if skip_exists:
@@ -99,7 +109,7 @@ def find_audio_files(
 
 
 def run_pipeline(
-    file_dirs: List[str | pathlib.Path],
+    file_dirs: list[Union[str, pathlib.Path]],
     model_size: str = "large-v2",
     language: str = "ja",
     task: str = "translate",
@@ -113,7 +123,7 @@ def run_pipeline(
     Run whisper pipeline and save the srt files.
 
     Args:
-        file_dir: Directory containing audio files
+        file_dir: Directory containing media files
         model_size: Size of the Whisper model to use
         language: Language code for transcription
         task: Task type ('transcribe' or 'translate')
@@ -135,16 +145,18 @@ def run_pipeline(
 
     # Initialize model
     with console.status("[bold green]Loading Whisper model...") as status:
-        model = WhisperModel(model_size, device=device, compute_type=compute_type)
+        model = model = WhisperModel(
+            model_size, device=device, compute_type=compute_type
+        )
         status.update("[bold green]Model loaded successfully!")
 
-    # Get audio files
-    files = sum([find_audio_files(f, skip_exists=skip_existing) for f in file_dirs], [])
+    # Get media files
+    files = sum([find_media_files(f, skip_exists=skip_existing) for f in file_dirs], [])
     if not files:
-        console.print("[yellow]No audio files found to process!")
+        console.print("[yellow]No media files found to process!")
         return
 
-    console.print(f"\nFound [cyan]{len(files)}[/cyan] audio files to process.\n")
+    console.print(f"\nFound [cyan]{len(files)}[/cyan] media files to process.\n")
 
     # Create progress bars
     progress = Progress(
@@ -158,7 +170,7 @@ def run_pipeline(
         console=console,
     )
 
-    # Process each audio file
+    # Process each media file
     with progress:
         overall_task = progress.add_task(
             "[cyan]Overall Progress[/cyan]", total=len(files)
@@ -173,7 +185,7 @@ def run_pipeline(
             )
 
             # Initialize a progress bar for the current file
-            audio_task = progress.add_task(
+            media_task = progress.add_task(
                 f"[green]Processing {f.name}[/green]", total=info.duration
             )
 
@@ -182,12 +194,12 @@ def run_pipeline(
             timestamps = 0.0
             for seg in segments:
                 chunks.append(seg)
-                progress.update(audio_task, advance=seg.end - timestamps)
+                progress.update(media_task, advance=seg.end - timestamps)
                 timestamps = seg.end
 
             # Handle remaining silence
             if timestamps < info.duration:
-                progress.update(audio_task, advance=info.duration - timestamps)
+                progress.update(media_task, advance=info.duration - timestamps)
 
             srt_file = create_srt(chunks, text_cutoff_length=text_cutoff_length)
             output_path = f.with_suffix(".srt")
@@ -196,14 +208,14 @@ def run_pipeline(
 
             # update progress
             progress.update(overall_task, advance=1)
-            progress.remove_task(audio_task)
+            progress.remove_task(media_task)
 
     console.print("\n[bold green]✓ All files processed successfully![/bold green]")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate subtitles from audio files using Faster Whisper"
+        description="Generate subtitles from media files using Faster Whisper"
     )
 
     # Required arguments
@@ -211,7 +223,7 @@ def main():
         "directories",
         type=str,
         nargs="+",
-        help="Directories containing audio files to process",
+        help="Directories containing media files to process",
     )
 
     # Optional arguments
