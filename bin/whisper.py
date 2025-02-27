@@ -146,13 +146,6 @@ def run_pipeline(
     config_text.append(f"• Min Silence: {min_silence_duration}ms\n", style="green")
     console.print(Panel(config_text, title="Whisper Subtitles Generator"))
 
-    # Initialize model
-    with console.status("[bold green]Loading Whisper model...") as status:
-        model = model = WhisperModel(
-            model_size, device=device, compute_type=compute_type
-        )
-        status.update("[bold green]Model loaded successfully!")
-
     # Get media files
     files = []
     for path in paths:
@@ -161,11 +154,18 @@ def run_pipeline(
         elif path.is_file() and is_media_file(path):
             files.append(path)
         else:
-            raise FileNotFoundError(f"Filepath {path} does not exist")
+            console.print(f"[yellow]Filepath {path} does not exist")
 
     if not files:
         console.print("[yellow]No media files found to process!")
         return
+
+    # Initialize model
+    with console.status("[bold green]Loading Whisper model...") as status:
+        model = model = WhisperModel(
+            model_size, device=device, compute_type=compute_type
+        )
+        status.update("[bold green]Model loaded successfully!")
 
     console.print(f"\nFound [cyan]{len(files)}[/cyan] media files to process.\n")
 
