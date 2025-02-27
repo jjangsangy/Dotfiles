@@ -1,4 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.8"
+# dependencies = [
+#     "rarfile",
+# ]
+# ///
 """
 Convert all cbr files in directories passed as arguments.
 
