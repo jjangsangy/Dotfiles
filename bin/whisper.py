@@ -10,7 +10,6 @@
 
 import argparse
 import pathlib
-from typing import Union
 
 import pysrt
 from faster_whisper import WhisperModel
@@ -65,19 +64,7 @@ def create_srt(chunks: list[Segment], text_cutoff_length=400) -> pysrt.SubRipFil
     return subtitles
 
 
-def find_media_files(
-    path: Union[str, pathlib.Path], skip_exists: bool = True
-) -> list[pathlib.Path]:
-    """
-    Iterate over a directory and find all files with media extension types.
-
-    Args:
-        path: Directory path to search for media files
-        skip_exists: Skip files that already have corresponding .srt files
-
-    Returns:
-        list[pathlib.Path]: List of paths to media files
-    """
+def is_media_file(path: pathlib.Path) -> bool:
     extensions = {
         ".m4a",
         ".mp3",
@@ -102,14 +89,30 @@ def find_media_files(
         ".mpeg",
         ".f4v",
     }
-    files = [f for f in pathlib.Path(path).iterdir() if f.suffix in extensions]
+    return path.suffix in extensions
+
+
+def find_media_files(
+    path: pathlib.Path, skip_exists: bool = True
+) -> list[pathlib.Path]:
+    """
+    Iterate over a directory and find all files with media extension types.
+
+    Args:
+        path: Directory path to search for media files
+        skip_exists: Skip files that already have corresponding .srt files
+
+    Returns:
+        list[pathlib.Path]: List of paths to media files
+    """
+    files = [f for f in path.iterdir() if is_media_file(f)]
     if skip_exists:
         files = list(filter(lambda f: not f.with_suffix(".srt").exists(), files))
     return files
 
 
 def run_pipeline(
-    file_dirs: list[Union[str, pathlib.Path]],
+    paths: list[pathlib.Path],
     model_size: str = "large-v2",
     language: str = "ja",
     task: str = "translate",
@@ -123,7 +126,7 @@ def run_pipeline(
     Run whisper pipeline and save the srt files.
 
     Args:
-        file_dir: Directory containing media files
+        paths: Files or directories containing media files
         model_size: Size of the Whisper model to use
         language: Language code for transcription
         task: Task type ('transcribe' or 'translate')
@@ -151,7 +154,15 @@ def run_pipeline(
         status.update("[bold green]Model loaded successfully!")
 
     # Get media files
-    files = sum([find_media_files(f, skip_exists=skip_existing) for f in file_dirs], [])
+    files = []
+    for path in paths:
+        if path.is_dir():
+            files.extend(find_media_files(path))
+        elif path.is_file() and is_media_file(path):
+            files.append(path)
+        else:
+            raise FileNotFoundError(f"Filepath {path} does not exist")
+
     if not files:
         console.print("[yellow]No media files found to process!")
         return
@@ -220,10 +231,10 @@ def main():
 
     # Required arguments
     parser.add_argument(
-        "directories",
-        type=str,
+        "paths",
+        type=pathlib.Path,
         nargs="+",
-        help="Directories containing media files to process",
+        help="Files or directories containing media files to process",
     )
 
     # Optional arguments
@@ -283,7 +294,7 @@ def main():
 
     # Run the pipeline with parsed arguments
     run_pipeline(
-        file_dirs=args.directories,
+        paths=args.paths,
         model_size=args.model_size,
         language=args.language,
         task=args.task,
