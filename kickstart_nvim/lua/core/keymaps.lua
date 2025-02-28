@@ -26,11 +26,11 @@ vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower win
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
 -- buffer management
-vim.api.nvim_set_keymap("n", "<Right>", ":bnext<CR>", { noremap = true, desc = "Go to the next buffer" })
-vim.api.nvim_set_keymap("n", "<Left>", ":bprevious<CR>", { noremap = true, desc = "Go to previous buffer" })
+vim.keymap.set("n", "<Right>", ":bnext<CR>", { noremap = true, desc = "Go to the next buffer" })
+vim.keymap.set("n", "<Left>", ":bprevious<CR>", { noremap = true, desc = "Go to previous buffer" })
 
 -- paste without replacing from register
-vim.api.nvim_set_keymap("x", "<leader>p", '"_dP', { noremap = true, desc = "Paste without removing from register" })
+vim.keymap.set("x", "<leader>p", '"_dP', { noremap = true, desc = "Paste without removing from register" })
 
 -- visual move lines up and down
 vim.keymap.set("v", "K", ":move '<-2<CR>gv=gv", { silent = true, desc = "Visual move lines up" })

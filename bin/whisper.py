@@ -107,7 +107,7 @@ def find_media_files(
     """
     files = [f for f in path.iterdir() if is_media_file(f)]
     if skip_exists:
-        files = list(filter(lambda f: not f.with_suffix(".srt").exists(), files))
+        return list(filter(lambda f: not f.with_suffix(".srt").exists(), files))
     return files
 
 

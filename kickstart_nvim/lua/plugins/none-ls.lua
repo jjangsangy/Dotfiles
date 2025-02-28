@@ -6,7 +6,7 @@ return {
   },
   config = function()
     local null_ls = require("null-ls")
-    local formatting = null_ls.builtins.formatting   -- to setup formatters
+    local formatting = null_ls.builtins.formatting -- to setup formatters
     local diagnostics = null_ls.builtins.diagnostics -- to setup linters
 
     -- list of formatters & linters for mason to install
@@ -14,10 +14,14 @@ return {
       ensure_installed = {
         "checkmake",
         "prettier", -- ts/js formatter
-        "stylua",   -- lua formatter
+        "stylua", -- lua formatter
         "eslint_d", -- ts/js linter
         "shfmt",
         "ruff",
+        "hadolint",
+        "gofumpt",
+        "alejandra",
+        "codelldb",
       },
       -- auto-install configured formatters & linters (with null-ls)
       automatic_installation = true,
@@ -25,10 +29,15 @@ return {
 
     local sources = {
       diagnostics.checkmake,
+      diagnostics.hadolint,
       formatting.prettier.with({ filetypes = { "html", "json", "yaml", "markdown" } }),
       formatting.stylua.with({ extra_args = { "--indent-type", "Spaces", "--indent-width", "2" } }),
       formatting.shfmt.with({ args = { "-i", "4" } }),
       formatting.terraform_fmt,
+      formatting.fish_indent,
+      formatting.gofumpt,
+      formatting.alejandra,
+      formatting.nginx_beautifier,
       require("none-ls.formatting.ruff").with({ extra_args = { "--extend-select", "I" } }),
       require("none-ls.formatting.ruff_format"),
     }

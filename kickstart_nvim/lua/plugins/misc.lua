@@ -11,4 +11,9 @@ return {
       vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
     end,
   },
+  {
+    "mrcjkb/rustaceanvim",
+    version = "^5", -- Recommended
+    lazy = false,   -- This plugin is already lazy
+  },
 }
