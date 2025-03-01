@@ -1,0 +1,27 @@
+[[language]]
+name = 'python'
+language-id = "python"
+roots = ["pyproject.toml", "setup.py", "Poetry.lock", ".git"]
+language-servers = ["ruff", "basedpyright"]
+auto-format = true
+indent = { tab-width = 4, unit = "    " }
+file-types = ["py"]
+
+[language-server.basedpyright]
+command = "basedpyright-langserver"
+args = ["--stdio"]
+# except-features = ["format", "code-action"]
+
+[language-server.basedpyright.config.basedpyright.analysis]
+autoSearchPaths = true
+typeCheckingMode = "basic"
+diagnosticMode = "openFilesOnly"
+
+[language-server.ruff]
+command = "ruff"
+args = ["server", "--preview"]
+
+[language.formatter]
+command = "ruff"
+args = ["format", "-"]
+
