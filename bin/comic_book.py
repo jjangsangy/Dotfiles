@@ -22,7 +22,11 @@ import tarfile
 import tempfile
 import zipfile
 from abc import ABC, abstractmethod
-from typing import Iterable, Self
+
+# ==============================================================
+# CONVERT SUBCOMMAND CODE (Comic Archive Converter)
+# ==============================================================
+from typing import Callable, Dict, Iterable, Self, Type, TypeVar
 
 import click
 import py7zr
@@ -40,17 +44,15 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-# ==============================================================
-# CONVERT SUBCOMMAND CODE (Comic Archive Converter)
-# ==============================================================
+T = TypeVar("T", bound=Type)
 
-ARCHIVERS = {}
+ARCHIVERS: Dict[str, Type] = {}
 
 
-def register_archiver(*filetypes):
+def register_archiver(*filetypes: str) -> Callable[[T], T]:
     """Decorator to register archiver classes."""
 
-    def register(cls):
+    def register(cls: T) -> T:
         for filetype in filetypes:
             ARCHIVERS[filetype] = cls
         return cls
