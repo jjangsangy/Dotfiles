@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run
 # /// script
-# requires-python = ">=3.8"
+# requires-python = ">=3.13"
 # dependencies = [
 #     "rarfile",
 #     "py7zr",
@@ -9,6 +9,8 @@
 #     "pillow",
 # ]
 # ///
+
+import glob
 import operator
 import os
 import pathlib
@@ -20,7 +22,7 @@ import tarfile
 import tempfile
 import zipfile
 from abc import ABC, abstractmethod
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, Self
 
 import click
 import py7zr
@@ -42,223 +44,28 @@ from rich.progress import (
 # CONVERT SUBCOMMAND CODE (Comic Archive Converter)
 # ==============================================================
 
-
-# Base class for archives.
-class Archive:
-    ext = None  # e.g. ".cbz", ".cbr", etc.
-
-    @staticmethod
-    def extract(source: pathlib.Path, dest: pathlib.Path):
-        raise NotImplementedError
-
-    @staticmethod
-    def compress(source_dir: pathlib.Path, target: pathlib.Path):
-        raise NotImplementedError
+ARCHIVERS = {}
 
 
-class ArchiveCBZ(Archive):
-    ext = ".cbz"
-
-    @staticmethod
-    def extract(source: pathlib.Path, dest: pathlib.Path):
-        with zipfile.ZipFile(source, "r") as zf:
-            zf.extractall(path=dest)
-
-    @staticmethod
-    def compress(source_dir: pathlib.Path, target: pathlib.Path):
-        with zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-            for root, _, files in os.walk(source_dir):
-                root_path = pathlib.Path(root)
-                for file in files:
-                    full_path = root_path / file
-                    zf.write(full_path, arcname=full_path.relative_to(source_dir))
-
-
-class ArchiveCBR(Archive):
-    ext = ".cbr"
-
-    @staticmethod
-    def extract(source: pathlib.Path, dest: pathlib.Path):
-        with rarfile.RarFile(str(source)) as rf:
-            rf.extractall(path=str(dest))
-
-    @staticmethod
-    def compress(source_dir: pathlib.Path, target: pathlib.Path):
-        try:
-            subprocess.run(["rar"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except FileNotFoundError:
-            raise RuntimeError(
-                "RAR command-line tool is not installed or not in PATH; cannot create CBR files."
-            )
-        cmd = ["rar", "a", "-idq", str(target), "*"]
-        subprocess.run(cmd, cwd=source_dir, check=True)
-
-
-class ArchiveCB7(Archive):
-    ext = ".cb7"
-
-    @staticmethod
-    def extract(source: pathlib.Path, dest: pathlib.Path):
-        with py7zr.SevenZipFile(source, mode="r") as sz:
-            sz.extractall(path=str(dest))
-
-    @staticmethod
-    def compress(source_dir: pathlib.Path, target: pathlib.Path):
-        with py7zr.SevenZipFile(target, mode="w") as sz:
-            sz.writeall(str(source_dir), arcname=".")
-
-
-class ArchiveCBT(Archive):
-    ext = ".cbt"
-
-    @staticmethod
-    def extract(source: pathlib.Path, dest: pathlib.Path):
-        with tarfile.open(source, "r:*") as tf:
-            tf.extractall(path=dest)
-
-    @staticmethod
-    def compress(source_dir: pathlib.Path, target: pathlib.Path):
-        with tarfile.open(target, "w") as tf:
-            for root, _, files in os.walk(source_dir):
-                root_path = pathlib.Path(root)
-                for file in files:
-                    full_path = root_path / file
-                    tf.add(full_path, arcname=full_path.relative_to(source_dir))
-
-
-ARCHIVE_CLASSES = {
-    ArchiveCBZ.ext: ArchiveCBZ,
-    ArchiveCBR.ext: ArchiveCBR,
-    ArchiveCB7.ext: ArchiveCB7,
-    ArchiveCBT.ext: ArchiveCBT,
-}
-
-# ==============================================================
-# SPLIT SUBCOMMAND CODE (Image Exporters & Split Logic)
-# ==============================================================
-
-EXPORTERS = {}
-
-
-def register_exporter(*filetypes):
-    """Decorator to register exporters."""
+def register_archiver(*filetypes):
+    """Decorator to register archiver classes."""
 
     def register(cls):
         for filetype in filetypes:
-            EXPORTERS[filetype] = cls
+            ARCHIVERS[filetype] = cls
         return cls
 
     return register
 
 
-class ImageExporterBase(ABC):
-    """
-    Base class for extracting images from different locations.
-    """
-
-    IMG_EXTENSIONS = {
-        ".jpeg",
-        ".jpg",
-        ".png",
-        ".tiff",
-        ".tif",
-        ".bmp",
-        ".webp",
-        ".heif",
-        ".heic",
-        ".svg",
-    }
-
-    def __init__(self, path: Union[str, pathlib.Path]) -> None:
-        self.path = pathlib.Path(path)
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}('{self.path}')"
-
-    @abstractmethod
-    def get_images(self) -> List[Image.Image]:
-        """Return a list of PIL Image objects."""
-
-    @abstractmethod
-    def copy_tree(self, output_dir: Union[str, pathlib.Path]) -> None:
-        """Copies all files recursively to the output directory."""
-
-
-@register_exporter("/")
-class DirectoryExporter(ImageExporterBase):
-    def get_images(self) -> List[Image.Image]:
-        images = sorted(
-            [
-                (file, Image.open(file))
-                for file in self.path.iterdir()
-                if file.suffix.lower() in self.IMG_EXTENSIONS
-            ],
-            key=lambda x: alphanum_key(str(x[0])),
-        )
-        return [i[1] for i in images]
-
-    def copy_tree(self, output_dir: Union[str, pathlib.Path]) -> None:
-        shutil.copytree(self.path, output_dir, dirs_exist_ok=True)
-
-
-@register_exporter(".cbz", ".zip")
-class ZipExporter(ImageExporterBase):
-    def get_images(self) -> List[Image.Image]:
-        with zipfile.ZipFile(self.path) as zf:
-            images = sorted(
-                [
-                    (file.filename, Image.open(zf.open(file.filename)))
-                    for file in zf.filelist
-                    if os.path.splitext(file.filename)[-1].lower()
-                    in self.IMG_EXTENSIONS
-                ],
-                key=lambda x: alphanum_key(str(x[0])),
-            )
-        return [i[1] for i in images]
-
-    def copy_tree(self, output_dir: Union[str, pathlib.Path]) -> None:
-        shutil.unpack_archive(self.path, extract_dir=output_dir, format="zip")
-
-
-@register_exporter(".rar", ".cbr")
-class RarExporter(ImageExporterBase):
-    def get_images(self) -> List[Image.Image]:
-        with rarfile.RarFile(self.path) as rf:
-            images = sorted(
-                [
-                    (file, Image.open(rf.open(file)))
-                    for file in rf.namelist()
-                    if os.path.splitext(file)[-1].lower() in self.IMG_EXTENSIONS
-                ],
-                key=lambda x: alphanum_key(str(x[0])),
-            )
-        return [i[1] for i in images]
-
-    def copy_tree(self, output_dir: Union[str, pathlib.Path]) -> None:
-        with rarfile.RarFile(self.path) as rf:
-            rf.extractall(path=pathlib.Path(output_dir).parent)
-
-
-def exporter_factory(d: pathlib.Path) -> Optional[ImageExporterBase]:
-    """
-    Create an exporter object based on the path's type.
-    """
-    if d.is_dir() and "/" in EXPORTERS:
-        return EXPORTERS["/"](d)
-    elif d.suffix.lower() in EXPORTERS:
-        return EXPORTERS[d.suffix.lower()](d)
-    else:
-        return None
-
-
-def alphanum_key(s: str) -> List[Union[str, int]]:
+def alphanum_key(s: str) -> list[str | int]:
     """
     Split a string into a list of strings and integers for natural sorting.
     """
     return [int(text) if text.isdigit() else text for text in re.split("([0-9]+)", s)]
 
 
-def split_image(img: Image.Image, size_threshold: int) -> List[Image.Image]:
+def split_image(img: Image.Image, size_threshold: int) -> list[Image.Image]:
     """
     Recursively splits an image horizontally until the image's total pixels are below size_threshold.
     """
@@ -275,8 +82,187 @@ def split_image(img: Image.Image, size_threshold: int) -> List[Image.Image]:
 
 def split_images(
     images: Iterable[Image.Image], size_threshold: int = 5_000_000
-) -> List[Image.Image]:
+) -> list[Image.Image]:
     return sum([split_image(i, size_threshold) for i in images], [])
+
+
+# Base class for archives.
+class ArchiveBase(ABC):
+    IMG_EXTENSIONS = {
+        ".jpeg",
+        ".jpg",
+        ".png",
+        ".tiff",
+        ".tif",
+        ".bmp",
+        ".webp",
+        ".heif",
+        ".heic",
+    }
+
+    def __init__(self: Self, path: str | pathlib.Path) -> None:
+        self.path = pathlib.Path(path)
+
+    def __repr__(self: Self) -> str:
+        return f"{self.__class__.__name__}('{self.path}')"
+
+    @abstractmethod
+    def extract(self: Self, dest: pathlib.Path) -> None:
+        raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    def compress(source_dir: pathlib.Path, dest: pathlib.Path) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_images(self: Self) -> list[Image.Image]:
+        """Return a list of PIL Image objects."""
+        raise NotImplementedError
+
+
+@register_archiver(".cbz", ".zip")
+class ArchiveCBZ(ArchiveBase):
+    def extract(self: Self, dest: pathlib.Path) -> None:
+        with zipfile.ZipFile(self.path, "r") as zf:
+            zf.extractall(path=dest)
+
+    @staticmethod
+    def compress(source_dir: pathlib.Path, dest: pathlib.Path) -> None:
+        base_name = str(dest.with_suffix(""))
+        archive = shutil.make_archive(base_name, "zip", root_dir=source_dir)
+        os.replace(archive, dest)
+
+    def get_images(self: Self) -> list[Image.Image]:
+        with zipfile.ZipFile(self.path) as zf:
+            images = sorted(
+                [
+                    (file, Image.open(zf.open(file)))
+                    for file in zf.namelist()
+                    if os.path.splitext(file)[-1].lower() in self.IMG_EXTENSIONS
+                ],
+                key=lambda x: alphanum_key(str(x[0])),
+            )
+        return [img for _, img in images]
+
+
+@register_archiver(".rar", ".cbr")
+class ArchiveCBR(ArchiveBase):
+    def extract(self: Self, dest: pathlib.Path) -> None:
+        with rarfile.RarFile(self.path) as rf:
+            rf.extractall(path=str(dest))
+
+    @staticmethod
+    def compress(source_dir: pathlib.Path, dest: pathlib.Path) -> None:
+        try:
+            subprocess.run(["rar"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except FileNotFoundError as err:
+            raise RuntimeError(
+                "RAR command-line tool is not installed or not in PATH; cannot create CBR files."
+            ) from err
+
+        cmd = ["rar", "a", "-idq", "-ep1", str(dest)] + glob.glob(str(source_dir / "*"))
+        subprocess.run(cmd, cwd=source_dir, check=True)
+
+    def get_images(self: Self) -> list[Image.Image]:
+        with rarfile.RarFile(self.path) as rf:
+            images = sorted(
+                [
+                    (file, Image.open(rf.open(file)))
+                    for file in rf.namelist()
+                    if os.path.splitext(file)[-1].lower() in self.IMG_EXTENSIONS
+                ],
+                key=lambda x: alphanum_key(str(x[0])),
+            )
+        return [img for _, img in images]
+
+
+@register_archiver(".7z", ".cb7")
+class ArchiveCB7(ArchiveBase):
+    def extract(self: Self, dest: pathlib.Path) -> None:
+        with py7zr.SevenZipFile(self.path, mode="r") as sz:
+            sz.extractall(path=str(dest))
+
+    @staticmethod
+    def compress(source_dir: pathlib.Path, dest: pathlib.Path) -> None:
+        with py7zr.SevenZipFile(dest, mode="w") as sz:
+            sz.writeall(str(source_dir), arcname=".")
+
+    def get_images(self: Self) -> list[Image.Image]:
+        with py7zr.SevenZipFile(self.path, mode="r") as sz:
+            all_files = sz.readall()
+            images = sorted(
+                [
+                    (fname, Image.open(file_obj))
+                    for fname, file_obj in all_files.items()
+                    if os.path.splitext(fname)[-1].lower() in self.IMG_EXTENSIONS
+                ],
+                key=lambda x: alphanum_key(x[0]),
+            )
+        return [img for _, img in images]
+
+
+@register_archiver(".tar", ".cbt")
+class ArchiveCBT(ArchiveBase):
+    def extract(self: Self, dest: pathlib.Path) -> None:
+        with tarfile.open(self.path, "r:*") as tf:
+            tf.extractall(path=dest, filter="data")
+
+    @staticmethod
+    def compress(source_dir: pathlib.Path, dest: pathlib.Path) -> None:
+        with tarfile.open(dest, "w") as tf:
+            for root, _, files in os.walk(source_dir):
+                root_path = pathlib.Path(root)
+                for file in files:
+                    full_path = root_path / file
+                    tf.add(full_path, arcname=full_path.relative_to(source_dir))
+
+    def get_images(self: Self) -> list[Image.Image]:
+        with tarfile.open(self.path, "r:*") as tf:
+            members = tf.getmembers()
+            images = sorted(
+                [
+                    (member.name, Image.open(tf.extractfile(member)).copy())
+                    for member in members
+                    if member.isfile()
+                    and os.path.splitext(member.name)[-1].lower() in self.IMG_EXTENSIONS
+                ],
+                key=lambda x: alphanum_key(x[0]),
+            )
+        return [img for _, img in images]
+
+
+@register_archiver("/")
+class ArchiveDir(ArchiveBase):
+    def extract(self: Self, dest: pathlib.Path) -> None:
+        shutil.copytree(self.path, dest, dirs_exist_ok=True)
+
+    @staticmethod
+    def compress(source_dir: pathlib.Path, dest: pathlib.Path) -> None:
+        shutil.copytree(source_dir, dest, dirs_exist_ok=True)
+
+    def get_images(self: Self) -> list[Image.Image]:
+        images = sorted(
+            [
+                (file, Image.open(file))
+                for file in self.path.iterdir()
+                if file.suffix.lower() in self.IMG_EXTENSIONS and file.is_file()
+            ],
+            key=lambda x: alphanum_key(str(x[0])),
+        )
+        return [img for _, img in images]
+
+
+def archiver_factory(d: pathlib.Path) -> ArchiveBase | None:
+    """
+    Create an archiver object based on the path's type.
+    """
+    if d.is_dir() and "/" in ARCHIVERS:
+        return ARCHIVERS["/"](d)
+    elif d.suffix.lower() in ARCHIVERS:
+        return ARCHIVERS[d.suffix.lower()](d)
+    else:
+        return None
 
 
 # ==============================================================
@@ -303,16 +289,19 @@ def cli():
     "--to",
     "target_ext",
     required=True,
-    type=click.Choice(["cbz", "cbr", "cb7", "cbt"], case_sensitive=False),
+    type=click.Choice(
+        [i.lstrip(".") for i in ARCHIVERS if i != "/" and i.startswith(".cb")],
+        case_sensitive=False,
+    ),
     help="Target filetype extension (without the dot).",
 )
 def convert(directories, target_ext):
     """
-    Convert all comic book archives in the provided directories from one format to another.
+    Convert different archive formats (cbr,cbz,etc..).
     """
     console = Console()
     target_ext = f".{target_ext.lower()}"
-    if target_ext not in ARCHIVE_CLASSES:
+    if target_ext not in ARCHIVERS:
         console.print(f"[red]Target extension {target_ext} is not supported.[/red]")
         sys.exit(1)
 
@@ -320,8 +309,8 @@ def convert(directories, target_ext):
     for directory in directories:
         for file_path in directory.iterdir():
             ext = file_path.suffix.lower()
-            if ext in ARCHIVE_CLASSES:
-                if ext == target_ext:
+            if ext in ARCHIVERS:
+                if (ext == target_ext) or (ARCHIVERS[ext] is ARCHIVERS[target_ext]):
                     console.print(
                         f"[yellow]Skipping {file_path.name}: already a {target_ext} file.[/yellow]"
                     )
@@ -351,9 +340,10 @@ def convert(directories, target_ext):
                     temp_dir_path = pathlib.Path(temp_dir)
                     extract_dir = temp_dir_path / "work"
                     extract_dir.mkdir()
-                    ARCHIVE_CLASSES[ext].extract(file_path, extract_dir)
+                    ARCHIVERS[ext](file_path).extract(extract_dir)
+
                     temp_target = temp_dir_path / (file_path.stem + target_ext)
-                    ARCHIVE_CLASSES[target_ext].compress(extract_dir, temp_target)
+                    ARCHIVERS[target_ext].compress(extract_dir, temp_target)
                     dest = file_path.parent / temp_target.name
                     shutil.copy(str(temp_target), str(dest))
             except Exception as e:
@@ -386,7 +376,7 @@ def convert(directories, target_ext):
 )
 def split(input_dir, output_dir, size_threshold):
     """
-    Split manhwa files (chapters) from input_dir until each resulting image is below the given size threshold.
+    Split images in comic archives to all be under a size threshold.
     """
     console = Console()
     # Ensure we don't write to the same directory we're reading from.
@@ -414,11 +404,11 @@ def split(input_dir, output_dir, size_threshold):
             pb.update(
                 ch_task, advance=1, description=f"[green]{chapter.name:.20}[/green]"
             )
-            exporter = exporter_factory(chapter)
-            if not exporter:
+            archiver = archiver_factory(chapter)
+            if not archiver:
                 continue
 
-            original_images = exporter.get_images()
+            original_images = archiver.get_images()
             output_chapter_dir = output_dir / chapter.stem
             if output_chapter_dir.exists():
                 shutil.rmtree(output_chapter_dir)
@@ -428,7 +418,7 @@ def split(input_dir, output_dir, size_threshold):
                 [operator.mul(*img.size) for img in original_images], default=0
             )
             if max_image_size < size_threshold:
-                exporter.copy_tree(output_chapter_dir)
+                archiver.extract(output_chapter_dir)
             else:
                 converted_images = split_images(
                     original_images, size_threshold=size_threshold
@@ -441,7 +431,9 @@ def split(input_dir, output_dir, size_threshold):
                 )
                 for num, image in enumerate(converted_images, 1):
                     pb.update(
-                        img_task, advance=1, description=f"\t[cyan]{num:03}.jpg[/cyan]"
+                        img_task,
+                        advance=1,
+                        description=f"\t[cyan]{num:03}.jpg[/cyan]",
                     )
                     output_filepath = output_chapter_dir / f"{num:03}.jpg"
                     image.convert("RGB").save(
