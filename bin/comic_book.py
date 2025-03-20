@@ -9,8 +9,8 @@
 #     "pillow",
 # ]
 # ///
-
 import glob
+import math
 import operator
 import os
 import pathlib
@@ -22,10 +22,6 @@ import tarfile
 import tempfile
 import zipfile
 from abc import ABC, abstractmethod
-
-# ==============================================================
-# CONVERT SUBCOMMAND CODE (Comic Archive Converter)
-# ==============================================================
 from typing import Callable, Dict, Iterable, Self, Type, TypeVar
 
 import click
@@ -44,9 +40,9 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-T = TypeVar("T", bound=Type)
+T = TypeVar("T", bound=Type["ArchiveBase"])
 
-ARCHIVERS: Dict[str, Type] = {}
+ARCHIVERS: Dict[str, Type["ArchiveBase"]] = {}
 
 
 def register_archiver(*filetypes: str) -> Callable[[T], T]:
@@ -86,6 +82,26 @@ def split_images(
     images: Iterable[Image.Image], size_threshold: int = 5_000_000
 ) -> list[Image.Image]:
     return sum([split_image(i, size_threshold) for i in images], [])
+
+
+def resize_image(img: Image.Image, size_threshold: int) -> Image.Image:
+    """
+    Resize an image proportionally so that its total number of pixels is below or equal to size_threshold.
+    If the image is already within the threshold, it is returned unchanged.
+    """
+    width, height = img.size
+    if width * height <= size_threshold:
+        return img
+    scale_factor = math.sqrt(size_threshold / (width * height))
+    new_width = max(1, int(width * scale_factor))
+    new_height = max(1, int(height * scale_factor))
+    return img.resize((new_width, new_height), Image.LANCZOS)
+
+
+def resize_images(
+    images: Iterable[Image.Image], size_threshold: int = 5_000_000
+) -> list[Image.Image]:
+    return [resize_image(image, size_threshold) for image in images]
 
 
 # Base class for archives.
@@ -354,7 +370,7 @@ def convert(directories, target_ext):
     console.print("[green]Conversion complete.[/green]")
 
 
-# ----- SPLIT SUBCOMMAND -----
+# ----- Clamp SUBCOMMAND -----
 @cli.command()
 @click.argument(
     "input_dir",
@@ -376,18 +392,31 @@ def convert(directories, target_ext):
     show_default=True,
     help="Maximum size (in total pixels) for resulting images",
 )
-def split(input_dir, output_dir, size_threshold):
+@click.option(
+    "--approach",
+    type=click.Choice(["split", "resize"]),
+    default="split",
+    show_default=True,
+    help="Approach to enforce size threshold: 'split' to split images in half or 'resize' to scale images down",
+)
+def clamp(input_dir, output_dir, size_threshold, approach):
     """
-    Split images in comic archives to all be under a size threshold.
+    clamp image sizes in comic archives to all be under a size threshold.
     """
     console = Console()
     # Ensure we don't write to the same directory we're reading from.
-    if output_dir.exists() and output_dir.samefile(input_dir):
+    if output_dir.samefile(input_dir):
         raise click.ClickException(
             "Cannot save into the same directory you're reading from"
         )
     if size_threshold <= 500000:
         raise click.ClickException("Cannot make images smaller than 500,000 pixels")
+
+    # Map approach names to processing functions.
+    process_func: Callable[[Iterable[Image.Image], int], list[Image.Image]] = {
+        "split": split_images,
+        "resize": resize_images,
+    }[approach]
 
     sorted_chapters = sorted(input_dir.iterdir(), key=lambda x: alphanum_key(str(x)))
     with Progress(
@@ -422,7 +451,7 @@ def split(input_dir, output_dir, size_threshold):
             if max_image_size < size_threshold:
                 archiver.extract(output_chapter_dir)
             else:
-                converted_images = split_images(
+                converted_images = process_func(
                     original_images, size_threshold=size_threshold
                 )
                 output_chapter_dir.mkdir(exist_ok=True, parents=True)
