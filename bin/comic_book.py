@@ -4,8 +4,8 @@
 # dependencies = [
 #     "rarfile",
 #     "py7zr",
-#     "click",
-#     "rich",
+#     "typer",
+#     "typing_extensions",
 #     "pillow",
 # ]
 # ///
@@ -17,16 +17,15 @@ import pathlib
 import re
 import shutil
 import subprocess
-import sys
 import tarfile
 import tempfile
 import zipfile
 from abc import ABC, abstractmethod
 from typing import Callable, Dict, Iterable, Self, Type, TypeVar
 
-import click
 import py7zr
 import rarfile
+import typer
 from PIL import Image
 from rich.console import Console
 from rich.progress import (
@@ -39,6 +38,7 @@ from rich.progress import (
     TimeElapsedColumn,
     TimeRemainingColumn,
 )
+from typing_extensions import Annotated
 
 T = TypeVar("T", bound=Type["ArchiveBase"])
 
@@ -95,7 +95,7 @@ def resize_image(img: Image.Image, size_threshold: int) -> Image.Image:
     scale_factor = math.sqrt(size_threshold / (width * height))
     new_width = max(1, int(width * scale_factor))
     new_height = max(1, int(height * scale_factor))
-    return img.resize((new_width, new_height), Image.LANCZOS)
+    return img.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
 
 def resize_images(
@@ -116,6 +116,8 @@ class ArchiveBase(ABC):
         ".webp",
         ".heif",
         ".heic",
+        ".jxl",
+        ".avif",
     }
 
     def __init__(self: Self, path: str | pathlib.Path) -> None:
@@ -288,32 +290,26 @@ def archiver_factory(d: pathlib.Path) -> ArchiveBase | None:
 # ==============================================================
 
 
-@click.group()
-def cli():
-    """Comic Book Toolset CLI."""
-    pass
+app = typer.Typer(add_completion=True)
 
 
 # ----- CONVERT SUBCOMMAND -----
-@cli.command()
-@click.argument(
-    "directories",
-    type=click.Path(
-        exists=True, file_okay=False, dir_okay=True, path_type=pathlib.Path
-    ),
-    nargs=-1,
-)
-@click.option(
-    "--to",
-    "target_ext",
-    required=True,
-    type=click.Choice(
-        [i.lstrip(".") for i in ARCHIVERS if i != "/" and i.startswith(".cb")],
-        case_sensitive=False,
-    ),
-    help="Target filetype extension (without the dot).",
-)
-def convert(directories, target_ext):
+@app.command()
+def convert(
+    directories: Annotated[
+        list[pathlib.Path],
+        typer.Argument(
+            exists=True, file_okay=False, dir_okay=True, help="Directories to convert."
+        ),
+    ],
+    target_ext: Annotated[
+        str,
+        typer.Option(
+            "--to",
+            help=f"Target filetype extension (without the dot). Choices: {[i.lstrip('.') for i in ARCHIVERS if i != '/' and i.startswith('.cb')]}",
+        ),
+    ],
+):
     """
     Convert different archive formats (cbr,cbz,etc..).
     """
@@ -321,7 +317,7 @@ def convert(directories, target_ext):
     target_ext = f".{target_ext.lower()}"
     if target_ext not in ARCHIVERS:
         console.print(f"[red]Target extension {target_ext} is not supported.[/red]")
-        sys.exit(1)
+        raise typer.Exit(code=1)
 
     files_to_convert = []
     for directory in directories:
@@ -371,46 +367,58 @@ def convert(directories, target_ext):
 
 
 # ----- Clamp SUBCOMMAND -----
-@cli.command()
-@click.argument(
-    "input_dir",
-    type=click.Path(exists=True, file_okay=True, dir_okay=True, path_type=pathlib.Path),
-)
-@click.option(
-    "--output-dir",
-    "-o",
-    default="Results",
-    type=click.Path(file_okay=False, dir_okay=True, path_type=pathlib.Path),
-    show_default=True,
-    help="Output directory to store results in",
-)
-@click.option(
-    "--size-threshold",
-    "-s",
-    default=5000000,
-    type=int,
-    show_default=True,
-    help="Maximum size (in total pixels) for resulting images",
-)
-@click.option(
-    "--approach",
-    type=click.Choice(["split", "resize"]),
-    default="split",
-    show_default=True,
-    help="Approach to enforce size threshold: 'split' to split images in half or 'resize' to scale images down",
-)
-def clamp(input_dir, output_dir, size_threshold, approach):
+@app.command()
+def clamp(
+    input_dir: Annotated[
+        pathlib.Path,
+        typer.Argument(
+            exists=True,
+            file_okay=True,
+            dir_okay=True,
+            help="Input directory or file to process.",
+        ),
+    ],
+    output_dir: Annotated[
+        pathlib.Path,
+        typer.Option(
+            "-o",
+            "--output-dir",
+            help="Output directory to store results in",
+        ),
+    ] = pathlib.Path("Results"),
+    size_threshold: Annotated[
+        int,
+        typer.Option(
+            "-s",
+            "--size-threshold",
+            help="Maximum size (in total pixels) for resulting images",
+        ),
+    ] = 5000000,
+    approach: Annotated[
+        str,
+        typer.Option(
+            "-a",
+            "--approach",
+            help="Approach to enforce size threshold: 'split' to split images in half or 'resize' to scale images down",
+            case_sensitive=False,
+        ),
+    ] = "split",
+):
     """
     clamp image sizes in comic archives to all be under a size threshold.
     """
     console = Console()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     # Ensure we don't write to the same directory we're reading from.
     if output_dir.samefile(input_dir):
-        raise click.ClickException(
-            "Cannot save into the same directory you're reading from"
+        console.print(
+            "[red]Cannot save into the same directory you're reading from[/red]"
         )
+        raise typer.Exit(code=1)
     if size_threshold <= 500000:
-        raise click.ClickException("Cannot make images smaller than 500,000 pixels")
+        console.print("[red]Cannot make images smaller than 500,000 pixels[/red]")
+        raise typer.Exit(code=1)
 
     # Map approach names to processing functions.
     process_func: Callable[[Iterable[Image.Image], int], list[Image.Image]] = {
@@ -446,7 +454,8 @@ def clamp(input_dir, output_dir, size_threshold, approach):
 
             # Determine the largest image (by total pixels).
             max_image_size = max(
-                [operator.mul(*img.size) for img in original_images], default=0
+                [operator.mul(img.size[0], img.size[1]) for img in original_images],
+                default=0,
             )
             if max_image_size < size_threshold:
                 archiver.extract(output_chapter_dir)
@@ -464,15 +473,15 @@ def clamp(input_dir, output_dir, size_threshold, approach):
                     pb.update(
                         img_task,
                         advance=1,
-                        description=f"\t[cyan]{num:03}.jpg[/cyan]",
+                        description=f"\t[cyan]{num:03}.webp[/cyan]",
                     )
-                    output_filepath = output_chapter_dir / f"{num:03}.jpg"
+                    output_filepath = output_chapter_dir / f"{num:03}.webp"
                     image.convert("RGB").save(
-                        str(output_filepath), format="JPEG", quality=85
+                        str(output_filepath), format="webp", quality=90
                     )
                 pb.remove_task(img_task)
     console.print("[green]Splitting complete.[/green]")
 
 
 if __name__ == "__main__":
-    cli()
+    app()

@@ -85,3 +85,6 @@ vim.opt.incsearch = true
 
 -- gui colors
 vim.opt.termguicolors = true
+
+-- completion opts
+vim.opt.completeopt = { "menu", "menuone", "noinsert", "noselect" }
