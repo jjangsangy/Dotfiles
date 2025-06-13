@@ -27,7 +27,7 @@ import zipfile
 from abc import ABC, abstractmethod
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from multiprocessing import Manager, Queue
-from typing import Callable, Dict, Iterable, Self, Tuple, Type, TypeVar
+from typing import Callable, Dict, Iterable, Tuple, Type, TypeVar
 
 import py7zr
 import rarfile
@@ -44,7 +44,7 @@ from rich.progress import (
     TimeElapsedColumn,
     TimeRemainingColumn,
 )
-from typing_extensions import Annotated
+from typing_extensions import Annotated, Self
 
 T = TypeVar("T", bound=Type["ArchiveBase"])
 
@@ -641,16 +641,22 @@ def clamp(
     help="Faster chapter splitting via batching with multiple target images using AI feature extraction.",
 )
 def create_chapters_command(
-    input_dir: str = typer.Argument(
-        ...,
-        help="Path to the directory containing comic images.",
-        rich_help_panel="Input Options",
-    ),
-    chapter_break_images: list[str] = typer.Argument(
-        ...,
-        help="Filenames of images within the input directory that mark chapter breaks.",
-        rich_help_panel="Input Options",
-    ),
+    input_dir: Annotated[
+        str,
+        typer.Argument(
+            ...,
+            help="Path to the directory containing comic images.",
+            rich_help_panel="Input Options",
+        ),
+    ],
+    chapter_break_images: Annotated[
+        list[str],
+        typer.Argument(
+            ...,
+            help="Filenames of images within the input directory that mark chapter breaks.",
+            rich_help_panel="Input Options",
+        ),
+    ],
     output_dir: str | None = typer.Option(
         None,
         help="Directory where the generated CBZ chapter files will be saved. Defaults to 'chapters' subdirectory within input_dir if None, or current directory if input_dir is '.'.",
@@ -696,6 +702,7 @@ def create_chapters_command(
     from rich.table import Table
     from torch.utils.data import DataLoader, Dataset
     from torchvision import models, transforms
+    from torchvision.models import efficientnet
 
     class ImageDataset(Dataset):
         def __init__(self, filepaths, transform):
@@ -825,7 +832,7 @@ def create_chapters_command(
     )
 
     backbone = models.efficientnet_b0(
-        weights=models.efficientnet.EfficientNet_B0_Weights.DEFAULT
+        weights=efficientnet.EfficientNet_B0_Weights.DEFAULT
     )
     model = nn.Sequential(
         backbone.features,
