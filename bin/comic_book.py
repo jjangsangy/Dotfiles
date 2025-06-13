@@ -21,6 +21,8 @@ import tarfile
 import tempfile
 import zipfile
 from abc import ABC, abstractmethod
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import Manager, Queue
 from typing import Callable, Dict, Iterable, Self, Type, TypeVar
 
 import py7zr
@@ -63,25 +65,34 @@ def alphanum_key(s: str) -> list[str | int]:
     return [int(text) if text.isdigit() else text for text in re.split("([0-9]+)", s)]
 
 
-def split_image(img: Image.Image, size_threshold: int) -> list[Image.Image]:
+def _split_image_iterative(img: Image.Image, size_threshold: int) -> list[Image.Image]:
     """
-    Recursively splits an image horizontally until the image's total pixels are below size_threshold.
+    Iteratively splits an image horizontally until all resulting image portions are below size_threshold.
     """
-    width, height = img.size
-    if width * height < size_threshold:
-        return [img]
-    middle = height // 2
-    top_half = img.crop((0, 0, width, middle))
-    bottom_half = img.crop((0, middle, width, height))
-    return split_image(top_half, size_threshold) + split_image(
-        bottom_half, size_threshold
-    )
+    result_images: list[Image.Image] = []
+    # Use a list as a stack for images to be processed
+    images_to_process = [img]
+
+    while images_to_process:
+        current_img = images_to_process.pop()
+        width, height = current_img.size
+        if width * height < size_threshold:
+            result_images.append(current_img)
+        else:
+            # Split and add halves back to the stack
+            middle = height // 2
+            top_half = current_img.crop((0, 0, width, middle))
+            bottom_half = current_img.crop((0, middle, width, height))
+            # Add bottom_half first so top_half is processed next (LIFO)
+            images_to_process.append(bottom_half)
+            images_to_process.append(top_half)
+    return result_images
 
 
 def split_images(
     images: Iterable[Image.Image], size_threshold: int = 5_000_000
 ) -> list[Image.Image]:
-    return sum([split_image(i, size_threshold) for i in images], [])
+    return sum([_split_image_iterative(i, size_threshold) for i in images], [])
 
 
 def resize_image(img: Image.Image, size_threshold: int) -> Image.Image:
@@ -285,6 +296,83 @@ def archiver_factory(d: pathlib.Path) -> ArchiveBase | None:
         return None
 
 
+def _process_chapter_item_worker(
+    chapter_path: pathlib.Path,
+    output_dir: pathlib.Path,
+    size_threshold: int,
+    process_func: Callable[[Iterable[Image.Image], int], list[Image.Image]],
+    progress_queue: Queue,
+) -> None:
+    """
+    Worker function to process a single chapter/file in a separate process.
+    Sends progress updates and errors back to the main process via a queue.
+    """
+    try:
+        archiver = archiver_factory(chapter_path)
+        if not archiver:
+            progress_queue.put(
+                {
+                    "type": "error",
+                    "chapter_name": chapter_path.name,
+                    "message": f"Unsupported file type for {chapter_path.name}",
+                }
+            )
+            return
+
+        original_images = archiver.get_images()
+        output_chapter_dir = output_dir / chapter_path.stem
+        if output_chapter_dir.exists():
+            shutil.rmtree(output_chapter_dir)
+
+        max_image_size = max(
+            [operator.mul(img.size[0], img.size[1]) for img in original_images],
+            default=0,
+        )
+
+        if max_image_size < size_threshold:
+            archiver.extract(output_chapter_dir)
+            progress_queue.put(
+                {
+                    "type": "chapter_done",
+                    "chapter_name": chapter_path.name,
+                    "total_images": len(original_images),
+                }
+            )
+        else:
+            converted_images = process_func(original_images, size_threshold)
+            output_chapter_dir.mkdir(exist_ok=True, parents=True)
+
+            for num, image in enumerate(converted_images, 1):
+                output_filepath = output_chapter_dir / f"{num:03}.webp"
+                image.convert("RGB").save(
+                    str(output_filepath), format="webp", quality=90
+                )
+                progress_queue.put(
+                    {
+                        "type": "image_saved",
+                        "chapter_name": chapter_path.name,
+                        "image_filename": f"{num:03}.webp",
+                        "total_images": len(converted_images),
+                    }
+                )
+            progress_queue.put(
+                {
+                    "type": "chapter_done",
+                    "chapter_name": chapter_path.name,
+                    "total_images": len(converted_images),
+                }
+            )
+
+    except Exception as e:
+        progress_queue.put(
+            {
+                "type": "error",
+                "chapter_name": chapter_path.name,
+                "message": str(e),
+            }
+        )
+
+
 # ==============================================================
 # CLI GROUP DEFINITION (Both Subcommands)
 # ==============================================================
@@ -403,6 +491,14 @@ def clamp(
             case_sensitive=False,
         ),
     ] = "split",
+    num_workers: Annotated[
+        int,
+        typer.Option(
+            "-w",
+            "--workers",
+            help="Number of worker processes to use for parallel processing. Defaults to the number of CPU cores.",
+        ),
+    ] = os.cpu_count() or 1,  # Ensure default is always an int
 ):
     """
     clamp image sizes in comic archives to all be under a size threshold.
@@ -426,61 +522,100 @@ def clamp(
         "resize": resize_images,
     }[approach]
 
-    sorted_chapters = sorted(input_dir.iterdir(), key=lambda x: alphanum_key(str(x)))
-    with Progress(
-        SpinnerColumn("dots2"),
-        TextColumn("{task.description}"),
-        BarColumn(bar_width=None),
-        TaskProgressColumn(),
-        MofNCompleteColumn(),
-        TimeElapsedColumn(),
-        TimeRemainingColumn(),
-        transient=True,
-        console=console,
-    ) as pb:
-        ch_task = pb.add_task("[green]Chapters[/green]", total=len(sorted_chapters))
-        for chapter in sorted_chapters:
-            pb.update(
-                ch_task, advance=1, description=f"[green]{chapter.name:.20}[/green]"
-            )
-            archiver = archiver_factory(chapter)
-            if not archiver:
-                continue
+    # Determine items to process: either a single file or all files in a directory
+    if input_dir.is_file():
+        chapters_to_process = [input_dir]
+    else:
+        all_items = sorted(input_dir.iterdir(), key=lambda x: alphanum_key(str(x)))
+        chapters_to_process = [
+            item for item in all_items if archiver_factory(item) is not None
+        ]
 
-            original_images = archiver.get_images()
-            output_chapter_dir = output_dir / chapter.stem
-            if output_chapter_dir.exists():
-                shutil.rmtree(output_chapter_dir)
+    if not chapters_to_process:
+        console.print("[blue]No supported files or directories to process.[/blue]")
+        return
 
-            # Determine the largest image (by total pixels).
-            max_image_size = max(
-                [operator.mul(img.size[0], img.size[1]) for img in original_images],
-                default=0,
+    # Use a multiprocessing Manager to create a queue for progress updates
+    with Manager() as manager:
+        progress_queue = manager.Queue()
+        image_tasks = {}  # To store rich progress sub-task IDs for images within a chapter
+
+        with Progress(
+            SpinnerColumn("dots2"),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(bar_width=None),
+            TaskProgressColumn(),
+            MofNCompleteColumn(),
+            TimeElapsedColumn(),
+            TimeRemainingColumn(),
+            transient=False,  # Keep progress bar visible until all tasks are done
+            console=console,
+        ) as pb:
+            main_task = pb.add_task(
+                "[green]Overall Progress[/green]", total=len(chapters_to_process)
             )
-            if max_image_size < size_threshold:
-                archiver.extract(output_chapter_dir)
-            else:
-                converted_images = process_func(
-                    original_images, size_threshold=size_threshold
-                )
-                output_chapter_dir.mkdir(exist_ok=True, parents=True)
-                img_task = pb.add_task(
-                    f"\t[cyan]{chapter.name}[/cyan]",
-                    total=len(converted_images),
-                    transient=True,
-                )
-                for num, image in enumerate(converted_images, 1):
-                    pb.update(
-                        img_task,
-                        advance=1,
-                        description=f"\t[cyan]{num:03}.webp[/cyan]",
+
+            # Submit tasks to the ProcessPoolExecutor
+            with ProcessPoolExecutor(max_workers=num_workers) as executor:
+                futures = [
+                    executor.submit(
+                        _process_chapter_item_worker,
+                        chapter_path=chapter_path,
+                        output_dir=output_dir,
+                        size_threshold=size_threshold,
+                        process_func=process_func,
+                        progress_queue=progress_queue,
                     )
-                    output_filepath = output_chapter_dir / f"{num:03}.webp"
-                    image.convert("RGB").save(
-                        str(output_filepath), format="webp", quality=90
-                    )
-                pb.remove_task(img_task)
-    console.print("[green]Splitting complete.[/green]")
+                    for chapter_path in chapters_to_process
+                ]
+
+                # Monitor the queue for progress updates
+                processed_chapters_count = 0
+                while processed_chapters_count < len(chapters_to_process):
+                    message = progress_queue.get()
+                    chapter_name = message["chapter_name"]
+
+                    if message["type"] == "image_saved":
+                        if chapter_name not in image_tasks:
+                            # Create a new sub-task for this chapter's images if it doesn't exist
+                            image_tasks[chapter_name] = pb.add_task(
+                                f"\t[cyan]{chapter_name}[/cyan]",
+                                total=message["total_images"],
+                                parent=main_task,
+                                visible=True,
+                            )
+                        pb.update(
+                            image_tasks[chapter_name],
+                            advance=1,
+                            description=f"\t[cyan]{chapter_name} - {message['image_filename']}[/cyan]",
+                        )
+                    elif message["type"] == "chapter_done":
+                        if chapter_name in image_tasks:
+                            pb.remove_task(image_tasks[chapter_name])
+                            del image_tasks[chapter_name]
+                        pb.update(
+                            main_task,
+                            advance=1,
+                            description=f"[green]{chapter_name} processed[/green]",
+                        )
+                        processed_chapters_count += 1
+                    elif message["type"] == "error":
+                        console.print(
+                            f"[red]Error processing {chapter_name}: {message['message']}[/red]"
+                        )
+                        # Still advance the main task for errors to ensure progress completes
+                        pb.update(
+                            main_task,
+                            advance=1,
+                            description=f"[red]{chapter_name} failed[/red]",
+                        )
+                        processed_chapters_count += 1
+
+                # Ensure all futures are completed (even if errors occurred)
+                for future in futures:
+                    future.result()  # This will re-raise exceptions from workers if any occurred
+
+    console.print("[green]Clamping complete.[/green]")
 
 
 if __name__ == "__main__":
