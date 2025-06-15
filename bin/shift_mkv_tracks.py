@@ -19,7 +19,7 @@ from pymkv import MKVFile, MKVTrack
 
 ShiftCheckerType = Callable[[MKVTrack], bool]
 
-LOGLEVEL = os.environ.get("LOGLEVEL", "INFO").upper()
+LOGLEVEL: str = os.environ.get("LOGLEVEL", "INFO").upper()
 
 try:
     import coloredlogs

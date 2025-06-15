@@ -65,7 +65,7 @@ def create_srt(chunks: list[Segment], text_cutoff_length=400) -> pysrt.SubRipFil
 
 
 def is_media_file(path: pathlib.Path) -> bool:
-    extensions = {
+    extensions: set[str] = {
         ".m4a",
         ".mp3",
         ".flac",
@@ -162,9 +162,7 @@ def run_pipeline(
 
     # Initialize model
     with console.status("[bold green]Loading Whisper model...") as status:
-        model = model = WhisperModel(
-            model_size, device=device, compute_type=compute_type
-        )
+        model = WhisperModel(model_size, device=device, compute_type=compute_type)
         status.update("[bold green]Model loaded successfully!")
 
     console.print(f"\nFound [cyan]{len(files)}[/cyan] media files to process.\n")

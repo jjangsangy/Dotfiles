@@ -10,7 +10,7 @@
 #     "torch",
 #     "torchvision",
 #     "pandas",
-#     "matplotlib",
+#     "plotext",
 # ]
 # ///
 import glob
@@ -134,7 +134,7 @@ def resize_images(
 
 # Base class for archives.
 class ArchiveBase(ABC):
-    IMG_EXTENSIONS = {
+    IMG_EXTENSIONS: set[str] = {
         ".jpeg",
         ".jpg",
         ".png",
@@ -183,7 +183,7 @@ class ArchiveCBZ(ArchiveBase):
 
     def get_images(self: Self) -> list[Image.Image]:
         with zipfile.ZipFile(self.path) as zf:
-            images = sorted(
+            images: list[Tuple[str, Image.Image]] = sorted(
                 [
                     (file, Image.open(zf.open(file)))
                     for file in zf.namelist()
@@ -209,12 +209,14 @@ class ArchiveCBR(ArchiveBase):
                 "RAR command-line tool is not installed or not in PATH; cannot create CBR files."
             ) from err
 
-        cmd = ["rar", "a", "-idq", "-ep1", str(dest)] + glob.glob(str(source_dir / "*"))
+        cmd: list[str] = ["rar", "a", "-idq", "-ep1", str(dest)] + glob.glob(
+            str(source_dir / "*")
+        )
         subprocess.run(cmd, cwd=source_dir, check=True)
 
     def get_images(self: Self) -> list[Image.Image]:
         with rarfile.RarFile(self.path) as rf:
-            images = sorted(
+            images: list[Tuple[str, Image.Image]] = sorted(
                 [
                     (file, Image.open(rf.open(file)))
                     for file in rf.namelist()
@@ -239,7 +241,7 @@ class ArchiveCB7(ArchiveBase):
     def get_images(self: Self) -> list[Image.Image]:
         with py7zr.SevenZipFile(self.path, mode="r") as sz:
             all_files = sz.readall()
-            images = sorted(
+            images: list[Tuple[str, Image.Image]] = sorted(
                 [
                     (fname, Image.open(file_obj))
                     for fname, file_obj in all_files.items()
@@ -681,6 +683,12 @@ def create_chapters_command(
         help="Number of worker threads for data loading and CBZ creation.",
         rich_help_panel="Processing Options",
     ),
+    plot: bool = typer.Option(
+        False,
+        "--plot",
+        help="Plot similarity values and exit.",
+        rich_help_panel="Output Options",
+    ),
 ):
     """
     Identifies chapter breaks in a directory of comic images based on similarity to target images
@@ -688,6 +696,7 @@ def create_chapters_command(
     """
     import numpy as np
     import pandas as pd
+    import plotext as plt
     import torch
     import torch.nn as nn
     from PIL import Image
@@ -820,8 +829,6 @@ def create_chapters_command(
     )
     paths = [os.path.join(input_dir, f) for f in files]
 
-    # Model & Transforms
-    # Moved imports and model initialization here to speed up Typer completion
     preprocess = transforms.Compose(
         [
             transforms.Resize(256),
@@ -901,6 +908,15 @@ def create_chapters_command(
     for target, count in target_counts.items():
         table.add_row(target, str(count))
     console.print(table)
+
+    if plot:
+        # Plotting similarity values
+        console.print("\n[bold]Plotting Similarity Values (Highest to Lowest)[/bold]")
+        plt.clf()  # Clear previous plot data
+        plt.title("Similarity Scores (Highest to Lowest)")
+        plt.bar(df["cosine_similarity"].values)
+        plt.show()
+        return
 
     if len(indices) < 1:
         console.print("[yellow]No matches found; nothing to split.[/yellow]")
