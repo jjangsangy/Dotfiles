@@ -1,24 +1,24 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "typer",
+#     "rich"
+# ]
+# ///
 
-import argparse
 import os
 import pathlib
 import shutil
+from typing import Annotated
+
+import typer
+from rich.progress import Progress
 
 
-def cli():
-    parser = argparse.ArgumentParser(
-        description="Renames NZB files to their folder id",
-    )
-    parser.add_argument(
-        "-m", "--move", action="store_true", help="Move file to current folder"
-    )
-    return parser.parse_args()
-
-
-def walkdir(root):
-    extensions = [".mov", ".wmv", ".mp4", ".mkv", ".m4v", ".avi"]
-    files = []
+def walkdir(root: pathlib.Path) -> list[pathlib.Path]:
+    extensions: list[str] = [".mov", ".wmv", ".mp4", ".mkv", ".m4v", ".avi"]
+    files: list[pathlib.Path] = []
     for r, _, f in os.walk(root):
         r = pathlib.Path(r)
         for file in f:
@@ -28,28 +28,50 @@ def walkdir(root):
     return files
 
 
-if __name__ == "__main__":
-    args = cli()
-    root = pathlib.Path()
+app = typer.Typer()
 
+
+@app.command()
+def main(
+    move: Annotated[
+        bool,
+        typer.Option("-m", "--move", help="Move files to current folder"),
+    ] = False,
+    root: Annotated[
+        pathlib.Path, typer.Argument(help="The root directory to search for files.")
+    ] = pathlib.Path("."),
+):
+    """
+    Renames NZB files to their folder id.
+    """
     if "podcasts" in str(root.absolute()).lower():
         raise ValueError(
             f"Error: Path contains 'Podcasts' - operation not allowed: {root.absolute()}"
         )
 
+    dirs_to_process = []
     for d in root.iterdir():
-        if not d.is_dir() or (d / "_unpack").is_dir():
-            continue
+        if d.is_dir() and not (d / "_unpack").is_dir():
+            vid_files = walkdir(d)
+            if vid_files:
+                dirs_to_process.append((d, vid_files))
 
-        vid_files = walkdir(d)
-        if not vid_files:
-            continue
+    with Progress() as progress:
+        task = progress.add_task("[cyan]Moving files...", total=len(dirs_to_process))
+        for d, vid_files in dirs_to_process:
+            top_file = max(vid_files, key=lambda x: x.lstat().st_size)
+            out_name = d.with_suffix(top_file.suffix)
 
-        top_file = max(vid_files, key=lambda x: x.lstat().st_size)
-        out_name = d.with_suffix(top_file.suffix)
+            if move:
+                shutil.move(top_file, out_name)
+            else:
+                shutil.move(top_file, d / out_name)
+            progress.update(
+                task,
+                advance=1,
+                description=f"[cyan]Moving [green]{top_file.name}[/green]...",
+            )
 
-        print(f'Moving file "{top_file}"')
-        if args.move:
-            shutil.move(top_file, out_name)
-        else:
-            shutil.move(top_file, d / out_name)
+
+if __name__ == "__main__":
+    app()

@@ -696,7 +696,7 @@ def create_chapters_command(
     """
     import numpy as np
     import pandas as pd
-    import plotext as plt
+    import plotext as plt  # type: ignore
     import torch
     import torch.nn as nn
     from PIL import Image
