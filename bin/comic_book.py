@@ -15,7 +15,6 @@
 # ///
 import glob
 import math
-import operator
 import os
 import pathlib
 import re
@@ -130,6 +129,25 @@ def resize_images(
     images: Iterable[Image.Image], size_threshold: int = 5_000_000
 ) -> list[Image.Image]:
     return [resize_image(image, size_threshold) for image in images]
+
+
+def resize_image_by_width(img: Image.Image, max_width: int) -> Image.Image:
+    """
+    Resize an image proportionally to a maximum width.
+    If the image width is already within the max_width, it is returned unchanged.
+    """
+    width, height = img.size
+    if width <= max_width:
+        return img
+    scale_factor = max_width / width
+    new_height = max(1, int(height * scale_factor))
+    return img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+
+
+def resize_images_by_width(
+    images: Iterable[Image.Image], max_width: int
+) -> list[Image.Image]:
+    return [resize_image_by_width(image, max_width) for image in images]
 
 
 # Base class for archives.
@@ -321,6 +339,7 @@ def _process_chapter_item_worker(
     size_threshold: int,
     process_func: Callable[[Iterable[Image.Image], int], list[Image.Image]],
     progress_queue: Queue,
+    approach: str,
 ) -> None:
     """
     Worker function to process a single chapter/file in a separate process.
@@ -343,12 +362,16 @@ def _process_chapter_item_worker(
         if output_chapter_dir.exists():
             shutil.rmtree(output_chapter_dir)
 
-        max_image_size = max(
-            [operator.mul(img.size[0], img.size[1]) for img in original_images],
-            default=0,
-        )
+        if approach in ("split", "resize"):
+            max_image_dimension = max(
+                (img.size[0] * img.size[1] for img in original_images), default=0
+            )
+        else:  # max-width
+            max_image_dimension = max(
+                (img.size[0] for img in original_images), default=0
+            )
 
-        if max_image_size < size_threshold:
+        if max_image_dimension < size_threshold:
             archiver.extract(output_chapter_dir)
             progress_queue.put(
                 {
@@ -506,7 +529,7 @@ def clamp(
         typer.Option(
             "-a",
             "--approach",
-            help="Approach to enforce size threshold: 'split' to split images in half or 'resize' to scale images down",
+            help="Approach to enforce size threshold: 'split', 'resize', or 'max-width'",
             case_sensitive=False,
         ),
     ] = "split",
@@ -531,14 +554,24 @@ def clamp(
             "[red]Cannot save into the same directory you're reading from[/red]"
         )
         raise typer.Exit(code=1)
-    if size_threshold <= 500000:
-        console.print("[red]Cannot make images smaller than 500,000 pixels[/red]")
-        raise typer.Exit(code=1)
+    if approach in ("split", "resize"):
+        if size_threshold <= 500000:
+            console.print(
+                "[red]For 'split' or 'resize' approach, size_threshold must be > 500,000 pixels[/red]"
+            )
+            raise typer.Exit(code=1)
+    elif approach == "max-width":
+        if size_threshold <= 400:
+            console.print(
+                "[red]For 'max-width' approach, size_threshold must be > 400 pixels[/red]"
+            )
+            raise typer.Exit(code=1)
 
     # Map approach names to processing functions.
     process_func: Callable[[Iterable[Image.Image], int], list[Image.Image]] = {
         "split": split_images,
         "resize": resize_images,
+        "max-width": resize_images_by_width,
     }[approach]
 
     # Determine items to process: either a single file or all files in a directory
@@ -584,6 +617,7 @@ def clamp(
                         size_threshold=size_threshold,
                         process_func=process_func,
                         progress_queue=progress_queue,
+                        approach=approach,
                     )
                     for chapter_path in chapters_to_process
                 ]
