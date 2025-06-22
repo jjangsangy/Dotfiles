@@ -437,6 +437,9 @@ def convert(
         typer.Option(
             "--to",
             help=f"Target filetype extension (without the dot). Choices: {[i.lstrip('.') for i in ARCHIVERS if i != '/' and i.startswith('.cb')]}",
+            autocompletion=lambda: [
+                i.lstrip(".") for i in ARCHIVERS if i != "/" and i.startswith(".cb")
+            ],
         ),
     ],
 ):
@@ -531,6 +534,7 @@ def clamp(
             "--approach",
             help="Approach to enforce size threshold: 'split', 'resize', or 'max-width'",
             case_sensitive=False,
+            autocompletion=lambda: ["max-width", "resize", "split"],
         ),
     ] = "split",
     num_workers: Annotated[
