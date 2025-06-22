@@ -509,6 +509,7 @@ def clamp(
             file_okay=True,
             dir_okay=True,
             help="Input directory or file to process.",
+            rich_help_panel="Input Options",
         ),
     ],
     output_dir: Annotated[
@@ -517,6 +518,7 @@ def clamp(
             "-o",
             "--output-dir",
             help="Output directory to store results in",
+            rich_help_panel="Output Options",
         ),
     ] = pathlib.Path("Results"),
     size_threshold: Annotated[
@@ -525,6 +527,7 @@ def clamp(
             "-s",
             "--size-threshold",
             help="Maximum size (in total pixels) for resulting images",
+            rich_help_panel="Size Options",
         ),
     ] = 5000000,
     approach: Annotated[
@@ -535,6 +538,7 @@ def clamp(
             help="Approach to enforce size threshold: 'split', 'resize', or 'max-width'",
             case_sensitive=False,
             autocompletion=lambda: ["max-width", "resize", "split"],
+            rich_help_panel="Size Options",
         ),
     ] = "split",
     num_workers: Annotated[
@@ -543,6 +547,7 @@ def clamp(
             "-w",
             "--workers",
             help="Number of worker processes to use for parallel processing. Defaults to the number of CPU cores.",
+            rich_help_panel="Processing Options",
         ),
     ] = os.cpu_count() or 1,  # Ensure default is always an int
 ):
@@ -676,6 +681,31 @@ def clamp(
 
 
 # ----- CREATE-CHAPTERS SUBCOMMAND -----
+def complete_chapter_break_images(ctx: typer.Context, incomplete: str):
+    """
+    Provide autocompletion for chapter break images.
+    """
+    input_dir = ctx.params.get("input_dir")
+    if not input_dir or not os.path.isdir(input_dir):
+        return []
+
+    try:
+        all_files = os.listdir(input_dir)
+        image_files = [
+            f
+            for f in all_files
+            if os.path.splitext(f)[1].lower() in ArchiveBase.IMG_EXTENSIONS
+            and f.startswith(incomplete)
+        ]
+
+        # Deduplicate based on already provided images
+        provided_images = ctx.params.get("chapter_break_images") or []
+
+        return [img for img in image_files if img not in provided_images]
+    except OSError:
+        return []
+
+
 @app.command(
     name="create-chapters",
     help="Faster chapter splitting via batching with multiple target images using AI feature extraction.",
@@ -695,6 +725,7 @@ def create_chapters_command(
             ...,
             help="Filenames of images within the input directory that mark chapter breaks.",
             rich_help_panel="Input Options",
+            autocompletion=complete_chapter_break_images,
         ),
     ],
     output_dir: str | None = typer.Option(
