@@ -45,6 +45,22 @@ from rich.progress import (
 )
 from typing_extensions import Annotated, Self
 
+IMG_EXTENSIONS: set[str] = {
+    ".jpeg",
+    ".jpg",
+    ".png",
+    ".tiff",
+    ".tif",
+    ".bmp",
+    ".webp",
+    ".heif",
+    ".heic",
+    ".jxl",
+    ".avif",
+    ".gif",  # Added from create_chapters_command
+    ".pgm",  # Added from create_chapters_command
+}
+
 T = TypeVar("T", bound=Type["ArchiveBase"])
 
 ARCHIVERS: Dict[str, Type["ArchiveBase"]] = {}
@@ -152,20 +168,6 @@ def resize_images_by_width(
 
 # Base class for archives.
 class ArchiveBase(ABC):
-    IMG_EXTENSIONS: set[str] = {
-        ".jpeg",
-        ".jpg",
-        ".png",
-        ".tiff",
-        ".tif",
-        ".bmp",
-        ".webp",
-        ".heif",
-        ".heic",
-        ".jxl",
-        ".avif",
-    }
-
     def __init__(self: Self, path: str | pathlib.Path) -> None:
         self.path = pathlib.Path(path)
 
@@ -205,7 +207,7 @@ class ArchiveCBZ(ArchiveBase):
                 [
                     (file, Image.open(zf.open(file)))
                     for file in zf.namelist()
-                    if os.path.splitext(file)[-1].lower() in self.IMG_EXTENSIONS
+                    if os.path.splitext(file)[-1].lower() in IMG_EXTENSIONS
                 ],
                 key=lambda x: alphanum_key(str(x[0])),
             )
@@ -238,7 +240,7 @@ class ArchiveCBR(ArchiveBase):
                 [
                     (file, Image.open(rf.open(file)))
                     for file in rf.namelist()
-                    if os.path.splitext(file)[-1].lower() in self.IMG_EXTENSIONS
+                    if os.path.splitext(file)[-1].lower() in IMG_EXTENSIONS
                 ],
                 key=lambda x: alphanum_key(str(x[0])),
             )
@@ -263,7 +265,7 @@ class ArchiveCB7(ArchiveBase):
                 [
                     (fname, Image.open(file_obj))
                     for fname, file_obj in all_files.items()
-                    if os.path.splitext(fname)[-1].lower() in self.IMG_EXTENSIONS
+                    if os.path.splitext(fname)[-1].lower() in IMG_EXTENSIONS
                 ],
                 key=lambda x: alphanum_key(x[0]),
             )
@@ -293,7 +295,7 @@ class ArchiveCBT(ArchiveBase):
                     (member.name, Image.open(tf.extractfile(member)).copy())
                     for member in members
                     if member.isfile()
-                    and os.path.splitext(member.name)[-1].lower() in self.IMG_EXTENSIONS
+                    and os.path.splitext(member.name)[-1].lower() in IMG_EXTENSIONS
                 ],
                 key=lambda x: alphanum_key(x[0]),
             )
@@ -314,7 +316,7 @@ class ArchiveDir(ArchiveBase):
             [
                 (file, Image.open(file))
                 for file in self.path.iterdir()
-                if file.suffix.lower() in self.IMG_EXTENSIONS and file.is_file()
+                if file.suffix.lower() in IMG_EXTENSIONS and file.is_file()
             ],
             key=lambda x: alphanum_key(str(x[0])),
         )
@@ -694,7 +696,7 @@ def complete_chapter_break_images(ctx: typer.Context, incomplete: str):
         image_files = [
             f
             for f in all_files
-            if os.path.splitext(f)[1].lower() in ArchiveBase.IMG_EXTENSIONS
+            if os.path.splitext(f)[1].lower() in IMG_EXTENSIONS
             and f.startswith(incomplete)
         ]
 
@@ -875,25 +877,7 @@ def create_chapters_command(
 
     # Gather files
     files = sorted(
-        [
-            f
-            for f in os.listdir(input_dir)
-            if f.lower().endswith(
-                (
-                    ".avif",
-                    ".bmp",
-                    ".gif",
-                    ".jpeg",
-                    ".jpg",
-                    ".jxl",
-                    ".pgm",
-                    ".png",
-                    ".tif",
-                    ".tiff",
-                    ".webp",
-                )
-            )
-        ],
+        [f for f in os.listdir(input_dir) if f.lower().endswith(tuple(IMG_EXTENSIONS))],
         key=alphanum_key,
     )
     paths = [os.path.join(input_dir, f) for f in files]
@@ -980,10 +964,32 @@ def create_chapters_command(
 
     if plot:
         # Plotting similarity values
-        console.print("\n[bold]Plotting Similarity Values (Highest to Lowest)[/bold]")
-        plt.clf()  # Clear previous plot data
-        plt.title("Similarity Scores (Highest to Lowest)")
-        plt.bar(df["cosine_similarity"].values)
+        console.print("\n[bold]Plotting Similarity Values[/bold]")
+        plt.clf()
+        plt.title("Max Similarity Score Distribution")
+        plt.xlabel("Cosine Similarity")
+        plt.ylabel("Frequency")
+
+        # Use the same bins for all data
+        min_sim = df["cosine_similarity"].min()
+        max_sim = df["cosine_similarity"].max()
+        bins = np.linspace(min_sim, max_sim, 30)
+
+        # Prepare data for a stacked bar chart
+        bar_labels = [f"{b:.2f}" for b in (bins[:-1] + bins[1:]) / 2]
+        bar_data = []
+        legend_labels = []
+
+        for target_name in chapter_break_images:
+            # Filter the DataFrame for rows where this target was the best match
+            subset_df = df[df["best_match_target"] == target_name]
+            # Calculate histogram for this subset
+            counts, _ = np.histogram(subset_df["cosine_similarity"], bins=bins)
+            bar_data.append(list(counts))
+            legend_labels.append(target_name)
+
+        plt.stacked_bar(bar_labels, bar_data, labels=legend_labels)
+
         plt.show()
         return
 
