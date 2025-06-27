@@ -93,9 +93,5 @@ if [ -d ~/.kubectx ]; then
     export KUBECTX_CURRENT_BGCOLOR="$(tput setab 7)" # white bg
 fi
 
-if test -x /opt/mamba/bin/micromamba; then
-    export MAMBA_ROOT_PREFIX='/opt/mamba'
-fi
-
 
 # vi: ft=sh

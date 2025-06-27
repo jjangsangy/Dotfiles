@@ -1,21 +1,5 @@
 # Bash Utility Functions
 
-function jupyterlab {
-    local pyenv_env="miniconda3-4.7.12"
-    local conda_env="xeus-python"
-
-    if [ "${pyenv_env}" != "$(pyenv version-name | tr -d '\n')" ]; then
-        pyenv activate --verbose "${pyenv_env}"
-    fi
-
-    if [ "${conda_env}" != "$(conda info -e | grep '*' | cut -f1 -d '*' | tr -d ' ')" ]; then
-        printf "conda: activate %s\n" "${conda_env}"
-        conda activate "${conda_env}"
-    fi
-
-    jupyter lab "${@}"
-}
-
 function gi {
     local ignores=$(printf "%s," "${@}")
     curl -sL "https://www.toptal.com/developers/gitignore/api/${ignores%,}"
@@ -88,49 +72,6 @@ function extract {
 # Process PS
 function p {
     command ps -axr -o "user pid sig %cpu %mem addr comm" 2>/dev/null
-}
-
-function mpv-sort {
-    local ARGS=( $@ )
-    find "${ARGS[@]:-'.'}" \
-        -d 1 \
-        -type f \( -name "*avi" -o -name "*mp4" -o -name "*wmv" -o -name "*mkv" \) \
-        -exec du -hma '{}' \; \
-    | sort -rn \
-    | cut -d $'\t' -f 2 \
-    | sed 's/\(.*\)/"\1"/g' | xargs mpv
-}
-
-function kill-audio {
-    sudo kill -9 $(pgrep coreaudiod)
-}
-
-function pyenv-install-cmd {
-    local ssl_prefix="$(brew --prefix openssl)"
-    local sqlite_prefix="$(brew --prefix sqlite)"
-
-    PYTHON_CFLAGS='-march=native' \
-    CPPFLAGS="-I${ssl_prefix}/include -I${sqlite_prefix}/include" \
-    LDFLAGS="-L$(ssl_prefix)/lib -L${sqlite_prefix}/lib" \
-    PYTHON_CONFIGURE_OPTS='--enable-loadable-sqlite-extensions --enable-framework' \
-        pyenv install --verbose $1
-}
-
-function activate-mamba {
-    local root_dir="${1:-/opt/mamba}"
-    local executable="${root_dir}/bin/micromamba"
-
-    if test -x "${executable}"; then
-        if eval "$(${executable} shell activate -s bash --auto-activate-base)"; then
-            echo -en "\E[1menvironment activated\n"
-        else
-            echo -en "\E[1mfailed to activate environment\n" 1>&2
-        fi
-    else
-        echo -en "could not activate mamba\n" 1>&2
-        echo -en "no binary at ${executable}\n" 1>&2
-    fi
-    tput sgr0
 }
 
 # vi: ft=sh
