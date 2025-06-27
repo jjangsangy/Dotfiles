@@ -57,8 +57,8 @@ IMG_EXTENSIONS: set[str] = {
     ".heic",
     ".jxl",
     ".avif",
-    ".gif",  # Added from create_chapters_command
-    ".pgm",  # Added from create_chapters_command
+    ".gif",
+    ".pgm",
 }
 
 T = TypeVar("T", bound=Type["ArchiveBase"])
