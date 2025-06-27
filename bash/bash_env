@@ -1,10 +1,6 @@
 # Bash Environment
 # ================
 
-# if test -z "${SSH_AGENT_PID}"; then
-#     eval $(ssh-agent -s)
-# fi
-
 if [ "$(uname -s)" = "Darwin" ]; then
     export N_CPUS="$(sysctl -n hw.ncpu)"
     export HOMEBREW_MAKE_JOBS="${N_CPUS}"
@@ -50,36 +46,15 @@ export MAKEFLAGS="-j${N_CPUS}"
 # ruby Environment
 export RBENV_VERSION="system"
 
-
 # python
 export PYTHONDONTWRITEBYTECODE=1
 export NUMEXPR_MAX_THREADS="${N_CPUS}"
-
-# aws
-export AWS_DEFAULT_REGION='us-west-2'
-
-# pyenv
-if [ -d ~/.pyenv ]; then
-    export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-fi
-
 
 # golang Environment
 if [ -d "${HOME}/Go" ]; then
     export GOPATH="${HOME}/Go"
     export GOBIN="${GOPATH}/bin"
 fi
-
-# poetry
-if [ -d "${HOME}/.poetry" ] && hash pyenv 2>/dev/null; then
-    export PATH="${HOME}/.poetry/bin:${PATH}"
-fi
-
-# pyenv
-if [ -d ~/.pyenv ] && hash pyenv 2>/dev/null; then
-    eval "$(pyenv init --no-rehash -)"
-fi
-
 
 # iterm2 integration
 #if [ -r "${HOME}/.iterm2_shell_integration.bash" ] && [ "${TERM_PROGRAM}" = "iTerm.app" ]; then
