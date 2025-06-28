@@ -1,20 +1,59 @@
-#!/usr/bin/env -S uv run
+#!/usr/bin/env -S uv run --extra-index-url https://download.pytorch.org/whl/cu124
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
+#     "torch",
 #     "faster-whisper>=1.1.1",
 #     "pysrt",
 #     "rich",
+#     "typer",
 # ]
 # ///
 
-import argparse
+from __future__ import annotations
+
+import os
+import sys
+
+if "UV_ENV_SET" not in os.environ:
+    from importlib.metadata import distribution
+
+    try:
+        cublas_dist = distribution("nvidia-cublas-cu12")
+        cudnn_dist = distribution("nvidia-cudnn-cu12")
+
+        cublas_lib_path = os.path.join(cublas_dist.locate_file("nvidia/cublas/lib"))
+        cudnn_lib_path = os.path.join(cudnn_dist.locate_file("nvidia/cudnn/lib"))
+
+        new_ld_library_path = f"{cublas_lib_path}:{cudnn_lib_path}"
+
+        if "LD_LIBRARY_PATH" in os.environ:
+            new_ld_library_path = (
+                f"{new_ld_library_path}:{os.environ['LD_LIBRARY_PATH']}"
+            )
+
+        # Set the environment for the re-executed script
+        os.environ["LD_LIBRARY_PATH"] = new_ld_library_path
+        os.environ["UV_ENV_SET"] = "1"
+
+        # Re-execute the script with the correct environment
+        os.execv(sys.executable, ["python"] + sys.argv)
+        sys.exit()  # Should not be reached
+
+    except Exception as e:
+        print(f"Error setting up environment: {e}")
+        sys.exit(1)
+
+
 import pathlib
+from enum import Enum
+from typing import TYPE_CHECKING, Annotated, List
 
 import pysrt
-from faster_whisper import WhisperModel
-from faster_whisper.transcribe import Segment
-from faster_whisper.utils import available_models
+import typer
+
+if TYPE_CHECKING:
+    from faster_whisper.transcribe import Segment
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import (
@@ -30,9 +69,214 @@ from rich.progress import (
 from rich.text import Text
 
 console = Console()
+app = typer.Typer(
+    help="Generate subtitles from media files using Faster Whisper",
+    pretty_exceptions_show_locals=False,
+)
 
 
-def create_srt(chunks: list[Segment], text_cutoff_length=400) -> pysrt.SubRipFile:
+class Task(str, Enum):
+    TRANSCRIBE = "transcribe"
+    TRANSLATE = "translate"
+
+
+class Device(str, Enum):
+    GPU = "cuda"
+    CPU = "cpu"
+
+
+class ComputeType(str, Enum):
+    FLOAT16 = "float16"
+    INT8 = "int8"
+    INT8_FLOAT16 = "int8_float16"
+    INT16 = "int16"
+    FLOAT32 = "float32"
+
+
+def get_available_models_for_completion() -> list[str]:
+    """
+    Returns a list of available models for autocompletion.
+    Avoids importing faster_whisper if only generating completions.
+    """
+    if os.environ.get("_TYPER_COMPLETE_ARGS"):
+        # Return a static list for fast autocompletion
+        return ["tiny", "base", "small", "medium", "large", "large-v2", "large-v3"]
+    else:
+        # Only import and call available_models if not in completion context
+        from faster_whisper.utils import available_models
+
+        return available_models()
+
+
+def get_supported_languages() -> list[str]:
+    """
+    Returns a list of supported languages for autocompletion.
+    """
+    return [
+        "ab",
+        "af",
+        "ak",
+        "am",
+        "an",
+        "ar",
+        "as",
+        "av",
+        "ay",
+        "az",
+        "ba",
+        "be",
+        "bg",
+        "bi",
+        "bn",
+        "br",
+        "ca",
+        "ce",
+        "ch",
+        "co",
+        "cr",
+        "cs",
+        "cu",
+        "cv",
+        "cy",
+        "da",
+        "de",
+        "dz",
+        "ee",
+        "el",
+        "en",
+        "eo",
+        "es",
+        "et",
+        "eu",
+        "fa",
+        "fi",
+        "fj",
+        "fo",
+        "fr",
+        "fy",
+        "ga",
+        "gd",
+        "gl",
+        "gn",
+        "gu",
+        "gv",
+        "ha",
+        "he",
+        "hi",
+        "ho",
+        "hr",
+        "ht",
+        "hu",
+        "hy",
+        "id",
+        "ig",
+        "ik",
+        "io",
+        "iu",
+        "ja",
+        "jv",
+        "ka",
+        "kg",
+        "ki",
+        "kj",
+        "kk",
+        "km",
+        "kn",
+        "ko",
+        "ku",
+        "kv",
+        "kw",
+        "ky",
+        "la",
+        "lb",
+        "lg",
+        "li",
+        "ln",
+        "lo",
+        "lt",
+        "lu",
+        "lv",
+        "mg",
+        "mh",
+        "mi",
+        "mk",
+        "ml",
+        "mn",
+        "ms",
+        "mt",
+        "my",
+        "na",
+        "nd",
+        "ne",
+        "ng",
+        "nl",
+        "no",
+        "nr",
+        "nv",
+        "ny",
+        "oc",
+        "om",
+        "os",
+        "pa",
+        "pi",
+        "pl",
+        "ps",
+        "pt",
+        "qu",
+        "rm",
+        "rn",
+        "ro",
+        "ru",
+        "rw",
+        "sa",
+        "sc",
+        "sd",
+        "sg",
+        "sh",
+        "si",
+        "si",
+        "sk",
+        "sl",
+        "sm",
+        "sn",
+        "so",
+        "sq",
+        "sr",
+        "ss",
+        "st",
+        "su",
+        "sv",
+        "sw",
+        "ta",
+        "te",
+        "tg",
+        "th",
+        "tk",
+        "tl",
+        "tr",
+        "tt",
+        "ty",
+        "ug",
+        "uk",
+        "ur",
+        "uz",
+        "vi",
+        "wa",
+        "wo",
+        "xh",
+        "yi",
+        "yo",
+        "za",
+        "zh-Hans",
+        "zh-Hant",
+        "zh",
+        "zu",
+    ]
+
+
+def create_srt(
+    chunks: list["Segment"], text_cutoff_length: int = 400
+) -> "pysrt.SubRipFile":
     """
     Take chunks from the output of the whisper model and convert it into a SRT time.
 
@@ -136,6 +380,8 @@ def run_pipeline(
         text_cutoff_length: Maximum length of text per subtitle
         skip_existing: Skip files that already have .srt files
     """
+    from faster_whisper import WhisperModel
+
     # Print configuration
     config_text = Text()
     config_text.append("Configuration:\n", style="bold cyan")
@@ -222,87 +468,95 @@ def run_pipeline(
     console.print("\n[bold green]✓ All files processed successfully![/bold green]")
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Generate subtitles from media files using Faster Whisper"
-    )
+@app.command()
+def main(
+    paths: Annotated[
+        List[pathlib.Path],
+        typer.Argument(
+            help="Files or directories containing media files to process",
+        ),
+    ],
+    model_size: Annotated[
+        str,
+        typer.Option(
+            help="Size of the Whisper model to use",
+            rich_help_panel="Configuration",
+            autocompletion=get_available_models_for_completion,
+        ),
+    ] = "large-v2",
+    language: Annotated[
+        str,
+        typer.Option(
+            help="Language code for transcription",
+            rich_help_panel="Configuration",
+            autocompletion=get_supported_languages,
+        ),
+    ] = "ja",
+    task: Annotated[
+        Task,
+        typer.Option(
+            help="Task to perform",
+            rich_help_panel="Configuration",
+        ),
+    ] = Task.TRANSLATE,
+    device: Annotated[
+        Device,
+        typer.Option(
+            help="Device to run the model on",
+            rich_help_panel="Configuration",
+        ),
+    ] = Device.GPU,
+    compute_type: Annotated[
+        ComputeType,
+        typer.Option(
+            help="Compute type for the model",
+            rich_help_panel="Configuration",
+        ),
+    ] = ComputeType.FLOAT16,
+    min_silence_duration: Annotated[
+        int,
+        typer.Option(
+            help="Minimum silence duration in milliseconds",
+            rich_help_panel="Configuration",
+        ),
+    ] = 500,
+    text_cutoff_length: Annotated[
+        int,
+        typer.Option(
+            help="Maximum length of text per subtitle",
+            rich_help_panel="Configuration",
+        ),
+    ] = 400,
+    skip_existing: Annotated[
+        bool,
+        typer.Option(
+            "--skip-existing/--no-skip-existing",
+            help="Skip files that already have corresponding .srt files",
+            rich_help_panel="Configuration",
+        ),
+    ] = True,
+):
+    """Generate subtitles from media files using Faster Whisper."""
+    # Import available_models here to ensure it's only loaded when the script is run, not for autocompletion
+    from faster_whisper.utils import available_models
 
-    # Required arguments
-    parser.add_argument(
-        "paths",
-        type=pathlib.Path,
-        nargs="+",
-        help="Files or directories containing media files to process",
-    )
+    if model_size not in available_models():
+        raise typer.BadParameter(
+            f"Invalid model size: {model_size}. Available models are: {', '.join(available_models())}"
+        )
 
-    # Optional arguments
-    parser.add_argument(
-        "--model-size",
-        type=str,
-        default="large-v2",
-        choices=available_models(),
-        help="Size of the Whisper model to use (default: large-v2)",
-    )
-    parser.add_argument(
-        "--language",
-        type=str,
-        default="ja",
-        help="Language code for transcription (default: ja)",
-    )
-    parser.add_argument(
-        "--task",
-        type=str,
-        default="translate",
-        choices=["transcribe", "translate"],
-        help="Task to perform (default: translate)",
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        default="cuda",
-        choices=["cuda", "cpu"],
-        help="Device to run the model on (default: cuda)",
-    )
-    parser.add_argument(
-        "--compute-type",
-        type=str,
-        default="float16",
-        choices=["float16", "int8"],
-        help="Compute type for the model (default: float16)",
-    )
-    parser.add_argument(
-        "--min-silence",
-        type=int,
-        default=500,
-        help="Minimum silence duration in milliseconds (default: 500)",
-    )
-    parser.add_argument(
-        "--text-cutoff",
-        type=int,
-        default=400,
-        help="Maximum length of text per subtitle (default: 400)",
-    )
-    parser.add_argument(
-        "--no-skip-existing",
-        action="store_false",
-        dest="skip_existing",
-        help="Process files even if .srt already exists",
-    )
-    args = parser.parse_args()
-
-    # Run the pipeline with parsed arguments
     run_pipeline(
-        paths=args.paths,
-        model_size=args.model_size,
-        language=args.language,
-        task=args.task,
-        device=args.device,
-        compute_type=args.compute_type,
-        min_silence_duration=args.min_silence,
-        text_cutoff_length=args.text_cutoff,
-        skip_existing=args.skip_existing,
+        paths=paths,
+        model_size=model_size,
+        language=language,
+        task=task.value,
+        device=device.value,
+        compute_type=compute_type.value,
+        min_silence_duration=min_silence_duration,
+        text_cutoff_length=text_cutoff_length,
+        skip_existing=skip_existing,
     )
 
 
 if __name__ == "__main__":
-    main()
+    app()
