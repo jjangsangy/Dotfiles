@@ -1,4 +1,4 @@
-#!/usr/bin/env -S uv run --extra-index-url https://download.pytorch.org/whl/cu124
+#!/usr/bin/env -S uv run --extra-index-url https://download.pytorch.org/whl/cu124 --script
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
@@ -38,7 +38,7 @@ if "UV_ENV_SET" not in os.environ:
 
         # Re-execute the script with the correct environment
         os.execv(sys.executable, ["python"] + sys.argv)
-        sys.exit()  # Should not be reached
+        sys.exit()
 
     except Exception as e:
         print(f"Error setting up environment: {e}")

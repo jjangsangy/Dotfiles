@@ -1,3 +1,5 @@
+set -gx EDITOR nvim
+
 function fish_greeting
     if type --quiet fastfetch
         fastfetch
