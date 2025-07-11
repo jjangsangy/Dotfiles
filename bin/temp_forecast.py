@@ -51,7 +51,7 @@ def get_weather_data(zip_code):
         weather_response.raise_for_status()
         return weather_response.json(), location_name
 
-    except requests.exceptions.RequestException as e:
+    except requests.RequestException as e:
         print(f"An error occurred while connecting to the network: {e}")
         return None, None
 
@@ -74,13 +74,21 @@ def plot_temperature(weather_data, location_name):
     datetime_objects = [datetime.fromisoformat(t) for t in times]
     hour_labels = [dt.strftime("%-I %p") for dt in datetime_objects]
 
-    # --- NEW: Get and format the date for the title ---
-    # We take the date from the first data point and format it nicely.
+    # Get the current hour
+    current_hour = datetime.now().hour
+
+    # Create a list of colors, highlighting the current hour
+    colors = [
+        "limegreen" if dt.hour == current_hour else "deepskyblue"
+        for dt in datetime_objects
+    ]
+
     plot_date_str = datetime_objects[0].strftime("%A, %B %d, %Y")
 
     plt.style.use("seaborn-v0_8-whitegrid")
     plt.figure(figsize=(15, 7))
-    bars = plt.bar(hour_labels, temperatures, color="deepskyblue", zorder=2)
+    # Use the colors list for the bar colors
+    bars = plt.bar(hour_labels, temperatures, color=colors, zorder=2)
 
     for bar in bars:
         yval = bar.get_height()
@@ -96,7 +104,6 @@ def plot_temperature(weather_data, location_name):
     plt.xlabel("Time of Day", fontsize=12)
     plt.ylabel(f"Temperature ({temp_unit})", fontsize=12)
 
-    # --- MODIFIED: The title now includes the date on a new line ---
     plt.title(
         f"Hourly Temperature Forecast for {location_name}\n{plot_date_str}",
         fontsize=16,
