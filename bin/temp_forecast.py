@@ -25,7 +25,6 @@ def get_weather_data(zip_code):
         geo_response = requests.get(geocoding_url, headers=headers)
         geo_response.raise_for_status()
         location_data = geo_response.json()
-
         if not location_data:
             print(f"❌ Error: Could not find location for zip code '{zip_code}'.")
             print("Please make sure it's a valid US zip code and try again.")

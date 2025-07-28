@@ -35,6 +35,10 @@ end
 
 abbr --add vim nvim
 abbr --add g git
+abbr --add gc 'git commit -m'
+abbr --add ga 'git add .'
+abbr --add gp 'git push origin main'
+abbr --add gs 'git status'
 abbr --add r 'rsync -av --progress'
 abbr --add .. 'cd ..'
 abbr --add ... 'cd ../..'
