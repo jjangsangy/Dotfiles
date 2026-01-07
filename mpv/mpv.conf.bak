@@ -1,0 +1,47 @@
+hwdec=auto                                # enable best HW decoder; turn off for software decoding
+priority=high
+
+#Subtitle blending in scenechanges (smoother effect)
+blend-subtitles=yes
+
+#Set the fps as the max. of your monitor Hz (only useful and needed with "interpolation=yes)
+video-sync=display-resample
+
+#Activate interpolation
+interpolation=yes
+tscale=box
+tscale-window=quadric #(or "sphinx")
+tscale-radius=1.0 #lower (e.g. 0.955) = sharper; higher (e.g. 1.005) = smoother 
+tscale-clamp=0.0
+
+###### Color gamut
+# https://github.com/mpv-player/mpv/issues/9071
+# Noticed this in the Evangelion 3.333 4K version. Reds look wrong when gamut-clipping is enabled.
+gamut-clipping=no
+hdr-compute-peak=no
+
+###### Antiring
+scale-antiring=0.7
+dscale-antiring=0.7
+cscale-antiring=0.7
+
+#Audio language priority
+alang=ja,jp,jpn,en,eng,de,deu,ger
+
+#Subtitle language priority
+slang=en,eng,de,deu,ger
+
+
+#########
+# Cache #
+#########
+
+# Configure the cache to be really big (multiple GBs)
+# We have a lot of memory, so why not use it for something
+cache=yes
+cache-default=4000000                   # size in KB
+cache-backbuffer=250000                 # size in KB
+demuxer-seekable-cache=yes
+#demuxer-max-bytes=1147483647            # ~1 GiB in bytes
+demuxer-max-bytes=2147483647			# ~2 GiB in bytes
+demuxer-max-back-bytes=1147483647
