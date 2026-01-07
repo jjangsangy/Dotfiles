@@ -1,8 +1,6 @@
-//Anime4K v3.1 GLSL
-
 // MIT License
 
-// Copyright (c) 2019-2020 bloc97
+// Copyright (c) 2019-2021 bloc97
 // All rights reserved.
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,34 +21,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(X)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Luma
+//!HOOK MAIN
 //!BIND HOOKED
+//!SAVE LINELUMA
+//!COMPONENTS 1
+
+float get_luma(vec4 rgba) {
+	return dot(vec4(0.299, 0.587, 0.114, 0.0), rgba);
+}
+
+vec4 hook() {
+    return vec4(get_luma(HOOKED_tex(HOOKED_pos)), 0.0, 0.0, 0.0);
+}
+
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-X
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
+//!BIND HOOKED
+//!BIND LINELUMA
 //!SAVE MMKERNEL
 //!COMPONENTS 1
 
-#define L_tex HOOKED_tex
+#define L_tex LINELUMA_tex
 
-#define SIGMA 1
+#define SIGMA 1.0
 
 float gaussian(float x, float s, float m) {
-	return (1 / (s * sqrt(2 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
+	return (1.0 / (s * sqrt(2.0 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
 }
 
 float lumGaussian(vec2 pos, vec2 d) {
-	float s = SIGMA * HOOKED_size.y / 1080;
-	float kernel_size = s * 2 + 1;
+	float s = SIGMA * HOOKED_size.y / 1080.0;
+	float kernel_size = s * 2.0 + 1.0;
 	
-	float g = (L_tex(pos).x) * gaussian(0, s, 0);
-	float gn = gaussian(0, s, 0);
+	float g = (L_tex(pos).x) * gaussian(0.0, s, 0.0);
+	float gn = gaussian(0.0, s, 0.0);
 	
-	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1, s, 0);
-	gn += gaussian(1, s, 0) * 2;
+	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1.0, s, 0.0);
+	gn += gaussian(1.0, s, 0.0) * 2.0;
 	
-	for (int i=2; i<kernel_size; i++) {
-		g += (L_tex(pos - (d * i)).x + L_tex(pos + (d * i)).x) * gaussian(i, s, 0);
-		gn += gaussian(i, s, 0) * 2;
+	for (int i=2; float(i)<kernel_size; i++) {
+		g += (L_tex(pos - (d * float(i))).x + L_tex(pos + (d * float(i))).x) * gaussian(float(i), s, 0.0);
+		gn += gaussian(float(i), s, 0.0) * 2.0;
 	}
 	
 	return g / gn;
@@ -60,45 +73,48 @@ vec4 hook() {
     return vec4(lumGaussian(HOOKED_pos, vec2(HOOKED_pt.x, 0)));
 }
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(Y)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-Y
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
+//!BIND LINELUMA
 //!BIND MMKERNEL
 //!SAVE MMKERNEL
 //!COMPONENTS 1
 
 #define L_tex MMKERNEL_tex
 
-#define SIGMA 1
+#define SIGMA 1.0
 
 float gaussian(float x, float s, float m) {
-	return (1 / (s * sqrt(2 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
+	return (1.0 / (s * sqrt(2.0 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
 }
 
 float lumGaussian(vec2 pos, vec2 d) {
-	float s = SIGMA * HOOKED_size.y / 1080;
-	float kernel_size = s * 2 + 1;
+	float s = SIGMA * HOOKED_size.y / 1080.0;
+	float kernel_size = s * 2.0 + 1.0;
 	
-	float g = (L_tex(pos).x) * gaussian(0, s, 0);
-	float gn = gaussian(0, s, 0);
+	float g = (L_tex(pos).x) * gaussian(0.0, s, 0.0);
+	float gn = gaussian(0.0, s, 0.0);
 	
-	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1, s, 0);
-	gn += gaussian(1, s, 0) * 2;
+	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1.0, s, 0.0);
+	gn += gaussian(1.0, s, 0.0) * 2.0;
 	
-	for (int i=2; i<kernel_size; i++) {
-		g += (L_tex(pos - (d * i)).x + L_tex(pos + (d * i)).x) * gaussian(i, s, 0);
-		gn += gaussian(i, s, 0) * 2;
+	for (int i=2; float(i)<kernel_size; i++) {
+		g += (L_tex(pos - (d * float(i))).x + L_tex(pos + (d * float(i))).x) * gaussian(float(i), s, 0.0);
+		gn += gaussian(float(i), s, 0.0) * 2.0;
 	}
 	
 	return g / gn;
 }
 
 vec4 hook() {
-    return vec4(min(HOOKED_tex(HOOKED_pos).x - lumGaussian(HOOKED_pos, vec2(0, HOOKED_pt.y)), 0));
+    return vec4(min(LINELUMA_tex(HOOKED_pos).x - lumGaussian(HOOKED_pos, vec2(0, HOOKED_pt.y)), 0.0));
 }
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(X)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-X
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND MMKERNEL
 //!SAVE MMKERNEL
@@ -109,22 +125,22 @@ vec4 hook() {
 #define SIGMA 0.4
 
 float gaussian(float x, float s, float m) {
-	return (1 / (s * sqrt(2 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
+	return (1.0 / (s * sqrt(2.0 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
 }
 
 float lumGaussian(vec2 pos, vec2 d) {
-	float s = SIGMA * HOOKED_size.y / 1080;
-	float kernel_size = s * 2 + 1;
+	float s = SIGMA * HOOKED_size.y / 1080.0;
+	float kernel_size = s * 2.0 + 1.0;
 	
-	float g = (L_tex(pos).x) * gaussian(0, s, 0);
-	float gn = gaussian(0, s, 0);
+	float g = (L_tex(pos).x) * gaussian(0.0, s, 0.0);
+	float gn = gaussian(0.0, s, 0.0);
 	
-	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1, s, 0);
-	gn += gaussian(1, s, 0) * 2;
+	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1.0, s, 0.0);
+	gn += gaussian(1.0, s, 0.0) * 2.0;
 	
-	for (int i=2; i<kernel_size; i++) {
-		g += (L_tex(pos - (d * i)).x + L_tex(pos + (d * i)).x) * gaussian(i, s, 0);
-		gn += gaussian(i, s, 0) * 2;
+	for (int i=2; float(i)<kernel_size; i++) {
+		g += (L_tex(pos - (d * float(i))).x + L_tex(pos + (d * float(i))).x) * gaussian(float(i), s, 0.0);
+		gn += gaussian(float(i), s, 0.0) * 2.0;
 	}
 	
 	return g / gn;
@@ -134,8 +150,9 @@ vec4 hook() {
     return vec4(lumGaussian(HOOKED_pos, vec2(HOOKED_pt.x, 0)));
 }
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(Y)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-Y
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND MMKERNEL
 //!SAVE MMKERNEL
@@ -146,22 +163,22 @@ vec4 hook() {
 #define SIGMA 0.4
 
 float gaussian(float x, float s, float m) {
-	return (1 / (s * sqrt(2 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
+	return (1.0 / (s * sqrt(2.0 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
 }
 
 float lumGaussian(vec2 pos, vec2 d) {
-	float s = SIGMA * HOOKED_size.y / 1080;
-	float kernel_size = s * 2 + 1;
+	float s = SIGMA * HOOKED_size.y / 1080.0;
+	float kernel_size = s * 2.0 + 1.0;
 	
-	float g = (L_tex(pos).x) * gaussian(0, s, 0);
-	float gn = gaussian(0, s, 0);
+	float g = (L_tex(pos).x) * gaussian(0.0, s, 0.0);
+	float gn = gaussian(0.0, s, 0.0);
 	
-	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1, s, 0);
-	gn += gaussian(1, s, 0) * 2;
+	g += (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1.0, s, 0.0);
+	gn += gaussian(1.0, s, 0.0) * 2.0;
 	
-	for (int i=2; i<kernel_size; i++) {
-		g += (L_tex(pos - (d * i)).x + L_tex(pos + (d * i)).x) * gaussian(i, s, 0);
-		gn += gaussian(i, s, 0) * 2;
+	for (int i=2; float(i)<kernel_size; i++) {
+		g += (L_tex(pos - (d * float(i))).x + L_tex(pos + (d * float(i))).x) * gaussian(float(i), s, 0.0);
+		gn += gaussian(float(i), s, 0.0) * 2.0;
 	}
 	
 	return g / gn;
@@ -171,28 +188,44 @@ vec4 hook() {
     return vec4(lumGaussian(HOOKED_pos, vec2(0, HOOKED_pt.y)));
 }
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND MMKERNEL
 
 #define STRENGTH 1.8 //Line darken proportional strength, higher is darker.
-#define L_tex HOOKED_tex
 
 vec4 hook() {
 	float c = (MMKERNEL_tex(HOOKED_pos).x) * STRENGTH;
-	return vec4(clamp(c + L_tex(HOOKED_pos).x, 0, L_tex(HOOKED_pos).x), HOOKED_tex(HOOKED_pos).yz, 0);
+	//This trick is only possible if the inverse Y->RGB matrix has 1 for every row... (which is the case for BT.709)
+	//Otherwise we would need to convert RGB to YUV, modify Y then convert back to RGB.
+    return HOOKED_tex(HOOKED_pos) + c;
 }
 
-
-
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(X)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Luma
+//!HOOK MAIN
 //!BIND HOOKED
+//!SAVE LINELUMA
+//!COMPONENTS 1
+
+float get_luma(vec4 rgba) {
+	return dot(vec4(0.299, 0.587, 0.114, 0.0), rgba);
+}
+
+vec4 hook() {
+    return vec4(get_luma(HOOKED_tex(HOOKED_pos)), 0.0, 0.0, 0.0);
+}
+
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-X
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
+//!BIND HOOKED
+//!BIND LINELUMA
 //!SAVE LUMAD
 //!COMPONENTS 2
 
-#define L_tex NATIVE_tex
+#define L_tex LINELUMA_tex
 
 vec4 hook() {
 	vec2 d = HOOKED_pt;
@@ -222,8 +255,9 @@ vec4 hook() {
 }
 
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(Y)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-Y
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMAD
 //!SAVE LUMAD
@@ -249,13 +283,13 @@ vec4 hook() {
 	//[-1  0  1]
 	//[-2  0  2]
 	//[-1  0  1]
-	float xgrad = (tx + cx + cx + bx) / 8;
+	float xgrad = (tx + cx + cx + bx) / 8.0;
 	
 	//Vertical Gradient
 	//[-1 -2 -1]
 	//[ 0  0  0]
 	//[ 1  2  1]
-	float ygrad = (-ty + by) / 8;
+	float ygrad = (-ty + by) / 8.0;
 	
 	//Computes the luminance's gradient
 	float norm = sqrt(xgrad * xgrad + ygrad * ygrad);
@@ -263,8 +297,9 @@ vec4 hook() {
 }
 
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(X)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-X
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMAD
 //!SAVE LUMADG
@@ -272,18 +307,18 @@ vec4 hook() {
 
 #define L_tex LUMAD_tex
 
-#define SIGMA (HOOKED_size.y / 1080) * 2
-#define KERNELSIZE (SIGMA * 2 + 1)
+#define SIGMA (HOOKED_size.y / 1080.0) * 2.0
+#define KERNELSIZE (SIGMA * 2.0 + 1.0)
 
 float gaussian(float x, float s, float m) {
-	return (1 / (s * sqrt(2 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
+	return (1.0 / (s * sqrt(2.0 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
 }
 
 float lumGaussian(vec2 pos, vec2 d) {
-	float g = (L_tex(pos).x) * gaussian(0, SIGMA, 0);
-	g = g + (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1, SIGMA, 0);
-	for (int i=2; i<KERNELSIZE; i++) {
-		g = g + (L_tex(pos - (d * i)).x + L_tex(pos + (d * i)).x) * gaussian(i, SIGMA, 0);
+	float g = (L_tex(pos).x) * gaussian(0.0, SIGMA, 0.0);
+	g = g + (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1.0, SIGMA, 0.0);
+	for (int i=2; float(i)<KERNELSIZE; i++) {
+		g = g + (L_tex(pos - (d * float(i))).x + L_tex(pos + (d * float(i))).x) * gaussian(float(i), SIGMA, 0.0);
 	}
 	
 	return g;
@@ -294,8 +329,9 @@ vec4 hook() {
 }
 
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(Y)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-Y
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMAD
 //!BIND LUMADG
@@ -304,18 +340,18 @@ vec4 hook() {
 
 #define L_tex LUMADG_tex
 
-#define SIGMA (HOOKED_size.y / 1080) * 2
-#define KERNELSIZE (SIGMA * 2 + 1)
+#define SIGMA (HOOKED_size.y / 1080.0) * 2.0
+#define KERNELSIZE (SIGMA * 2.0 + 1.0)
 
 float gaussian(float x, float s, float m) {
-	return (1 / (s * sqrt(2 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
+	return (1.0 / (s * sqrt(2.0 * 3.14159))) * exp(-0.5 * pow(abs(x - m) / s, 2.0));
 }
 
 float lumGaussian(vec2 pos, vec2 d) {
-	float g = (L_tex(pos).x) * gaussian(0, SIGMA, 0);
-	g = g + (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1, SIGMA, 0);
-	for (int i=2; i<KERNELSIZE; i++) {
-		g = g + (L_tex(pos - (d * i)).x + L_tex(pos + (d * i)).x) * gaussian(i, SIGMA, 0);
+	float g = (L_tex(pos).x) * gaussian(0.0, SIGMA, 0.0);
+	g = g + (L_tex(pos - d).x + L_tex(pos + d).x) * gaussian(1.0, SIGMA, 0.0);
+	for (int i=2; float(i)<KERNELSIZE; i++) {
+		g = g + (L_tex(pos - (d * float(i))).x + L_tex(pos + (d * float(i))).x) * gaussian(float(i), SIGMA, 0.0);
 	}
 	
 	return g;
@@ -329,8 +365,9 @@ vec4 hook() {
 
 
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(X)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-X
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMAD
 //!SAVE LUMAD2
@@ -364,8 +401,9 @@ vec4 hook() {
 }
 
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(Y)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-Y
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMAD2
 //!SAVE LUMAD2
@@ -391,25 +429,27 @@ vec4 hook() {
 	//[-1  0  1]
 	//[-2  0  2]
 	//[-1  0  1]
-	float xgrad = (tx + cx + cx + bx) / 8;
+	float xgrad = (tx + cx + cx + bx) / 8.0;
 	
 	//Vertical Gradient
 	//[-1 -2 -1]
 	//[ 0  0  0]
 	//[ 1  2  1]
-	float ygrad = (-ty + by) / 8;
+	float ygrad = (-ty + by) / 8.0;
 	
 	//Computes the luminance's gradient
 	return vec4(xgrad, ygrad, 0, 0);
 }
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND LUMAD
 //!BIND LUMAD2
-//!WIDTH OUTPUT.w
-//!HEIGHT OUTPUT.h
+//!SAVE MAINTEMPTHIN
+//!WIDTH MAIN.w 2 *
+//!HEIGHT MAIN.h 2 *
 
 #define STRENGTH 0.4 //Strength of warping for each iteration
 #define ITERATIONS 1 //Number of iterations for the forwards solver, decreasing strength and increasing iterations improves quality at the cost of speed.
@@ -419,7 +459,7 @@ vec4 hook() {
 vec4 hook() {
 	vec2 d = HOOKED_pt;
 	
-	float relstr = HOOKED_size.y / 1080 * STRENGTH;
+	float relstr = HOOKED_size.y / 1080.0 * STRENGTH;
 	
 	vec2 pos = HOOKED_pos;
 	for (int i=0; i<ITERATIONS; i++) {
@@ -428,20 +468,36 @@ vec4 hook() {
 		pos -= dd;
 	}
 	
-	return HOOKED_tex(pos);
+	return L_tex(pos);
 	
 }
 
-
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(X)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Luma
+//!HOOK MAIN
 //!BIND HOOKED
+//!BIND MAINTEMPTHIN
+//!COMPONENTS 1
+//!SAVE MAINTEMP
+//!WIDTH MAIN.w 2 *
+//!HEIGHT MAIN.h 2 *
+
+float get_luma(vec4 rgba) {
+	return dot(vec4(0.299, 0.587, 0.114, 0.0), rgba);
+}
+
+vec4 hook() {
+    return vec4(get_luma(MAINTEMPTHIN_tex(HOOKED_pos)), 0.0, 0.0, 0.0);
+}
+
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-X
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
+//!BIND HOOKED
+//!BIND MAINTEMP
 //!SAVE MMKERNEL
-//!WIDTH NATIVE.w 2 /
-//!HEIGHT NATIVE.h 2 /
 //!COMPONENTS 3
 
-#define L_tex HOOKED_tex
+#define L_tex MAINTEMP_tex
 
 float max3v(float a, float b, float c) {
 	return max(max(a, b), c);
@@ -472,13 +528,12 @@ vec4 hook() {
 }
 
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD-Kernel(Y)
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2-Kernel-Y
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
 //!BIND MMKERNEL
 //!SAVE MMKERNEL
-//!WIDTH NATIVE.w 2 /
-//!HEIGHT NATIVE.h 2 /
 //!COMPONENTS 3
 
 #define L_tex MMKERNEL_tex
@@ -515,17 +570,22 @@ vec4 hook() {
     return vec4(lumGaussian7(HOOKED_pos, vec2(0, HOOKED_pt.y)), minmax3(HOOKED_pos, vec2(0, HOOKED_pt.y)), 0);
 }
 
-//!DESC Anime4K-v3.1-Upscale(x2)-DTD
-//!HOOK NATIVE
+//!DESC Anime4K-v3.2-Upscale-DTD-x2
+//!WHEN OUTPUT.w MAIN.w / 1.200 > OUTPUT.h MAIN.h / 1.200 > *
+//!HOOK MAIN
 //!BIND HOOKED
+//!BIND MAINTEMPTHIN
+//!BIND MAINTEMP
 //!BIND MMKERNEL
+//!WIDTH MAIN.w 2 *
+//!HEIGHT MAIN.h 2 *
 
-#define STRENGTH 0.8 //De-blur proportional strength, higher is sharper. However, it is better to tweak BLUR_CURVE instead to avoid ringing.
-#define BLUR_CURVE 0.6 //De-blur power curve, lower is sharper. Good values are between 0.3 - 1. Values greater than 1 softens the image;
+#define STRENGTH 0.5 //De-blur proportional strength, higher is sharper. However, it is better to tweak BLUR_CURVE instead to avoid ringing.
+#define BLUR_CURVE 0.8 //De-blur power curve, lower is sharper. Good values are between 0.3 - 1. Values greater than 1 softens the image;
 #define BLUR_THRESHOLD 0.1 //Value where curve kicks in, used to not de-blur already sharp edges. Only de-blur values that fall below this threshold.
 #define NOISE_THRESHOLD 0.004 //Value where curve stops, used to not sharpen noise. Only de-blur values that fall above this threshold.
 
-#define L_tex HOOKED_tex
+#define L_tex MAINTEMP_tex
 
 vec4 hook() {
 	float c = (L_tex(HOOKED_pos).x - MMKERNEL_tex(HOOKED_pos).x) * STRENGTH;
@@ -541,7 +601,12 @@ vec4 hook() {
 	} else {
 		c_t = c;
 	}
-	return vec4(clamp(c_t + L_tex(HOOKED_pos).x, MMKERNEL_tex(HOOKED_pos).y, MMKERNEL_tex(HOOKED_pos).z), HOOKED_tex(HOOKED_pos).yz, 0);
+	
+	float cc = clamp(c_t + L_tex(HOOKED_pos).x, MMKERNEL_tex(HOOKED_pos).y, MMKERNEL_tex(HOOKED_pos).z) - L_tex(HOOKED_pos).x;
+	
+	//This trick is only possible if the inverse Y->RGB matrix has 1 for every row... (which is the case for BT.709)
+	//Otherwise we would need to convert RGB to YUV, modify Y then convert back to RGB.
+	return MAINTEMPTHIN_tex(HOOKED_pos) + cc;
 }
 
 
